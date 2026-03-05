@@ -70,4 +70,8 @@ Same variable names as TR-BUTE (sister project). Only values differ.
     client components, admin comment moderation page with status filters and hide/show/delete
     actions, moderation API endpoint, author/user profile page with published articles grid,
     comment integration in article page
-- **Phase 6: Polish & Launch** — IN PROGRESS
+- **Phase 6: Polish & Launch** — COMPLETE
+  - Collections system (listing + detail pages with article grids), full-text search API
+    with pagination + search page (articles + tags), RSS feed (`/feed/rss.xml`) with full
+    article metadata, dynamic sitemap (categories, articles, tags, collections), enhanced
+    search API with subtitle matching

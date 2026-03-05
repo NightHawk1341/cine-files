@@ -1,43 +1,53 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
+import { jsonError } from '@/lib/api-utils';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const query = searchParams.get('q');
+  const page = Math.max(1, parseInt(searchParams.get('page') || '1'));
+  const limit = Math.min(parseInt(searchParams.get('limit') || '20'), 50);
 
   if (!query || query.length < 2) {
-    return NextResponse.json({ articles: [], tags: [] });
+    return jsonError('Query must be at least 2 characters', 400);
   }
 
-  const [articles, tags] = await Promise.all([
+  const where = {
+    status: 'published' as const,
+    OR: [
+      { title: { contains: query, mode: 'insensitive' as const } },
+      { lead: { contains: query, mode: 'insensitive' as const } },
+      { subtitle: { contains: query, mode: 'insensitive' as const } },
+    ],
+  };
+
+  const [articles, total] = await Promise.all([
     prisma.article.findMany({
-      where: {
-        status: 'published',
-        OR: [
-          { title: { contains: query, mode: 'insensitive' } },
-          { lead: { contains: query, mode: 'insensitive' } },
-        ],
-      },
-      select: {
-        id: true,
-        slug: true,
-        title: true,
-        lead: true,
-        coverImageUrl: true,
-        publishedAt: true,
-        category: { select: { slug: true, nameRu: true } },
+      where,
+      include: {
+        category: true,
+        author: { select: { id: true, displayName: true, avatarUrl: true } },
+        tags: { include: { tag: true } },
       },
       orderBy: { publishedAt: 'desc' },
-      take: 20,
+      skip: (page - 1) * limit,
+      take: limit,
     }),
-    prisma.tag.findMany({
-      where: {
-        nameRu: { contains: query, mode: 'insensitive' },
-      },
-      orderBy: { articleCount: 'desc' },
-      take: 10,
-    }),
+    prisma.article.count({ where }),
   ]);
 
-  return NextResponse.json({ articles, tags });
+  const tags = await prisma.tag.findMany({
+    where: {
+      nameRu: { contains: query, mode: 'insensitive' },
+      articleCount: { gt: 0 },
+    },
+    orderBy: { articleCount: 'desc' },
+    take: 10,
+  });
+
+  return NextResponse.json({
+    articles,
+    tags,
+    pagination: { page, limit, total, pages: Math.ceil(total / limit) },
+  });
 }
