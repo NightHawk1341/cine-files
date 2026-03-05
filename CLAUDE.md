@@ -1,0 +1,77 @@
+# CineFiles — Claude Instructions
+
+## Project Overview
+CineFiles is a cinema/entertainment news and review site. Russian-language primary, i18n-ready.
+
+## Tech Stack
+- **Framework**: Next.js 14+ (App Router), TypeScript strict mode
+- **Database**: PostgreSQL (Supabase) via Prisma ORM
+- **Styling**: CSS Modules + CSS Variables (dark/light themes)
+- **Auth**: Yandex OAuth (primary), VK ID, Telegram Login Widget
+- **Storage**: Yandex S3 for images
+- **Deployment**: Yandex Cloud (Docker) primary, Vercel fallback
+
+## Key Conventions
+- **Never hardcode colors** — always use CSS variables from `styles/globals.css`
+- **Font loading**: Montserrat from `/fonts/`, never Google Fonts
+- **Skeleton loading**: use `--skeleton-bg-base` and `--skeleton-bg-highlight`
+- **Shadows**: use `--shadow-sm`, `--shadow-md`, `--shadow-lg`
+- **All interactive elements** need `.active` + `.active:hover` states
+- **Russian-first UI** — all strings in `locales/ru.json`
+- **Slug generation**: Russian → Latin transliteration via `lib/transliterate.ts`
+
+## Commands
+- `npm run dev` — development server
+- `npm run build` — production build
+- `npm run lint` — ESLint
+- `npx prisma db push` — sync schema to DB
+- `npx prisma generate` — generate Prisma client
+- `npx prisma migrate dev` — create migration
+
+## Project Structure
+- `app/` — Next.js App Router pages and API routes
+- `app/(public)/` — public pages
+- `app/admin/` — admin panel (protected)
+- `components/` — React components
+- `lib/` — server-side utilities (auth, db, tmdb, storage, config)
+- `styles/` — CSS globals and modules
+- `locales/` — i18n string files
+- `prisma/` — database schema and seeds
+
+## CSS Variable Naming
+Same variable names as TR-BUTE (sister project). Only values differ.
+
+## Progress
+- **Phase 1: Foundation** — COMPLETE
+  - Next.js 14 + TypeScript strict, Prisma schema (12 tables), CSS variables (dark/light),
+    layout components (Header/Footer/BottomNav/ThemeToggle), lib utilities (auth, db, tmdb,
+    storage, transliterate, config, tribute-api, types), localization (ru/en), all public
+    and admin page stubs, API routes, middleware, Dockerfile, vercel.json, robots/sitemap
+  - Note: Admin uses `/admin/` segment (not route group) to avoid path conflicts
+- **Phase 2: Content System** — COMPLETE
+  - Article CRUD API with auth guards (requireEditor/requireAdmin), block-based content
+    editor (BlockEditor component), article rendering (ArticleBody with 11 block types,
+    ArticleCard, ArticleMeta), image upload API (Yandex S3), category listing pages with
+    pagination, full article page with cover images and tags, SEO meta tags + JSON-LD,
+    categories API, admin article list with status filters
+- **Phase 3: TMDB & Tagging** — COMPLETE
+  - TMDB proxy API (`/api/tmdb/[...path]`) for Vercel geo-bypass, TMDB search autocomplete
+    endpoint for admin, tag CRUD API with TMDB entity linking and auto-sync, public tag
+    detail page (articles by tag with pagination + TMDB overview), public tags listing page
+    (grouped by type with article counts), admin tag management with TMDB search/autocomplete,
+    TMDB batch sync cron endpoint (re-syncs stale entities, cleans expired cache)
+- **Phase 4: TR-BUTE Integration** — COMPLETE
+  - ProductCard component for TR-BUTE products, TributeProductsBlock server component
+    with live data fetching, ArticleBody customBlocks pattern for server component injection,
+    related articles API (`/api/articles/related`) for TR-BUTE cross-linking (by product ID
+    or tag slug), full integration in article page rendering
+- **Phase 5: Comments & Community** — COMPLETE
+  - Comment CRUD API with threading (nested replies), CommentList/CommentItem/CommentForm
+    client components, admin comment moderation page with status filters and hide/show/delete
+    actions, moderation API endpoint, author/user profile page with published articles grid,
+    comment integration in article page
+- **Phase 6: Polish & Launch** — COMPLETE
+  - Collections system (listing + detail pages with article grids), full-text search API
+    with pagination + search page (articles + tags), RSS feed (`/feed/rss.xml`) with full
+    article metadata, dynamic sitemap (categories, articles, tags, collections), enhanced
+    search API with subtitle matching
