@@ -1,0 +1,19 @@
+{
+  "contextWindow": 65536,
+  "model": "claude-opus-4-6",
+  "permissions": {
+    "allow": [
+      "Read",
+      "Glob",
+      "Grep",
+      "WebFetch",
+      "WebSearch",
+      "TodoWrite"
+    ]
+  },
+  "instructions": [
+    "Always read CLAUDE.md before starting work on this project",
+    "Follow the conventions documented in IMPLEMENTATION_PROTOCOL.md",
+    "Check docs/ directory for system-specific documentation"
+  ]
+}

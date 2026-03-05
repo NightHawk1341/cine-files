@@ -1,0 +1,54 @@
+name: Cleanup Container Registry
+
+on:
+  schedule:
+    # Run weekly on Sundays at 04:00 UTC
+    - cron: '0 4 * * 0'
+  workflow_dispatch:
+
+env:
+  REGISTRY_ID: ${{ secrets.YC_REGISTRY_ID }}
+  REPOSITORY_NAME: cinefiles
+  # Keep the last N images
+  KEEP_LAST: 5
+
+jobs:
+  cleanup:
+    name: Remove Old Docker Images
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install Yandex Cloud CLI
+        run: |
+          curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash -s -- -n
+          echo "$HOME/yandex-cloud/bin" >> $GITHUB_PATH
+
+      - name: Authenticate with Yandex Cloud
+        run: |
+          echo '${{ secrets.YC_SA_JSON_KEY }}' > sa-key.json
+          yc config set service-account-key sa-key.json
+          rm sa-key.json
+
+      - name: List and cleanup old images
+        run: |
+          echo "Fetching image list from registry..."
+
+          # Get all image IDs sorted by creation date (oldest first)
+          IMAGE_IDS=$(yc container image list \
+            --registry-id ${{ env.REGISTRY_ID }} \
+            --repository-name ${{ env.REPOSITORY_NAME }} \
+            --format json | \
+            jq -r 'sort_by(.createdAt) | .[:-${{ env.KEEP_LAST }}] | .[].id')
+
+          if [ -z "$IMAGE_IDS" ]; then
+            echo "No old images to clean up."
+            exit 0
+          fi
+
+          echo "Removing old images (keeping last ${{ env.KEEP_LAST }})..."
+          for IMAGE_ID in $IMAGE_IDS; do
+            echo "Deleting image: $IMAGE_ID"
+            yc container image delete --id "$IMAGE_ID" || true
+          done
+
+          echo "Cleanup complete."

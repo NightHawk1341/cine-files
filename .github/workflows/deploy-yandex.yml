@@ -1,0 +1,90 @@
+name: Deploy to Yandex Cloud
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  REGISTRY: cr.yandex/${{ secrets.YC_REGISTRY_ID }}
+  IMAGE_NAME: cinefiles
+  CONTAINER_NAME: cinefiles-app
+
+jobs:
+  build-and-push:
+    name: Build & Push Docker Image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Login to Yandex Container Registry
+        run: echo "${{ secrets.YC_SA_JSON_KEY }}" | docker login --username json_key --password-stdin cr.yandex
+
+      - name: Build Docker image
+        run: |
+          docker build \
+            -f docker/Dockerfile \
+            -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
+            -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest \
+            .
+
+      - name: Push Docker image
+        run: |
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+
+  deploy:
+    name: Deploy to Server
+    needs: build-and-push
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          script: |
+            echo "${{ secrets.YC_SA_JSON_KEY }}" | docker login --username json_key --password-stdin cr.yandex
+
+            docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+
+            docker stop ${{ env.CONTAINER_NAME }} 2>/dev/null || true
+            docker rm ${{ env.CONTAINER_NAME }} 2>/dev/null || true
+
+            docker run -d \
+              --name ${{ env.CONTAINER_NAME }} \
+              --restart unless-stopped \
+              -p 3000:3000 \
+              -e NODE_ENV=production \
+              -e DATABASE_URL="${{ secrets.DATABASE_URL }}" \
+              -e JWT_SECRET="${{ secrets.JWT_SECRET }}" \
+              -e SESSION_SECRET="${{ secrets.SESSION_SECRET }}" \
+              -e CRON_SECRET="${{ secrets.CRON_SECRET }}" \
+              -e APP_URL="${{ secrets.APP_URL }}" \
+              -e YANDEX_CLIENT_ID="${{ secrets.YANDEX_CLIENT_ID }}" \
+              -e YANDEX_CLIENT_SECRET="${{ secrets.YANDEX_CLIENT_SECRET }}" \
+              -e VK_CLIENT_ID="${{ secrets.VK_CLIENT_ID }}" \
+              -e VK_CLIENT_SECRET="${{ secrets.VK_CLIENT_SECRET }}" \
+              -e TELEGRAM_BOT_TOKEN="${{ secrets.TELEGRAM_BOT_TOKEN }}" \
+              -e YANDEX_S3_ENDPOINT="${{ secrets.YANDEX_S3_ENDPOINT }}" \
+              -e YANDEX_S3_REGION="${{ secrets.YANDEX_S3_REGION }}" \
+              -e YANDEX_S3_BUCKET="${{ secrets.YANDEX_S3_BUCKET }}" \
+              -e YANDEX_S3_ACCESS_KEY="${{ secrets.YANDEX_S3_ACCESS_KEY }}" \
+              -e YANDEX_S3_SECRET_KEY="${{ secrets.YANDEX_S3_SECRET_KEY }}" \
+              -e TMDB_API_KEY="${{ secrets.TMDB_API_KEY }}" \
+              -e TMDB_PROXY_URL="${{ secrets.TMDB_PROXY_URL }}" \
+              -e TMDB_PROXY_SECRET="${{ secrets.TMDB_PROXY_SECRET }}" \
+              -e TRIBUTE_API_URL="${{ secrets.TRIBUTE_API_URL }}" \
+              -e TRIBUTE_API_KEY="${{ secrets.TRIBUTE_API_KEY }}" \
+              ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+
+            # Wait for container to be healthy
+            sleep 5
+            docker ps | grep ${{ env.CONTAINER_NAME }}
+
+            # Clean up old images
+            docker image prune -f
