@@ -1,0 +1,18 @@
+{
+  "framework": "nextjs",
+  "regions": ["iad1"],
+  "crons": [
+    {
+      "path": "/api/cron/tmdb-sync",
+      "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/cron/tmdb-cleanup",
+      "schedule": "0 3 * * *"
+    },
+    {
+      "path": "/api/cron/token-cleanup",
+      "schedule": "0 5 * * *"
+    }
+  ]
+}

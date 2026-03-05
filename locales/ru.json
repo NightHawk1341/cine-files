@@ -1,0 +1,106 @@
+{
+  "site": {
+    "name": "CineFiles",
+    "description": "Кино, аниме, игры — новости, рецензии, разборы",
+    "copyright": "Все права защищены"
+  },
+  "nav": {
+    "home": "Главная",
+    "news": "Новости",
+    "reviews": "Рецензии",
+    "articles": "Статьи",
+    "tags": "Теги",
+    "search": "Поиск",
+    "collections": "Подборки",
+    "about": "О проекте",
+    "legal": "Правовая информация",
+    "profile": "Профиль",
+    "login": "Войти",
+    "logout": "Выйти"
+  },
+  "auth": {
+    "loginTitle": "Войти в CineFiles",
+    "loginWith": "Войти через {provider}",
+    "yandex": "Яндекс",
+    "vk": "VK",
+    "telegram": "Telegram",
+    "logoutConfirm": "Вы уверены, что хотите выйти?"
+  },
+  "articles": {
+    "readMore": "Читать далее",
+    "publishedAt": "Опубликовано",
+    "updatedAt": "Обновлено",
+    "views": "просмотров",
+    "comments": "комментариев",
+    "share": "Поделиться",
+    "relatedArticles": "Похожие статьи",
+    "noArticles": "Статей пока нет"
+  },
+  "comments": {
+    "title": "Комментарии",
+    "write": "Написать комментарий",
+    "reply": "Ответить",
+    "delete": "Удалить",
+    "hide": "Скрыть",
+    "loginToComment": "Войдите, чтобы оставить комментарий",
+    "noComments": "Комментариев пока нет. Будьте первым!"
+  },
+  "tags": {
+    "allTags": "Все теги",
+    "movies": "Фильмы",
+    "tv": "Сериалы",
+    "people": "Персоны",
+    "genres": "Жанры",
+    "franchises": "Франшизы",
+    "studios": "Студии",
+    "topics": "Темы",
+    "games": "Игры",
+    "anime": "Аниме"
+  },
+  "search": {
+    "placeholder": "Поиск статей, фильмов, людей...",
+    "noResults": "Ничего не найдено",
+    "resultsFor": "Результаты для «{query}»"
+  },
+  "admin": {
+    "dashboard": "Панель управления",
+    "articles": "Статьи",
+    "newArticle": "Новая статья",
+    "editArticle": "Редактировать статью",
+    "tags": "Теги",
+    "media": "Медиатека",
+    "comments": "Комментарии",
+    "collections": "Подборки",
+    "users": "Пользователи",
+    "settings": "Настройки",
+    "publish": "Опубликовать",
+    "saveDraft": "Сохранить черновик",
+    "sendToReview": "На проверку",
+    "archive": "Архивировать"
+  },
+  "status": {
+    "draft": "Черновик",
+    "review": "На проверке",
+    "published": "Опубликовано",
+    "archived": "В архиве"
+  },
+  "common": {
+    "loading": "Загрузка...",
+    "error": "Произошла ошибка",
+    "retry": "Повторить",
+    "save": "Сохранить",
+    "cancel": "Отмена",
+    "delete": "Удалить",
+    "edit": "Редактировать",
+    "create": "Создать",
+    "confirm": "Подтвердить",
+    "yes": "Да",
+    "no": "Нет",
+    "showMore": "Показать ещё",
+    "back": "Назад"
+  },
+  "tribute": {
+    "relatedProducts": "Связанные товары на TR-BUTE",
+    "viewOnTribute": "Смотреть на TR-BUTE"
+  }
+}

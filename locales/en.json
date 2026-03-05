@@ -1,0 +1,106 @@
+{
+  "site": {
+    "name": "CineFiles",
+    "description": "Cinema, anime, games — news, reviews, analysis",
+    "copyright": "All rights reserved"
+  },
+  "nav": {
+    "home": "Home",
+    "news": "News",
+    "reviews": "Reviews",
+    "articles": "Articles",
+    "tags": "Tags",
+    "search": "Search",
+    "collections": "Collections",
+    "about": "About",
+    "legal": "Legal",
+    "profile": "Profile",
+    "login": "Log in",
+    "logout": "Log out"
+  },
+  "auth": {
+    "loginTitle": "Log in to CineFiles",
+    "loginWith": "Log in with {provider}",
+    "yandex": "Yandex",
+    "vk": "VK",
+    "telegram": "Telegram",
+    "logoutConfirm": "Are you sure you want to log out?"
+  },
+  "articles": {
+    "readMore": "Read more",
+    "publishedAt": "Published",
+    "updatedAt": "Updated",
+    "views": "views",
+    "comments": "comments",
+    "share": "Share",
+    "relatedArticles": "Related articles",
+    "noArticles": "No articles yet"
+  },
+  "comments": {
+    "title": "Comments",
+    "write": "Write a comment",
+    "reply": "Reply",
+    "delete": "Delete",
+    "hide": "Hide",
+    "loginToComment": "Log in to leave a comment",
+    "noComments": "No comments yet. Be the first!"
+  },
+  "tags": {
+    "allTags": "All tags",
+    "movies": "Movies",
+    "tv": "TV Shows",
+    "people": "People",
+    "genres": "Genres",
+    "franchises": "Franchises",
+    "studios": "Studios",
+    "topics": "Topics",
+    "games": "Games",
+    "anime": "Anime"
+  },
+  "search": {
+    "placeholder": "Search articles, movies, people...",
+    "noResults": "No results found",
+    "resultsFor": "Results for \"{query}\""
+  },
+  "admin": {
+    "dashboard": "Dashboard",
+    "articles": "Articles",
+    "newArticle": "New article",
+    "editArticle": "Edit article",
+    "tags": "Tags",
+    "media": "Media library",
+    "comments": "Comments",
+    "collections": "Collections",
+    "users": "Users",
+    "settings": "Settings",
+    "publish": "Publish",
+    "saveDraft": "Save draft",
+    "sendToReview": "Send to review",
+    "archive": "Archive"
+  },
+  "status": {
+    "draft": "Draft",
+    "review": "In review",
+    "published": "Published",
+    "archived": "Archived"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "retry": "Retry",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "confirm": "Confirm",
+    "yes": "Yes",
+    "no": "No",
+    "showMore": "Show more",
+    "back": "Back"
+  },
+  "tribute": {
+    "relatedProducts": "Related products on TR-BUTE",
+    "viewOnTribute": "View on TR-BUTE"
+  }
+}
