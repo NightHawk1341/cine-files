@@ -65,4 +65,9 @@ Same variable names as TR-BUTE (sister project). Only values differ.
     with live data fetching, ArticleBody customBlocks pattern for server component injection,
     related articles API (`/api/articles/related`) for TR-BUTE cross-linking (by product ID
     or tag slug), full integration in article page rendering
-- **Phase 5: Comments & Community** — IN PROGRESS
+- **Phase 5: Comments & Community** — COMPLETE
+  - Comment CRUD API with threading (nested replies), CommentList/CommentItem/CommentForm
+    client components, admin comment moderation page with status filters and hide/show/delete
+    actions, moderation API endpoint, author/user profile page with published articles grid,
+    comment integration in article page
+- **Phase 6: Polish & Launch** — IN PROGRESS

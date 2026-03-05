@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
 import { ArticleMeta } from '@/components/article/ArticleMeta';
 import { ArticleBody } from '@/components/article/ArticleBody';
 import { TributeProductsBlock } from '@/components/tribute/TributeProductsBlock';
+import { CommentList } from '@/components/comments/CommentList';
 import type { Block } from '@/lib/types';
 import styles from '@/styles/pages/article.module.css';
 
@@ -138,6 +139,8 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
             ))}
           </div>
         )}
+
+        <CommentList articleId={article.id} allowComments={article.allowComments} />
       </article>
     </>
   );
