@@ -40,3 +40,12 @@ CineFiles is a cinema/entertainment news and review site. Russian-language prima
 
 ## CSS Variable Naming
 Same variable names as TR-BUTE (sister project). Only values differ.
+
+## Progress
+- **Phase 1: Foundation** — COMPLETE
+  - Next.js 14 + TypeScript strict, Prisma schema (12 tables), CSS variables (dark/light),
+    layout components (Header/Footer/BottomNav/ThemeToggle), lib utilities (auth, db, tmdb,
+    storage, transliterate, config, tribute-api, types), localization (ru/en), all public
+    and admin page stubs, API routes, middleware, Dockerfile, vercel.json, robots/sitemap
+  - Note: Admin uses `/admin/` segment (not route group) to avoid path conflicts
+- **Phase 2: Content System** — IN PROGRESS

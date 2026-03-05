@@ -1,0 +1,251 @@
+.editor {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.blockWrapper {
+  position: relative;
+  display: flex;
+  gap: 8px;
+  padding: 8px 0;
+}
+
+.blockControls {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 24px;
+  opacity: 0.3;
+  transition: opacity 200ms;
+}
+
+.blockWrapper:hover .blockControls {
+  opacity: 1;
+}
+
+.controlBtn {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: var(--text-tertiary);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 200ms, color 200ms;
+}
+
+.controlBtn:hover:not(:disabled) {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.controlBtn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.blockContent {
+  flex: 1;
+  min-width: 0;
+}
+
+.blockType {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+.textInput {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 14px;
+  color: var(--text-primary);
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  resize: vertical;
+  font-family: inherit;
+  line-height: 1.5;
+  transition: border-color 200ms;
+}
+
+.textInput:focus {
+  outline: none;
+  border-color: var(--border-active);
+}
+
+.textInput::placeholder {
+  color: var(--text-tertiary);
+}
+
+.select {
+  padding: 8px 12px;
+  font-size: 13px;
+  color: var(--text-primary);
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.headingInput {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.headingInput .select {
+  width: 70px;
+  flex-shrink: 0;
+}
+
+.headingInput .textInput {
+  flex: 1;
+}
+
+.listItem {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.listItem .textInput {
+  flex: 1;
+}
+
+.smallBtn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: var(--text-tertiary);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.smallBtn:hover {
+  color: var(--status-error);
+  border-color: var(--status-error);
+}
+
+.addItemBtn {
+  font-size: 13px;
+  color: var(--brand-primary);
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: var(--brand-muted);
+  border: 1px solid transparent;
+  cursor: pointer;
+  align-self: flex-start;
+  transition: background-color 200ms;
+}
+
+.addItemBtn:hover {
+  background: var(--bg-tertiary);
+}
+
+.dividerPreview {
+  text-align: center;
+  color: var(--text-tertiary);
+  font-size: 13px;
+  padding: 8px;
+  border-top: 1px dashed var(--border-color);
+  border-bottom: 1px dashed var(--border-color);
+}
+
+.hint {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  font-style: italic;
+}
+
+.addBlock {
+  position: absolute;
+  bottom: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+}
+
+.addBlockWrapper {
+  position: relative;
+}
+
+.addBlockBtn {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  color: var(--text-tertiary);
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 200ms, background-color 200ms;
+}
+
+.blockWrapper:hover .addBlockBtn {
+  opacity: 1;
+}
+
+.addBlockBtn:hover {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.addBlockMenu {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 4px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  width: 280px;
+  box-shadow: var(--shadow-lg);
+  z-index: 10;
+}
+
+.addBlockOption {
+  padding: 6px 12px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 200ms, color 200ms;
+  background: none;
+  border: none;
+}
+
+.addBlockOption:hover {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
