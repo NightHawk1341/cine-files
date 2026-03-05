@@ -12,7 +12,7 @@
 
 ### TypeScript
 - Strict mode enabled — no `any` types unless absolutely necessary
-- Use Prisma-generated types for database models
+- Use Supabase-generated types for database models
 - Shared types live in `lib/types.ts`
 - Prefer `interface` over `type` for object shapes
 
@@ -52,7 +52,7 @@
 1. Create route at `app/api/{resource}/route.ts`
 2. Add appropriate auth guard
 3. Validate all inputs
-4. Use Prisma for database operations
+4. Use Supabase client for database operations
 5. Return consistent JSON shape
 6. Update denormalized counts if applicable
 
@@ -69,10 +69,10 @@
 3. Add editing UI in `components/editor/BlockEditor.tsx`
 4. If server-side data needed, use `customBlocks` injection pattern
 
-### New Database Model
-1. Add model to `prisma/schema.prisma`
-2. Run `npx prisma migrate dev` to create migration
-3. Run `npx prisma generate` to update client
+### New Database Table
+1. Write the SQL DDL and add to `SQL_SCHEMA.sql`
+2. Apply via Supabase Dashboard SQL editor
+3. Update TypeScript types in `lib/types.ts`
 4. Document in `docs/DATABASE.md`
 
 ### New Cron Job
@@ -82,7 +82,7 @@
 4. Document in `docs/CRON_JOBS.md`
 
 ### New OAuth Provider
-1. Add OAuth IDs to User model in Prisma schema
+1. Add OAuth ID columns to `users` table via SQL migration
 2. Create auth route at `app/api/auth/{provider}/route.ts`
 3. Add env vars to `lib/config.ts`
 4. Document in `docs/AUTH_SYSTEM.md` and `docs/ENV_VARS.md`
@@ -112,14 +112,14 @@
 4. Test error cases (missing fields, invalid IDs, duplicates)
 
 ### Database Changes
-1. Run `npx prisma migrate dev` — verify migration is clean
-2. Check for cascade effects on related models
+1. Apply SQL via Supabase Dashboard and verify
+2. Check for cascade effects on related tables
 3. Update seed script if needed
 
 ## Deployment Checklist
 
 1. All env vars set in target environment
-2. `npx prisma migrate deploy` run against production DB
+2. Database migrations applied via Supabase Dashboard
 3. Docker: `DOCKER_BUILD=true` set during build
 4. Vercel: cron schedules in `vercel.json` are correct
 5. Security headers in `next.config.js` are intact
@@ -136,5 +136,5 @@
 | Page CSS modules | `styles/pages/` |
 | Component CSS modules | `styles/components/` |
 | Russian strings | `locales/ru.json` |
-| Database schema | `prisma/schema.prisma` |
+| Database schema | `SQL_SCHEMA.sql` |
 | Documentation | `docs/` |

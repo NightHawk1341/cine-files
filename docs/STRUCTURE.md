@@ -73,7 +73,7 @@ cine-files/
 │   ├── auth.ts                       # JWT sign/verify, session helpers
 │   ├── api-utils.ts                  # requireAuth/requireEditor/requireAdmin guards
 │   ├── config.ts                     # Environment variable parsing
-│   ├── db.ts                         # Prisma singleton
+│   ├── db.ts                         # Supabase client singleton
 │   ├── tmdb.ts                       # TMDB API + caching + entity sync
 │   ├── storage.ts                    # Yandex S3 upload (AWS4-HMAC-SHA256)
 │   ├── transliterate.ts              # Russian → Latin slug generation
@@ -89,9 +89,7 @@ cine-files/
 │   ├── ru.json                       # Russian strings (primary)
 │   └── en.json                       # English strings (fallback)
 │
-├── prisma/
-│   ├── schema.prisma                 # Database schema (12 models)
-│   └── seed.ts                       # Seeding script
+├── SQL_SCHEMA.sql                    # Database schema (PostgreSQL DDL)
 │
 ├── public/
 │   ├── fonts/                        # Montserrat WOFF2 (locally hosted)

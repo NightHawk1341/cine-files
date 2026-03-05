@@ -20,7 +20,7 @@ CineFiles is a cinema/entertainment news and review site — a sister project to
 | Framework | **Next.js 14+ (App Router)** | SSR/SSG for SEO, React Server Components |
 | Language | **TypeScript** | Strict mode |
 | Database | **PostgreSQL (Supabase)** | Separate project from TR-BUTE |
-| ORM | **Prisma** | Type-safe queries, migrations |
+| DB Client | **Supabase JS** (`@supabase/supabase-js`) | Same client as TR-BUTE |
 | Styling | **CSS Modules + CSS Variables** | Shared variable naming with TR-BUTE for visual kinship |
 | Auth | **Yandex OAuth** (primary), **VK ID** (secondary), **Telegram Login Widget** (tertiary) | No mini-app auth — standard OAuth flows only |
 | Storage | **Yandex S3** | All images (article covers, author photos, editorial assets) |
@@ -1092,15 +1092,13 @@ cinefiles/
 │   └── tribute/                  # TributeProductCard, TributeSection
 ├── lib/                          # Server-side utilities
 │   ├── config.ts                 # Environment variables (mirrors TR-BUTE pattern)
-│   ├── db.ts                     # Prisma client
+│   ├── db.ts                     # Supabase client
 │   ├── tmdb.ts                   # TMDB client + cache logic
 │   ├── storage.ts                # Yandex S3 operations
 │   ├── auth.ts                   # JWT + OAuth helpers
 │   ├── tribute-api.ts            # TR-BUTE API client
 │   └── transliterate.ts          # Russian → Latin slug generation
-├── prisma/
-│   ├── schema.prisma             # Database schema
-│   └── seed.ts                   # Initial categories, settings
+├── SQL_SCHEMA.sql                # Database schema (PostgreSQL DDL)
 ├── styles/
 │   ├── globals.css               # CSS variables, theme, reset
 │   └── components/               # CSS Modules
@@ -1131,7 +1129,7 @@ cinefiles/
 
 ### Phase 1: Foundation (Week 1-2)
 - Next.js project setup with TypeScript
-- Database schema (Prisma) + Supabase project
+- Database schema (SQL) + Supabase project
 - Auth system (Yandex OAuth first)
 - Basic layout (header, footer, theme toggle)
 - CSS variables and global styles

@@ -5,7 +5,7 @@ Cinema and entertainment news & review site. Russian-language primary, i18n-read
 ## Tech Stack
 
 - **Next.js 14+** (App Router) with TypeScript strict mode
-- **PostgreSQL** (Supabase) via Prisma ORM
+- **PostgreSQL** via Supabase (`@supabase/supabase-js`)
 - **CSS Modules** + CSS Variables (dark/light themes)
 - **Yandex OAuth** (primary), VK ID, Telegram Login Widget
 - **Yandex S3** for image storage
@@ -31,8 +31,8 @@ npm install
 # (no local .env file — all secrets managed via platform)
 # See docs/ENV_VARS.md for the full list
 
-# Push database schema
-npx prisma db push
+# Apply database schema (via Supabase Dashboard SQL editor or CLI)
+# See SQL_SCHEMA.sql for the full schema
 
 # Seed database (optional)
 npm run db:seed
@@ -63,9 +63,6 @@ npm run dev          # Development server (localhost:3000)
 npm run build        # Production build
 npm run start        # Start production server
 npm run lint         # ESLint check
-npm run db:generate  # Generate Prisma client
-npm run db:push      # Push schema to database
-npm run db:migrate   # Create and apply migration
 npm run db:seed      # Seed database
 ```
 
@@ -80,7 +77,7 @@ components/       React components
 lib/              Server utilities (auth, db, tmdb, storage, etc.)
 styles/           CSS Modules + globals
 locales/          i18n strings (ru.json, en.json)
-prisma/           Database schema + seeds
+SQL_SCHEMA.sql    Database schema (PostgreSQL DDL)
 docs/             Project documentation
 .github/          CI/CD workflows (deploy, cleanup)
 ```

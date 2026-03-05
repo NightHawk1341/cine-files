@@ -2,7 +2,7 @@
 
 ## Overview
 
-PostgreSQL (Supabase) with Prisma ORM. 12 models covering users, content, tags, comments, media, and settings.
+PostgreSQL via Supabase (`@supabase/supabase-js`). 12 tables covering users, content, tags, comments, media, and settings. Same client library as TR-BUTE.
 
 ## Models
 
@@ -70,21 +70,19 @@ Many-to-many junction with ordering.
 Key-value store for site configuration.
 - Fields: id, key (unique), value (JSON), timestamps
 
-## Commands
+## Schema Management
 
-```bash
-npx prisma generate       # Generate Prisma client
-npx prisma db push        # Push schema to database (no migration)
-npx prisma migrate dev    # Create and apply migration
-npx prisma studio         # Open Prisma Studio (DB browser)
-npm run db:seed            # Run seed script
-```
+- **Schema file**: `SQL_SCHEMA.sql` (PostgreSQL DDL)
+- **Apply schema**: Run SQL via Supabase Dashboard SQL editor
+- **Browse data**: Supabase Dashboard Table Editor
+- **Seed data**: `npm run db:seed`
 
 ## Key Design Decisions
 
-1. **Block-based content**: Articles store content as JSON array, not rich text. Enables flexible rendering without WYSIWYG complexity.
-2. **Soft-delete comments**: Status field (visible/hidden/deleted) preserves thread structure.
-3. **Cascading deletes**: Article deletion cascades to comments and tag relations.
-4. **TMDB separation**: Entity data stored separately from tags — one entity can be referenced by multiple tags.
-5. **Article counts on tags**: Denormalized `articleCount` for performance (updated on tag operations).
-6. **View/comment counts on articles**: Denormalized counters avoid expensive COUNT queries.
+1. **Supabase client** — same `@supabase/supabase-js` library as TR-BUTE for consistency.
+2. **Block-based content**: Articles store content as JSONB, not rich text. Enables flexible rendering without WYSIWYG complexity.
+3. **Soft-delete comments**: Status field (visible/hidden/deleted) preserves thread structure.
+4. **Cascading deletes**: Article deletion cascades to comments and tag relations via `ON DELETE CASCADE`.
+5. **TMDB separation**: Entity data stored separately from tags — one entity can be referenced by multiple tags.
+6. **Article counts on tags**: Denormalized `article_count` for performance (updated on tag operations).
+7. **View/comment counts on articles**: Denormalized counters avoid expensive COUNT queries.

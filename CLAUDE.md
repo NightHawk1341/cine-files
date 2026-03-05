@@ -6,7 +6,7 @@ Sister project to [TR-BUTE](https://buy-tribute.com) (e-commerce). They share CS
 
 ## Tech Stack
 - **Framework**: Next.js 14+ (App Router), TypeScript strict mode
-- **Database**: PostgreSQL (Supabase) via Prisma ORM
+- **Database**: PostgreSQL via Supabase (`@supabase/supabase-js`)
 - **Styling**: CSS Modules + CSS Variables (dark/light themes)
 - **Auth**: Yandex OAuth (primary), VK ID, Telegram Login Widget
 - **Storage**: Yandex S3 for images
@@ -16,9 +16,6 @@ Sister project to [TR-BUTE](https://buy-tribute.com) (e-commerce). They share CS
 - `npm run dev` — development server
 - `npm run build` — production build
 - `npm run lint` — ESLint
-- `npx prisma db push` — sync schema to DB
-- `npx prisma generate` — generate Prisma client
-- `npx prisma migrate dev` — create migration
 - `npm run db:seed` — seed database
 
 ## Project Structure
@@ -30,7 +27,7 @@ Sister project to [TR-BUTE](https://buy-tribute.com) (e-commerce). They share CS
 - `lib/` — server-side utilities (auth, db, tmdb, storage, config, transliterate, tribute-api, types)
 - `styles/` — CSS globals and modules (`pages/` and `components/` subdirs)
 - `locales/` — i18n string files (ru.json primary, en.json fallback)
-- `prisma/` — database schema and seeds
+- `sql/` — database schema and seeds
 - `docs/` — project documentation
 
 ## Key Conventions
@@ -62,10 +59,11 @@ Sister project to [TR-BUTE](https://buy-tribute.com) (e-commerce). They share CS
 - Admin middleware: lightweight cookie check in `middleware.ts`, full JWT in admin layout
 
 ### Database
-- Prisma ORM — always use Prisma queries, never raw SQL
-- 12 models (see `prisma/schema.prisma`)
-- Denormalized counters: `viewCount`/`commentCount` on Article, `articleCount` on Tag
+- Supabase client — use `@supabase/supabase-js` for all queries (same as TR-BUTE)
+- 12 tables (see `SQL_SCHEMA.sql`)
+- Denormalized counters: `view_count`/`comment_count` on articles, `article_count` on tags
 - Soft-delete pattern for comments (status field, not actual deletion)
+- Use Supabase Dashboard or `SQL_SCHEMA.sql` for schema changes
 
 ## Gotchas & Common Pitfalls
 
@@ -81,28 +79,25 @@ TMDB blocks some Russian IPs. The `/api/tmdb/[...path]` proxy runs on Vercel (US
 ### 4. Theme script prevents FOUC
 Root layout includes an inline `<script>` that reads `localStorage('theme')` and sets `data-theme` before paint. CSP allows inline scripts for this reason. Do not remove the inline script or tighten CSP `script-src` without an alternative FOUC solution.
 
-### 5. `postinstall` runs `prisma generate`
-The `postinstall` script in package.json runs `prisma generate`. This ensures the Prisma client is always in sync after `npm install`. Don't remove it.
-
-### 6. Docker build needs `DOCKER_BUILD=true`
+### 5. Docker build needs `DOCKER_BUILD=true`
 Setting `DOCKER_BUILD=true` enables `output: 'standalone'` in `next.config.js`. Without it, the Docker build won't produce the standalone server. Vercel builds should NOT set this variable.
 
-### 7. Cron jobs need bearer auth
+### 6. Cron jobs need bearer auth
 All `/api/cron/*` endpoints require `Authorization: Bearer {CRON_SECRET}`. Vercel passes this automatically for configured crons. When testing locally, you must pass the header manually.
 
-### 8. Comment deletion updates article counts
+### 7. Comment deletion updates article counts
 When moderating/deleting comments, the `commentCount` on the associated Article must be updated. The moderation endpoint handles this — don't delete comments directly without updating the count.
 
-### 9. Image remote patterns are whitelisted
+### 8. Image remote patterns are whitelisted
 `next.config.js` only allows images from `storage.yandexcloud.net` and `userapi.com` (VK avatars). Adding a new image source requires updating the `images.remotePatterns` config.
 
-### 10. CSP frame-src is restricted
+### 9. CSP frame-src is restricted
 Only YouTube, VK Video, and RuTube embeds are allowed. Adding support for a new embed provider requires updating the CSP `frame-src` in `next.config.js`.
 
-### 11. Slug collisions get timestamp suffix
+### 10. Slug collisions get timestamp suffix
 If `lib/transliterate.ts` generates a slug that already exists, a timestamp is appended. Don't assume slugs are pure transliterations — they may have suffixes.
 
-### 12. TR-BUTE blocks are server components
+### 11. TR-BUTE blocks are server components
 `TributeProductsBlock` is a React Server Component that fetches live data. It's injected into `ArticleBody` via the `customBlocks` prop pattern — not rendered client-side.
 
 ## Documentation

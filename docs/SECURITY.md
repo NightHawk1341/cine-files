@@ -59,7 +59,8 @@ Configured in `next.config.js`:
 
 ## Database Security
 
-- **Prisma ORM** prevents SQL injection by default
+- **Supabase client** with parameterized queries prevents SQL injection
+- Row Level Security (RLS) available for additional protection
 - Cascading deletes configured for related records
 - Soft-delete pattern for comments (preserves thread structure)
 - Unique constraints on slugs, OAuth IDs, refresh tokens

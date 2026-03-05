@@ -22,13 +22,13 @@
 docker build -f docker/Dockerfile -t cinefiles .
 
 # Run
-docker run -p 3000:3000 --env-file .env cinefiles
+docker run -p 3000:3000 cinefiles  # env vars injected by platform
 ```
 
 ### Build Stages
 1. **base** — Node 20 Alpine
-2. **deps** — Install npm dependencies + copy Prisma schema
-3. **builder** — `prisma generate` + `npm run build` (with `DOCKER_BUILD=true`)
+2. **deps** — Install npm dependencies
+3. **builder** — `npm run build` (with `DOCKER_BUILD=true`)
 4. **runner** — Minimal production image with standalone Next.js output
 
 ### Key Detail: `DOCKER_BUILD=true`
@@ -53,9 +53,9 @@ Set this env var during build to enable `output: 'standalone'` in `next.config.j
 ## Database
 
 - **Provider**: PostgreSQL on Supabase
-- **ORM**: Prisma
-- **Schema sync**: `npx prisma db push` (quick sync) or `npx prisma migrate dev` (migration)
-- **Client generation**: `npx prisma generate` (runs automatically on `npm install` via `postinstall`)
+- **Client**: `@supabase/supabase-js` (same as TR-BUTE)
+- **Schema**: `SQL_SCHEMA.sql` — apply via Supabase Dashboard SQL editor
+- **Env vars**: `DATABASE_URL`, `SUPABASE_URL`, `SUPABASE_ANON_KEY` managed in platform dashboards
 
 ## Image Storage
 
