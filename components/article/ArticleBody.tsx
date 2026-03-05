@@ -1,16 +1,21 @@
 import type { Block } from '@/lib/types';
+import type { ReactNode } from 'react';
 import styles from '@/styles/components/article-body.module.css';
 
 interface ArticleBodyProps {
   blocks: Block[];
+  /** Map of block index to custom React node (e.g., server-rendered TributeProductsBlock) */
+  customBlocks?: Map<number, ReactNode>;
 }
 
-export function ArticleBody({ blocks }: ArticleBodyProps) {
+export function ArticleBody({ blocks, customBlocks }: ArticleBodyProps) {
   return (
     <div className={styles.body}>
-      {blocks.map((block, index) => (
-        <BlockRenderer key={index} block={block} />
-      ))}
+      {blocks.map((block, index) => {
+        const custom = customBlocks?.get(index);
+        if (custom) return <div key={index}>{custom}</div>;
+        return <BlockRenderer key={index} block={block} />;
+      })}
     </div>
   );
 }

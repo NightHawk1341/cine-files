@@ -1,8 +1,10 @@
 import type { Metadata } from 'next';
+import type { ReactNode } from 'react';
 import { prisma } from '@/lib/db';
 import { notFound } from 'next/navigation';
 import { ArticleMeta } from '@/components/article/ArticleMeta';
 import { ArticleBody } from '@/components/article/ArticleBody';
+import { TributeProductsBlock } from '@/components/tribute/TributeProductsBlock';
 import type { Block } from '@/lib/types';
 import styles from '@/styles/pages/article.module.css';
 
@@ -121,7 +123,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 
         {article.lead && <p className={styles.lead}>{article.lead}</p>}
 
-        <ArticleBody blocks={blocks} />
+        <ArticleBody blocks={blocks} customBlocks={buildCustomBlocks(blocks)} />
 
         {article.tags.length > 0 && (
           <div className={styles.tags}>
@@ -139,4 +141,14 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
       </article>
     </>
   );
+}
+
+function buildCustomBlocks(blocks: Block[]): Map<number, ReactNode> {
+  const map = new Map<number, ReactNode>();
+  blocks.forEach((block, index) => {
+    if (block.type === 'tribute_products') {
+      map.set(index, <TributeProductsBlock productIds={block.productIds} />);
+    }
+  });
+  return map;
 }

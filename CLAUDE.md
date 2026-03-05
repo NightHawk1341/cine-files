@@ -60,4 +60,9 @@ Same variable names as TR-BUTE (sister project). Only values differ.
     detail page (articles by tag with pagination + TMDB overview), public tags listing page
     (grouped by type with article counts), admin tag management with TMDB search/autocomplete,
     TMDB batch sync cron endpoint (re-syncs stale entities, cleans expired cache)
-- **Phase 4: TR-BUTE Integration** — IN PROGRESS
+- **Phase 4: TR-BUTE Integration** — COMPLETE
+  - ProductCard component for TR-BUTE products, TributeProductsBlock server component
+    with live data fetching, ArticleBody customBlocks pattern for server component injection,
+    related articles API (`/api/articles/related`) for TR-BUTE cross-linking (by product ID
+    or tag slug), full integration in article page rendering
+- **Phase 5: Comments & Community** — IN PROGRESS
