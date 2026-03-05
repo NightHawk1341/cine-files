@@ -48,4 +48,16 @@ Same variable names as TR-BUTE (sister project). Only values differ.
     storage, transliterate, config, tribute-api, types), localization (ru/en), all public
     and admin page stubs, API routes, middleware, Dockerfile, vercel.json, robots/sitemap
   - Note: Admin uses `/admin/` segment (not route group) to avoid path conflicts
-- **Phase 2: Content System** — IN PROGRESS
+- **Phase 2: Content System** — COMPLETE
+  - Article CRUD API with auth guards (requireEditor/requireAdmin), block-based content
+    editor (BlockEditor component), article rendering (ArticleBody with 11 block types,
+    ArticleCard, ArticleMeta), image upload API (Yandex S3), category listing pages with
+    pagination, full article page with cover images and tags, SEO meta tags + JSON-LD,
+    categories API, admin article list with status filters
+- **Phase 3: TMDB & Tagging** — COMPLETE
+  - TMDB proxy API (`/api/tmdb/[...path]`) for Vercel geo-bypass, TMDB search autocomplete
+    endpoint for admin, tag CRUD API with TMDB entity linking and auto-sync, public tag
+    detail page (articles by tag with pagination + TMDB overview), public tags listing page
+    (grouped by type with article counts), admin tag management with TMDB search/autocomplete,
+    TMDB batch sync cron endpoint (re-syncs stale entities, cleans expired cache)
+- **Phase 4: TR-BUTE Integration** — IN PROGRESS
