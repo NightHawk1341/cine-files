@@ -182,14 +182,14 @@ NOTIFICATION_FROM_EMAIL=noreply@your-cinefiles-domain.com
 
 ### 3.1 — Run Schema
 
-Once Claude has generated the Prisma schema and migrations:
+Apply the database schema:
 
-- [ ] Run `npx prisma db push` (or apply migration via Supabase SQL editor)
+- [ ] Run `SQL_SCHEMA.sql` via Supabase Dashboard SQL editor
 - [ ] Verify tables exist in Supabase dashboard
 
 ### 3.2 — Seed Initial Data
 
-- [ ] Run `npx prisma db seed` to create:
+- [ ] Run `npm run db:seed` to create:
   - Default categories (news, reviews, articles, interviews, lists, analysis)
   - Default app_settings
   - Your admin user account
