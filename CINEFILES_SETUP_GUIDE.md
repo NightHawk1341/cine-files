@@ -11,14 +11,9 @@ This document is your personal checklist for setting up CineFiles infrastructure
 - [ ] Go to [app.supabase.com](https://app.supabase.com)
 - [ ] Create a new project named `cinefiles` (keep it in the same organization as TR-BUTE if you want)
 - [ ] Choose a region close to your audience (EU or Singapore — Supabase doesn't have Russian regions)
-- [ ] Save the following from Project Settings → API:
-  - `DATABASE_URL` (Connection string → URI, use "Transaction" mode pooler for Next.js)
-  - `SUPABASE_URL`
-  - `SUPABASE_SERVICE_ROLE_KEY`
-- [ ] Enable the `pg_trgm` extension (needed for tag search):
-  ```sql
-  CREATE EXTENSION IF NOT EXISTS pg_trgm;
-  ```
+- [ ] Save from Project Settings → Database:
+  - `DATABASE_URL` (Connection string → URI, use **"Transaction" mode pooler** for Next.js/Prisma)
+- [ ] Note: CineFiles uses **Prisma ORM** (not `@supabase/supabase-js`). Only the PostgreSQL connection string is needed — no Supabase URL or service role key.
 
 ### 0.2 — Yandex Cloud (New Resources)
 
@@ -122,6 +117,8 @@ You likely already have a Yandex Cloud account for TR-BUTE. Create new resources
 
 ### 2.1 — Create `.env.local` for Development
 
+All variables below are parsed in `lib/config.ts`. Missing required vars throw at startup.
+
 ```bash
 # Core
 NODE_ENV=development
@@ -129,6 +126,7 @@ APP_URL=http://localhost:3000
 DATABASE_URL=postgresql://...your-supabase-connection-string...
 JWT_SECRET=generate-a-random-64-char-string
 SESSION_SECRET=generate-another-random-64-char-string
+CRON_SECRET=generate-another-random-64-char-string
 
 # Auth — Yandex
 YANDEX_CLIENT_ID=from-step-0.6
@@ -157,11 +155,11 @@ TMDB_PROXY_SECRET=generate-a-shared-secret
 TRIBUTE_API_URL=https://buy-tribute.com/api
 TRIBUTE_API_KEY=generate-and-add-to-tribute-env-too
 
-# Email
-POSTBOX_API_KEY_ID=from-step-0.10
-POSTBOX_API_KEY_SECRET=from-step-0.10
-NOTIFICATION_FROM_EMAIL=noreply@your-cinefiles-domain.com
+# Cache (optional — skip for initial setup)
+# REDIS_URL=redis://localhost:6379
 ```
+
+Note: Email notification vars (`POSTBOX_API_KEY_ID`, etc.) are not yet wired into `lib/config.ts`. They will be added when the notification system is built. For now, skip step 0.10 — it's a future task.
 
 ### 2.2 — Set Vercel Environment Variables
 
@@ -180,72 +178,61 @@ NOTIFICATION_FROM_EMAIL=noreply@your-cinefiles-domain.com
 
 ## Phase 3: Database Setup
 
-### 3.1 — Run Schema
+CineFiles uses **Prisma ORM** for database management. The schema is defined in `prisma/schema.prisma` and Prisma handles migrations, type generation, and seeding.
 
-Apply the database schema:
+### 3.1 — Install Dependencies & Generate Prisma Client
 
-- [ ] Run `SQL_SCHEMA.sql` via Supabase Dashboard SQL editor
-- [ ] Verify tables exist in Supabase dashboard
+```bash
+npm install
+# postinstall hook runs `prisma generate` automatically
+```
 
-### 3.2 — Seed Initial Data
+### 3.2 — Push Schema to Database
 
-- [ ] Run `npm run db:seed` to create:
+With your `DATABASE_URL` set in `.env.local`:
+
+```bash
+# Push the Prisma schema to your Supabase database (creates all tables)
+npm run db:push
+```
+
+This reads `prisma/schema.prisma` and creates all tables in your Supabase PostgreSQL. Use `db:push` for initial setup. For subsequent schema changes in development, use `npm run db:migrate`.
+
+- [ ] Verify tables exist in Supabase dashboard (12 tables: users, auth_tokens, categories, articles, tags, article_tags, tmdb_entities, tmdb_cache, comments, media, collections, app_settings, collection_articles)
+
+### 3.3 — Seed Initial Data
+
+```bash
+npm run db:seed
+```
+
+This runs `prisma/seed.ts` via `tsx` and creates:
   - Default categories (news, reviews, articles, interviews, lists, analysis)
   - Default app_settings
   - Your admin user account
+
+### 3.4 — Reference: SQL Schema
+
+`SQL_SCHEMA.sql` in the repo root is a **reference file** generated from the Prisma schema. Do NOT run it manually — it exists for documentation and for inspecting the schema without Prisma tooling. If you need to make schema changes, edit `prisma/schema.prisma` and run `npm run db:migrate`.
 
 ---
 
 ## Phase 4: TR-BUTE Side Changes
 
-These changes need to be made in the TR-BUTE repository to enable cross-site integration:
+These changes need to be made in the **TR-BUTE repository** to enable cross-site integration. A detailed implementation guide lives in the TR-BUTE repo:
 
-### 4.1 — New Environment Variables (TR-BUTE)
+**See: `TR-BUTE/docs/CINEFILES_INTEGRATION_STEPS.md`**
 
-Add to TR-BUTE's `.env` and Vercel/Yandex Cloud env:
+High-level summary of what needs to happen on TR-BUTE's side:
 
-```bash
-# CineFiles Integration
-CINEFILES_API_URL=https://your-cinefiles-domain.com/api
-CINEFILES_API_KEY=same-key-as-TRIBUTE_API_KEY-in-cinefiles
-```
+- [ ] Add `CINEFILES_API_URL` and `CINEFILES_API_KEY` env vars to `lib/config.js`
+- [ ] Create `GET /api/products/by-ids` endpoint (for CineFiles product card blocks)
+- [ ] Create `GET /api/users/by-provider` endpoint (for cross-site user linking)
+- [ ] Create `GET /api/products/:id/related-articles` endpoint (proxies to CineFiles)
+- [ ] Add "Related Articles" section to product detail page
+- [ ] Register routes BEFORE the products catch-all in `server/routes/index.js`
 
-Add to `lib/config.js`:
-```javascript
-cinefilesApiUrl: process.env.CINEFILES_API_URL || '',
-cinefilesApiKey: process.env.CINEFILES_API_KEY || '',
-```
-
-Update `docs/ENV_VARS.md` with the new variables.
-
-### 4.2 — New API Endpoints (TR-BUTE)
-
-Claude will implement these in the TR-BUTE repo. They include:
-
-1. **`GET /api/products/by-ids?ids=1,2,3`** — returns minimal product data (title, price, image, slug) for CineFiles product cards
-2. **`GET /api/users/by-provider?provider=yandex&provider_id=123`** — checks if a user exists (for cross-site linking)
-3. **`GET /api/products/:id/related-articles`** — proxies to CineFiles API to get articles related to a product
-
-All endpoints will be protected by API key authentication (`X-API-Key` header).
-
-### 4.3 — Product Page Changes (TR-BUTE)
-
-When the integration is built, the product detail page will get a "Related Articles" section. This requires:
-
-- [ ] A new component in `public/js/pages/product/` for the articles section
-- [ ] CSS additions to `public/css/product.css`
-- [ ] The section only renders if CineFiles returns articles — no empty states
-
-### 4.4 — Register Routes (TR-BUTE)
-
-In `server/routes/index.js`, register the new endpoints BEFORE the products catch-all:
-
-```javascript
-// CineFiles integration (before app.use('/api/products', productRouter))
-app.get('/api/products/by-ids', require('./routes/integration').getProductsByIds);
-app.get('/api/users/by-provider', require('./routes/integration').getUserByProvider);
-app.get('/api/products/:id/related-articles', require('./routes/integration').getRelatedArticles);
-```
+All details, code patterns, and gotchas are in the TR-BUTE-side guide.
 
 ---
 
@@ -331,5 +318,6 @@ These are random strings you generate yourself (use `openssl rand -hex 32`):
 |--------|-----------|
 | `JWT_SECRET` | CineFiles auth tokens |
 | `SESSION_SECRET` | CineFiles sessions |
+| `CRON_SECRET` | Bearer token for `/api/cron/*` endpoints |
 | `TMDB_PROXY_SECRET` | Shared between CineFiles (Yandex) and TMDB proxy (Vercel) |
 | `TRIBUTE_API_KEY` / `CINEFILES_API_KEY` | Same value, used by both sites for cross-API auth |
