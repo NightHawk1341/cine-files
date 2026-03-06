@@ -1,0 +1,354 @@
+/* ============================================================
+   HOME PAGE STYLES (style.css)
+   This file is ONLY loaded on the home/index page (index.html).
+   It contains home-page-specific overrides and components:
+   - Products header filter bar
+   - Catalogs carousel adjustments
+   - Home-page SVG/button/toast overrides
+   - FAQ popup in-page styling
+   - Scroll-to-top button
+   - Touch device feedback
+
+   General-purpose styles belong in global.css or component CSS files.
+   ============================================================ */
+
+/* ===== HOME PAGE :root OVERRIDES ===== */
+:root {
+  /* Fluid typography using clamp() - scales smoothly between viewport sizes */
+  --font-size-base: clamp(0.875rem, 0.8rem + 0.25vw, 1rem); /* 14px to 16px */
+  --font-size-body: clamp(1rem, 0.95rem + 0.2vw, 1.125rem); /* 16px to 18px */
+  --heading-sm: clamp(1.125rem, 1rem + 0.5vw, 1.5rem); /* 18px to 24px */
+  --heading-md: clamp(1.25rem, 1rem + 1vw, 1.75rem); /* 20px to 28px */
+  --heading-lg: clamp(1.5rem, 1.25rem + 1.25vw, 2rem); /* 24px to 32px */
+
+  /* Fluid spacing using clamp() */
+  --space-xs: clamp(0.25rem, 0.2rem + 0.25vw, 0.5rem); /* 4px to 8px */
+  --space-sm: clamp(0.5rem, 0.4rem + 0.5vw, 0.75rem); /* 8px to 12px */
+  --space-md: clamp(0.75rem, 0.6rem + 0.75vw, 1.25rem); /* 12px to 20px */
+  --space-lg: clamp(1rem, 0.75rem + 1.25vw, 1.875rem); /* 16px to 30px */
+  --space-xl: clamp(1.5rem, 1rem + 2.5vw, 3rem); /* 24px to 48px */
+
+  --icon-scale: 1;
+}
+
+/* ===== HOME PAGE BODY OVERRIDES ===== */
+/* Fluid font-size and touch-action overrides for the home page */
+html {
+  touch-action: pan-y pinch-zoom;
+}
+
+body {
+  font-size: clamp(0.875rem, 0.8rem + 0.35vw, 1.125rem); /* 14px to 18px fluid */
+  touch-action: pan-y pinch-zoom;
+}
+
+/* ===== HOME PAGE BUTTON OVERRIDES ===== */
+/* Home page adds scale transform on icon button hover (not in global.css) */
+@media (hover: hover) {
+  .btn-icon:hover svg {
+    transform: scale(1.1);
+  }
+}
+
+/* Home page uses circular favorite buttons (global.css uses rounded-pill) */
+.btn-favorite {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  padding: 0;
+  position: relative;
+}
+
+@media (hover: hover) {
+  .btn-favorite:hover {
+    background-color: var(--bg-overlay);
+  }
+
+  .btn-favorite:hover svg:not(.favorite-hover) {
+    display: none;
+  }
+
+  .btn-favorite:hover svg.favorite-hover {
+    display: block;
+  }
+}
+
+.btn-favorite svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Target path directly to override global svg path styling */
+.btn-favorite svg path {
+  fill: var(--text-tertiary);
+  stroke: none;
+}
+
+.btn-favorite.is-favorite svg.favorite-hover {
+  display: none;
+}
+
+/* Typography is now fluid via clamp() - this media query kept for h1 fallback only */
+h1 { font-size: clamp(1.5rem, 1.25rem + 1.25vw, 2rem); /* 24px to 32px fluid */ }
+
+@media (min-width: 1025px) {
+  body {
+    padding-top: 60px;
+  }
+}
+
+/* .products-loading-indicator: defined in header.css (loaded on all pages) */
+
+
+.button-text {
+  font-size: 13px;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+  transition: color 0.2s;
+}
+
+@media (max-width: 900px) {
+  .button-text { display: none; }
+}
+
+/* ===== FAQ IN-PAGE SECTIONS (home page FAQ popup content) ===== */
+
+.faq-section,
+.info-section {
+  margin-bottom: 25px;
+}
+
+.faq-section h3,
+.info-section h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--icon-color);
+  margin-bottom: 15px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.faq-item {
+  margin-bottom: 15px;
+  padding: 15px;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+}
+
+.faq-item h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.faq-item p,
+.info-section p {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.info-section p {
+  padding: 12px;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+}
+
+.catalog-items-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: flex-start;
+}
+
+@keyframes pulse-indicator {
+  0%, 100% { background: var(--text-primary); }
+  50% { background: var(--text-secondary); }
+}
+
+
+/* ===== PRODUCTS HEADER ===== */
+
+.products-header {
+  position: -webkit-sticky;
+  position: sticky;
+  top: var(--header-height); /* Stick right below the fixed header */
+  transition: top 0.3s ease, transform 0.3s ease;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 15px 5px 5px 5px;
+  flex-wrap: wrap;
+  gap: 10px;
+  display: flex;
+  width: 100%;
+  z-index: 998;
+}
+
+/* Mobile: products-header is not sticky */
+@media (max-width: 1024px) {
+  .products-header {
+    position: relative;
+    top: auto;
+    transition: none;
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.spinner {
+  border: 3px solid var(--border-color);
+  border-top: 3px solid var(--status-info);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin: 20px auto;
+}
+
+/* ===== DISABLING SCROLLBARS ===== */
+
+.faq-popup-content {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.faq-popup-content::-webkit-scrollbar {
+  display: none;
+}
+
+/* ===== @MEDIA QUERIES ===== */
+/* Mobile: body inherits padding-top from header.css for fixed header spacing */
+/* No override needed - clamp() in header.css handles all viewport sizes */
+
+/* ===== MOBILE STYLES ===== */
+
+@media (max-width: 768px) {
+  /* FAQ popup z-index - backdrop covers everything including header/nav */
+  .faq-popup-overlay {
+    z-index: 10010;
+  }
+
+  /* Opaque FAQ popup on mobile */
+  .faq-popup-content {
+    background: var(--bg-primary);
+    backdrop-filter: none;
+  }
+}
+
+/* ============ TOUCH DEVICE FEEDBACK ============ */
+/* Visual feedback for all buttons on touch devices */
+@media (hover: none) and (pointer: coarse) {
+  button:active,
+  .btn-filter:active,
+  .btn-icon:active,
+  .btn-carousel:active,
+  .btn-favorite:active,
+  .bottom-nav-button:active,
+  .header-icon-button:active,
+  .header-back-button:active,
+  .header-burger-button:active,
+  .header-gear-button:active,
+  .header-profile-button:active,
+  .header-logo-button:active,
+  .review-star-btn:active,
+  .review-form-button:active,
+  .comment-form-button:active,
+  .suggestion-form-button:active,
+  .picker-control-button:active,
+  .picker-start-button:active {
+    transform: scale(0.95);
+    opacity: 0.8;
+    transition: transform 0.1s ease, opacity 0.1s ease;
+  }
+
+  /* Ensure smooth return to normal state */
+  button,
+  .btn-filter,
+  .btn-icon,
+  .btn-carousel,
+  .btn-favorite,
+  .bottom-nav-button,
+  .header-icon-button,
+  .header-back-button,
+  .header-burger-button,
+  .header-gear-button,
+  .header-profile-button,
+  .header-logo-button,
+  .review-star-btn,
+  .review-form-button,
+  .comment-form-button,
+  .suggestion-form-button,
+  .picker-control-button,
+  .picker-start-button {
+    transition: transform 0.1s ease, opacity 0.1s ease;
+  }
+}
+
+/* ============================================================
+   SCROLL TO TOP BUTTON
+   ============================================================ */
+
+.scroll-to-top-btn {
+  position: fixed;
+  width: 48px;
+  height: 48px;
+  background-color: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.2s ease, background-color 0.2s, border-color 0.2s;
+  z-index: 1000;
+  backdrop-filter: blur(10px);
+}
+
+.scroll-to-top-btn.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.scroll-to-top-btn svg {
+  color: var(--primary);
+  stroke: var(--primary);
+}
+
+.scroll-to-top-btn:hover {
+  background-color: var(--bg-primary);
+  border-color: var(--brand-muted);
+}
+
+.scroll-to-top-btn:active {
+  transform: translateY(0);
+}
+
+/* Desktop: bottom right, to the side of products grid */
+@media (min-width: 1025px) {
+  .scroll-to-top-btn {
+    bottom: 40px;
+    right: 40px;
+  }
+}
+
+/* Mobile: above bottom nav + filters, to the right */
+@media (hover: none) and (pointer: coarse), (max-width: 768px) {
+  .scroll-to-top-btn {
+    bottom: calc(var(--actual-bottom-nav-height, 60px) + var(--filter-at-bottom-height, 0px) + 20px);
+    right: 20px;
+  }
+}
+
+/* Light theme handled by CSS variables in global.css */

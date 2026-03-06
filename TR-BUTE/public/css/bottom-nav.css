@@ -1,0 +1,155 @@
+/* ===== BOTTOM NAVIGATION ===== */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  will-change: transform;
+  background-color: var(--bg-primary);
+  border-top: 1px solid var(--border-color);
+  display: none;
+  justify-content: space-around;
+  align-items: stretch;
+  padding: 0 8px;
+  box-shadow: 0 -4px 12px var(--shadow-color);
+  height: clamp(3.75rem, 3.5rem + 1vw, 4.25rem); /* Taller to fit labels */
+}
+
+body.popup-open .bottom-nav {
+  box-shadow: none;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .bottom-nav { display: flex !important; }
+}
+
+/* Show bottom-nav on narrow desktop when header nav buttons are hidden */
+@media (max-width: 768px) {
+  .bottom-nav { display: flex !important; }
+}
+
+.bottom-nav-button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 4px;
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  height: 100%;
+  transition: none;
+  /* Ensure <a> tags don't have default link styling */
+  text-decoration: none;
+  color: inherit;
+}
+
+@media (hover: hover) {
+  .bottom-nav-button {
+    transition: background 0.15s;
+  }
+  .bottom-nav-button:not(.active-page):hover svg {
+    color: var(--text-primary);
+    fill: var(--text-primary);
+  }
+  .bottom-nav-button:not(.active-page):hover .bottom-nav-label {
+    color: var(--text-primary);
+  }
+}
+
+/* Explicit order to guarantee correct arrangement across all devices */
+.customers-toggle-button-mobile { order: 1; }
+.picker-toggle-button-mobile    { order: 2; }
+.home-toggle-button-mobile      { order: 3; }
+.favorites-toggle-button-mobile { order: 4; }
+.cart-toggle-button-mobile      { order: 5; }
+
+/* No scale on mobile - ripple provides feedback */
+
+/* Icon wrap: positions counters relative to the icon, not the full-width button */
+.bottom-nav-icon-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bottom-nav-button svg {
+  width: 20px;
+  height: 20px;
+  color: var(--text-tertiary);
+  fill: var(--text-tertiary);
+  transform: scale(var(--icon-scale));
+}
+
+/* Cart and favorites counters — positioned relative to their icon wrap */
+.cart-count-bottom-nav,
+.favorites-count-bottom-nav {
+  position: absolute;
+  top: -4px;
+  right: -8px;
+  font-size: 8px;
+  font-weight: 700;
+  color: var(--brand-primary);
+  background: var(--bg-primary);
+  border-radius: 10px;
+  padding: 0 3px;
+  line-height: 1.4;
+  min-width: 14px;
+  text-align: center;
+  pointer-events: none;
+}
+
+.cart-count-bottom-nav:empty,
+.favorites-count-bottom-nav:empty {
+  display: none;
+}
+
+.bottom-nav-label {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  line-height: 1;
+  margin-top: 3px;
+  white-space: nowrap;
+}
+
+/* Active page state: icon + label */
+.bottom-nav-button.active-page svg {
+  color: var(--active-page-color) !important;
+  fill: var(--active-page-color) !important;
+}
+.bottom-nav-button.active-page .bottom-nav-label {
+  color: var(--active-page-color) !important;
+}
+
+/* Pressed state: icon + label */
+.bottom-nav-button.mobile-pressed-to-active svg {
+  color: var(--active-page-color) !important;
+  fill: var(--active-page-color) !important;
+  filter: brightness(0.7);
+  transition: filter 0.1s ease;
+}
+.bottom-nav-button.mobile-pressed-to-active .bottom-nav-label {
+  color: var(--active-page-color) !important;
+  filter: brightness(0.7);
+  transition: filter 0.1s ease;
+}
+
+/* If already on active page, just darken */
+.bottom-nav-button.active-page.mobile-pressed-to-active svg,
+.bottom-nav-button.active-page.mobile-pressed-to-active .bottom-nav-label {
+  filter: brightness(0.7);
+}
+
+/* Add padding to footer to account for fixed bottom-nav and filters-at-bottom */
+@media (hover: none) and (pointer: coarse), (max-width: 768px) {
+  .footer {
+    padding-bottom: calc(var(--actual-bottom-nav-height, 60px) + var(--filter-at-bottom-height, 0px)) !important;
+  }
+}
+

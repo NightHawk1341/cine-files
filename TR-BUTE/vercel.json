@@ -1,0 +1,56 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "server.js",
+      "use": "@vercel/node",
+      "config": {
+        "maxLambdaSize": "50mb",
+        "includeFiles": ["public/**", "assets/**"]
+      }
+    },
+    {
+      "src": "admin-miniapp/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "^/public/(.*)",
+      "dest": "/public/$1"
+    },
+    {
+      "src": "^/admin-miniapp/(.*)",
+      "dest": "/admin-miniapp/$1"
+    },
+    {
+      "src": "^/admin-miniapp$",
+      "dest": "/admin-miniapp/index.html"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "server.js"
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/cron/process-giveaways",
+      "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/cron/check-ip-rights",
+      "schedule": "0 3 * * 1"
+    },
+    {
+      "path": "/api/cron/update-tracking",
+      "schedule": "0 9 * * *"
+    },
+    {
+      "path": "/api/cron/cleanup-tokens",
+      "schedule": "0 6 * * *"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  }
+}

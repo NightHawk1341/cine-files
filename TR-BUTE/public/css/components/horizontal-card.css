@@ -1,0 +1,344 @@
+/* ============================================================
+   HORIZONTAL PRODUCT CARD COMPONENT
+   Unified card component for order items and checkout items.
+   Visual structure matches the cart card layout:
+     - Top section: image + info + heart
+     - Bottom bar: format/details + price
+   Cart-specific extras (checkmark, dropdown, delete) are in cart.css.
+   ============================================================ */
+
+/* Base card container */
+.horizontal-card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  transition: border-color 0.2s;
+}
+
+@media (hover: hover) {
+  .horizontal-card:hover {
+    border-color: var(--border-hover, rgba(143, 143, 143, 0.5));
+  }
+
+  .horizontal-card.special-product:hover {
+    border-color: var(--product-special-hover-border);
+    animation: pulse-orange-glow-horizontal 3s infinite alternate;
+  }
+}
+
+@keyframes pulse-orange-glow-horizontal {
+  0% { box-shadow: 0 0 5px rgba(255, 165, 0, 0.1); }
+  100% { box-shadow: 0 0 15px rgba(255, 165, 0, 0.2); }
+}
+
+/* Custom product wavy border */
+.horizontal-card.custom-product {
+  position: relative;
+}
+
+.horizontal-card.custom-product::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  padding: 2px;
+  background: linear-gradient(
+    135deg,
+    rgba(251, 233, 138, 0.4),
+    rgba(251, 233, 138, 0.8),
+    rgba(251, 233, 138, 0.4)
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ===== TOP SECTION (image + info + heart) ===== */
+
+.horizontal-card-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+}
+
+.horizontal-card-image-wrapper {
+  position: relative;
+  width: 72px;
+  height: 86px;
+  border-radius: 8px;
+  overflow: visible;
+  flex-shrink: 0;
+}
+
+.horizontal-card-image-wrapper.triptych {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    transparent 30%,
+    rgba(255,255,255,0.15) 30%,
+    rgba(255,255,255,0.15) 33%,
+    transparent 33%,
+    transparent 66%,
+    rgba(255,255,255,0.15) 66%,
+    rgba(255,255,255,0.15) 69%,
+    transparent 69%
+  );
+}
+
+.horizontal-card-image-link {
+  display: block;
+  width: 100%;
+  height: 100%;
+  text-decoration: none;
+  color: inherit;
+}
+
+.horizontal-card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+  background-color: var(--bg-tertiary);
+}
+
+/* Triptych layered shadow effect */
+.horizontal-card-image-wrapper.triptych .horizontal-card-image {
+  box-shadow:
+    0 2px 0 0 var(--bg-primary),
+    0 4px 0 0 rgba(255, 255, 255, 0.1),
+    0 6px 0 0 var(--bg-primary),
+    0 8px 0 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Info section */
+.horizontal-card-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 1px;
+}
+
+.horizontal-card-title-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.horizontal-card-title {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-primary);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.horizontal-card-details {
+  font-size: 13px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Favorite button (circular, like product-grid) */
+.horizontal-card-favorite {
+  width: 28px;
+  height: 28px;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 0;
+  color: var(--text-tertiary);
+  transition: all 0.2s;
+}
+
+.horizontal-card-favorite svg {
+  width: 14px;
+  height: 14px;
+  fill: currentColor;
+  color: inherit;
+}
+
+.horizontal-card-favorite.is-favorite {
+  color: var(--favorite-color);
+}
+
+@media (hover: hover) {
+  .horizontal-card-favorite:hover {
+    border-color: var(--border-hover);
+  }
+}
+
+/* ===== BOTTOM BAR (format/details + price) ===== */
+
+.horizontal-card-bar {
+  display: flex;
+  align-items: stretch;
+  border-top: 1px solid var(--divider);
+  min-height: 36px;
+}
+
+.horizontal-card-bar-info {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.horizontal-card-bar-qty {
+  color: var(--text-tertiary);
+  font-weight: 400;
+}
+
+.horizontal-card-bar-price {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-left: 1px solid var(--divider);
+  white-space: nowrap;
+}
+
+.horizontal-card-price {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+.horizontal-card-old-price {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  text-decoration: line-through;
+}
+
+/* ===== COMPACT VARIANT (for checkout summary) ===== */
+
+.horizontal-card.compact .horizontal-card-top {
+  padding: 10px;
+  gap: 10px;
+}
+
+.horizontal-card.compact .horizontal-card-image-wrapper {
+  width: 56px;
+  height: 68px;
+}
+
+.horizontal-card.compact .horizontal-card-title {
+  font-size: 14px;
+}
+
+.horizontal-card.compact .horizontal-card-details {
+  font-size: 12px;
+}
+
+.horizontal-card.compact .horizontal-card-bar {
+  min-height: 34px;
+}
+
+.horizontal-card.compact .horizontal-card-bar-info {
+  font-size: 12px;
+  padding: 6px 10px;
+}
+
+.horizontal-card.compact .horizontal-card-bar-price {
+  padding: 6px 10px;
+}
+
+.horizontal-card.compact .horizontal-card-price {
+  font-size: 13px;
+}
+
+.horizontal-card.compact .horizontal-card-favorite {
+  width: 24px;
+  height: 24px;
+}
+
+.horizontal-card.compact .horizontal-card-favorite svg {
+  width: 12px;
+  height: 12px;
+}
+
+/* ===== RESPONSIVE ===== */
+
+@media (max-width: 768px) {
+  .horizontal-card-image-wrapper {
+    width: 60px;
+    height: 72px;
+  }
+
+  .horizontal-card-title {
+    font-size: 14px;
+  }
+
+  .horizontal-card-details {
+    font-size: 12px;
+  }
+
+  .horizontal-card-price {
+    font-size: 13px;
+  }
+
+  .horizontal-card.compact .horizontal-card-image-wrapper {
+    width: 48px;
+    height: 58px;
+  }
+}
+
+@media (max-width: 600px) {
+  .horizontal-card-top {
+    gap: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .horizontal-card-image-wrapper {
+    width: 54px;
+    height: 65px;
+  }
+
+  .horizontal-card-top {
+    padding: 10px;
+  }
+
+  .horizontal-card-bar-info {
+    font-size: 12px;
+    padding: 8px 8px;
+  }
+
+  .horizontal-card-bar-price {
+    padding: 8px 8px;
+  }
+}
+
+/* ===== LIGHT THEME ===== */
+
+html[data-theme="light"],
+body[data-theme="light"] {
+  .horizontal-card-image-wrapper.triptych .horizontal-card-image {
+    box-shadow:
+      0 2px 0 0 var(--bg-primary),
+      0 4px 0 0 rgba(0, 0, 0, 0.08),
+      0 6px 0 0 var(--bg-primary),
+      0 8px 0 0 rgba(0, 0, 0, 0.08);
+  }
+}

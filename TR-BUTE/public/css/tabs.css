@@ -1,0 +1,320 @@
+/**
+ * CSS Round-Out Tabs
+ * Implements tab design with round-out effect
+ * Shared across product, profile, and customers pages
+ */
+
+/* ===== TAB CONTAINER ===== */
+.tabs-wrapper {
+  margin: 20px 0 0 0;
+}
+
+.tabs-container {
+  display: flex;
+  gap: 0;
+  align-items: flex-end;
+  border-bottom: 1px solid var(--border-color);
+  position: relative;
+}
+
+/* ===== TAB BUTTONS ===== */
+.tab {
+  position: relative;
+  background: var(--tab-inactive-bg);
+  border: 1px solid var(--tab-inactive-border);
+  border-bottom: none;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  padding: 10px 16px 11px;
+  margin-right: 4px;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-tertiary);
+  font-size: 13px;
+  font-weight: 500;
+  min-height: 40px;
+  z-index: 1;
+}
+
+.tab:last-child {
+  margin-right: 0;
+}
+
+/* Active tab state */
+.tab.active {
+  background: var(--tab-active-bg);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+  z-index: 2;
+  margin-bottom: -1px;
+  padding-bottom: 12px;
+}
+
+/* Hover state for inactive tabs */
+@media (hover: hover) {
+  .tab:not(.active):hover {
+    background: var(--tab-inactive-bg);
+    border-color: var(--border-hover);
+    color: var(--text-secondary);
+  }
+}
+
+/* Tab counter badge */
+.tab .tab-counter {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  background-color: var(--tab-counter-bg);
+  border: 1px solid var(--tab-counter-border);
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--tab-counter-color);
+  margin-left: 4px;
+}
+
+.tab.active .tab-counter {
+  background-color: var(--tab-counter-active-bg);
+  border-color: var(--tab-counter-border);
+  color: var(--tab-counter-active-color);
+}
+
+/* Hide counter when empty or zero */
+.tab-counter:empty,
+.tab-counter[data-count="0"],
+.filter-count:empty,
+.filter-count[data-count="0"] {
+  display: none;
+}
+
+/* ===== TAB CONTENT PANEL ===== */
+.tab-content {
+  display: none;
+  background: var(--tab-active-bg);
+  border: 1px solid var(--border-color);
+  border-top: none;
+  border-radius: 0 0 12px 12px;
+  padding: 14px;
+  margin-top: -1px;
+}
+
+/* Square top-left corner when first tab is active */
+.tabs-wrapper.first-tab-active ~ .tab-content.active {
+  border-top-left-radius: 0;
+}
+
+/* Square top-right corner when last tab is active */
+.tabs-wrapper.last-tab-active ~ .tab-content.active {
+  border-top-right-radius: 0;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+/* ===== ALTERNATIVE: COLLAPSIBLE TABS ===== */
+/* For collapsible functionality (used in some pages) */
+.tab-collapsible {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-tertiary);
+  font-size: 13px;
+  font-weight: 500;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Collapsible tab gradient background */
+.tab-collapsible::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent, rgba(255, 255, 255, 0.02));
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tab-collapsible.active::before {
+  opacity: 1;
+}
+
+.tab-collapsible.active {
+  background: linear-gradient(135deg, var(--status-info-bg), rgba(6, 111, 163, 0.05));
+  border-color: rgba(6, 111, 163, 0.3);
+  color: var(--tab-counter-active-color);
+  box-shadow: 0 0 0 1px rgba(6, 111, 163, 0.1) inset;
+}
+
+/* Arrow indicator for collapsible */
+.tab-collapsible::after {
+  content: '';
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 6px solid currentColor;
+  margin-left: auto;
+  transition: transform 0.3s ease;
+  opacity: 0.6;
+}
+
+.tab-collapsible.active::after {
+  transform: rotate(180deg);
+  opacity: 1;
+}
+
+@media (hover: hover) {
+  .tab-collapsible:hover {
+    background-color: var(--bg-tertiary);
+    border-color: var(--border-hover);
+    color: var(--text-secondary);
+  }
+}
+
+/* ===== STANDALONE BUTTON STYLE ===== */
+/* For standalone buttons like "Orders" that aren't part of a tab group */
+.standalone-button {
+  background: linear-gradient(135deg, rgba(6, 111, 163, 0.15), rgba(6, 111, 163, 0.08));
+  border: 2px solid rgba(6, 111, 163, 0.4);
+  border-radius: 12px;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--tab-counter-active-color);
+  font-size: 14px;
+  font-weight: 600;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(6, 111, 163, 0.2);
+}
+
+.standalone-button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), transparent);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+@media (hover: hover) {
+  .standalone-button:hover {
+    background: linear-gradient(135deg, rgba(6, 111, 163, 0.25), rgba(6, 111, 163, 0.15));
+    border-color: rgba(6, 111, 163, 0.6);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(6, 111, 163, 0.3);
+  }
+
+  .standalone-button:hover::before {
+    opacity: 1;
+  }
+}
+
+.standalone-button:active {
+  transform: translateY(0);
+}
+
+.standalone-button .tab-counter {
+  background-color: rgba(6, 111, 163, 0.4);
+  border-color: rgba(6, 111, 163, 0.8);
+  color: var(--text-primary);
+}
+
+/* Arrow for expandable standalone buttons */
+.standalone-button.expandable::after {
+  content: '';
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 7px solid currentColor;
+  margin-left: auto;
+  transition: transform 0.3s ease;
+  opacity: 0.8;
+}
+
+.standalone-button.expandable.active::after {
+  transform: rotate(180deg);
+}
+
+/* ===== TAB GROUP LAYOUT ===== */
+.tab-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.tab-group .tab-collapsible,
+.tab-group .standalone-button {
+  flex: 0 0 auto;
+}
+
+/* Group icon */
+.tab-group-icon {
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+}
+
+.standalone-button .tab-group-icon,
+.tab-collapsible.active .tab-group-icon {
+  color: var(--tab-counter-active-color);
+}
+
+/* Group description */
+.tab-group-description {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  margin-bottom: 12px;
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .tabs-container {
+    gap: 0;
+  }
+
+  .tab {
+    flex: 1;
+    justify-content: center;
+    padding: 8px 12px 9px;
+    font-size: 12px;
+    margin-right: 3px;
+  }
+
+  .tab.active {
+    padding-bottom: 10px;
+  }
+
+  .tab-content {
+    padding: 10px;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .tab-collapsible,
+  .standalone-button {
+    font-size: 12px;
+    padding: 9px 12px;
+  }
+}
+

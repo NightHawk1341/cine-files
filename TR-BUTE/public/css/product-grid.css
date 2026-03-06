@@ -1,0 +1,1414 @@
+/* ============================================================
+   PRODUCT GRID MODULE
+   Reusable product card styles for catalog, favorites, and main page
+   ============================================================ */
+
+/* ===== PRODUCTS GRID CONTAINER ===== */
+/* Main grid container for products on main page, favorites, catalog */
+
+.products {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(160px, 100%), 1fr));
+  gap: 16px;
+  align-content: start;
+  box-sizing: border-box;
+  margin: 12px auto 0;
+  max-width: 1300px;
+  padding: 0 10px 40px 10px; /* Bottom padding for footer clearance */
+  width: 100%;
+  min-height: 400px;
+}
+
+/* Desktop: fixed 200px cards, centered */
+@media (hover: hover) and (pointer: fine), (min-width: 1025px) {
+  .products {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 200px));
+    justify-content: center;
+  }
+}
+
+/* Narrow desktop (e.g. Telegram miniapp): 2 equal columns so the grid never collapses to 1.
+   Threshold: 2×200px + 1×16px gap + 20px padding = 436px — below that, auto-fill gives 1 column. */
+@media (hover: hover) and (pointer: fine) and (max-width: 435px) {
+  .products {
+    grid-template-columns: repeat(2, 1fr);
+    justify-content: normal;
+  }
+}
+
+@media (max-width: 1024px) {
+  .products {
+    padding-bottom: 20px; /* Reduced spacing - footer handles bottom-nav clearance */
+  }
+}
+
+.no-results {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: var(--text-tertiary);
+  padding: 40px 20px;
+}
+
+/* Product card container */
+.product {
+  box-sizing: border-box;
+  background-color: var(--bg-primary);
+  margin: 0;
+  padding: 6px;
+  border: 1px solid var(--product-card-border);
+  text-align: left;
+  border-radius: 12px;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Coming soon products have dotted border */
+.product.coming-soon {
+  border-style: dotted;
+  border-width: 2px;
+}
+
+/* Test products have dotted border */
+.product.test-product {
+  border-style: dotted;
+  border-width: 2px;
+}
+
+/* Coming soon + special product keeps dotted border */
+.product.coming-soon.special-product {
+  border-style: dotted;
+  border-width: 2px;
+}
+
+/* Test + special product keeps dotted border */
+.product.test-product.special-product {
+  border-style: dotted;
+  border-width: 2px;
+}
+
+/* Product card inner link - remove default link styling */
+.product-card-inner {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* Product card hover states */
+@media (hover: hover) {
+  .product:hover {
+    background-color: var(--product-card-hover-bg);
+    border: 1px solid var(--product-card-hover-border);
+    animation: pulse-grey-glow 3s infinite alternate;
+  }
+  .product.coming-soon:hover {
+    background-color: var(--product-card-hover-bg);
+    border: 2px dotted var(--product-card-hover-border);
+    animation: pulse-grey-glow 3s infinite alternate;
+  }
+  .product.test-product:hover {
+    background-color: var(--product-card-hover-bg);
+    border: 2px dotted var(--product-card-hover-border);
+    animation: pulse-grey-glow 3s infinite alternate;
+  }
+  .product.special-product:hover {
+    background-color: var(--product-special-hover-bg);
+    border: 1px solid var(--product-special-hover-border);
+    animation: pulse-orange-glow 3s infinite alternate;
+  }
+  /* Special product + coming soon should keep dotted border with orange color */
+  .product.special-product.coming-soon:hover {
+    background-color: var(--product-special-hover-bg);
+    border: 2px dotted var(--product-special-hover-border);
+    animation: pulse-orange-glow 3s infinite alternate;
+  }
+  /* Special product + test should keep dotted border with orange color */
+  .product.special-product.test-product:hover {
+    background-color: var(--product-special-hover-bg);
+    border: 2px dotted var(--product-special-hover-border);
+    animation: pulse-orange-glow 3s infinite alternate;
+  }
+}
+
+/* Animations for hover glow effects */
+@keyframes pulse-orange-glow {
+  0% { box-shadow: 0 0 5px rgba(255, 165, 0, 0.1); }
+  100% { box-shadow: 0 0 15px rgba(255, 165, 0, 0.2); }
+}
+
+@keyframes pulse-grey-glow {
+  0% { box-shadow: 0 0 5px rgba(150, 150, 150, 0.1); }
+  100% { box-shadow: 0 0 15px rgba(150, 150, 150, 0.15); }
+}
+
+/* Product card fills its grid cell */
+.product {
+  width: 100%;
+  min-width: 0;
+}
+
+/* Image carousel container */
+.image-carousel {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 6px;
+  /* Create stacking context above hover zones (z-index: 2) so favorite button works */
+  z-index: 5;
+  /* Ensure proper stacking context isolation */
+  isolation: isolate;
+}
+
+/* Slides container */
+.image-carousel .slides {
+  position: relative;
+  width: 100%;
+  display: flex;
+  transition: transform 0.3s ease;
+  /* GPU acceleration to prevent flicker */
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Disable transition during touch for immediate response */
+.image-carousel.touching .slides {
+  transition: none;
+}
+
+/* Individual slide */
+.image-carousel .slide {
+  flex: 0 0 100%;
+  width: 100%;
+}
+
+/* Product images */
+.product img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 5/6;
+  object-fit: cover;
+  display: block;
+  /* Smooth fade-in when image loads */
+  opacity: 0;
+  transition: opacity 0.3s ease-in;
+}
+
+/* Image loaded state */
+.product img.loaded {
+  opacity: 1;
+}
+
+/* Placeholder background while image loads - animated skeleton shimmer */
+.image-carousel .slide {
+  background-color: var(--skeleton-bg-base);
+  background-image: linear-gradient(
+    90deg,
+    var(--skeleton-bg-base) 0px,
+    var(--skeleton-bg-highlight) 40px,
+    var(--skeleton-bg-base) 80px
+  );
+  background-size: 200px 100%;
+  background-repeat: no-repeat;
+  animation: skeleton-loading var(--skeleton-animation-duration) var(--skeleton-animation-timing) infinite;
+}
+
+/* Hide placeholder background once image is loaded */
+.image-carousel .slide:has(img.loaded) {
+  background: transparent;
+  animation: none;
+}
+
+/* Carousel indicators container (sits outside .image-carousel as sibling) */
+.product .indicators {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  align-items: center;
+  margin: 7px 0 8px;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+.product .indicators > * { flex: auto; }
+
+/* Individual indicator (dot) */
+.product .indicator {
+  width: 25px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--indicator-default);
+  cursor: pointer;
+  transition: background 0.2s, width 0.2s;
+}
+
+/* Active indicator */
+.product .indicator.active {
+  background: var(--indicator-active);
+  width: 35px;
+}
+
+/* Hover state for active indicator */
+@media (hover: hover) {
+  .product:hover .indicator.active { background: var(--text-primary); }
+  .product.special-product:hover .indicator.active { background: var(--brand-primary); }
+}
+
+/* coming_soon and custom product (id=1) indicators use В ожидании text color */
+.product.coming-soon .indicator,
+.product[data-product-id="1"] .indicator {
+  background: var(--text-secondary);
+}
+
+.product.coming-soon .indicator.active,
+.product[data-product-id="1"] .indicator.active {
+  background: var(--text-secondary);
+  opacity: 0.8;
+}
+
+/* Diagonal cuts for coming_soon and test product indicators (construction tape effect) */
+.product.test-product .indicator {
+  position: relative;
+  overflow: hidden;
+}
+
+.product.test-product .indicator::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    -45deg,
+    #292929 0px,
+    #292929 1px,
+    transparent 1px,
+    transparent 4px
+  );
+  opacity: 0.6;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* ===== FADE CAROUSEL (Custom Product) ===== */
+/* Stacks slides on top of each other and cross-fades between them */
+
+.image-carousel.fade-carousel .slides {
+  display: block;
+  position: relative;
+  transition: none;
+  transform: none !important;
+  will-change: auto;
+}
+
+.image-carousel.fade-carousel .slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  opacity: 0;
+  transition: opacity 0.8s ease-in-out;
+}
+
+/* First child stays relative to establish container height */
+.image-carousel.fade-carousel .slide:first-child {
+  position: relative;
+}
+
+.image-carousel.fade-carousel .slide.fade-active {
+  opacity: 1;
+}
+
+/* Hide hover zones for fade carousel */
+.product:has(.fade-carousel) .hover-zone {
+  display: none !important;
+}
+
+/* Scrolling indicators for fade carousel with many images */
+.image-carousel.fade-carousel + .indicators {
+  overflow: hidden;
+  justify-content: flex-start;
+  padding: 0;
+  mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+}
+
+.image-carousel.fade-carousel + .indicators > .indicators-track {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  transition: transform 0.3s ease;
+  flex: none;
+  width: max-content;
+}
+
+.image-carousel.fade-carousel + .indicators .indicators-track .indicator {
+  flex: 0 0 auto;
+  width: 8px;
+  height: 2px;
+}
+
+.image-carousel.fade-carousel + .indicators .indicators-track .indicator.active {
+  width: 16px;
+}
+
+/* Custom product card: no gradient on indicators, darker dots */
+.product.custom-product-card .image-carousel.fade-carousel + .indicators {
+  mask-image: none;
+  -webkit-mask-image: none;
+  justify-content: center;
+}
+
+.product.custom-product-card .image-carousel.fade-carousel + .indicators .indicators-track .indicator {
+  background: rgba(60, 60, 60, 0.9);
+}
+
+.product.custom-product-card .image-carousel.fade-carousel + .indicators .indicators-track .indicator.active {
+  background: rgba(120, 120, 120, 0.9);
+}
+
+/* Desktop hover zones for carousel navigation */
+@media (hover: hover) {
+  .product .hover-zone {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    right: 6px;
+    height: calc(100% - 102px);
+    z-index: 2;
+    /* Ensure hover zones don't block favorite/variant buttons */
+    pointer-events: auto;
+  }
+}
+
+/* Hide hover zones on touch devices (they're for mouse hover navigation) */
+@media (hover: none) {
+  .product .hover-zone {
+    display: none;
+  }
+}
+
+/* Product title */
+.product h3 {
+  font-size: clamp(0.8125rem, 0.75rem + 0.3vw, 1rem); /* 13px to 16px fluid */
+  font-weight: 600;
+  margin: 0 0 8px 3px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
+}
+
+/* Product price */
+.price {
+  font-weight: 400;
+  margin: 5px 0 5px 3px;
+}
+
+/* Custom product: "Перейти →" label in price row */
+.price.price-go-label {
+  color: var(--text-tertiary);
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  transition: color 0.15s;
+}
+
+@media (hover: hover) {
+  .card-format-option:hover .price.price-go-label {
+    color: var(--text-secondary);
+  }
+}
+
+/* Old price (crossed out) */
+.disabled {
+  opacity: 0.3;
+  text-decoration: line-through;
+  font-size: 11px;
+  margin: 2px 0 0 5px;
+}
+
+/* ============================================================
+   PRODUCT CARD BUTTON GROUP
+   Groups favorite/tag/variant buttons with automatic spacing
+   ============================================================ */
+
+.product-card-buttons {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 15;
+  pointer-events: auto;
+}
+
+/* Favorite button on product card */
+/* Set color on the button container so it cascades into SVG <use> shadow DOM
+   (Safari doesn't reliably resolve currentColor from CSS targeting the svg element) */
+.product .favorite-button {
+  width: 28px;
+  height: 28px;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  opacity: 0;
+  /* Position is now relative within button group */
+  position: relative;
+  /* Center heart icon */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  /* Ensure button receives pointer events - critical for click handling */
+  pointer-events: auto;
+  cursor: pointer;
+  /* Color cascades into SVG <use> shadow DOM for currentColor resolution */
+  color: var(--text-tertiary);
+}
+
+.product .favorite-button svg {
+  width: 14px;
+  height: 14px;
+  color: inherit !important;
+  fill: currentColor !important;
+  transition: color 0.2s, fill 0.2s;
+  stroke: var(--border-color);
+  stroke-width: 1px;
+}
+
+.product .favorite-button svg path {
+  fill: currentColor !important;
+  stroke: none;
+  transition: fill 0.2s;
+}
+
+/* Favorite button when product is favorited */
+.product .favorite-button.is-favorite {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  opacity: 1;
+  color: var(--favorite-color);
+}
+
+.product .favorite-button.is-favorite svg {
+  color: inherit !important;
+  fill: currentColor !important;
+}
+
+.product .favorite-button.is-favorite svg path {
+  fill: currentColor !important;
+}
+
+/* Telegram browser overrides - ensure colors aren't affected by Telegram theme injection */
+html[data-telegram="true"] .product .favorite-button {
+  color: var(--text-tertiary) !important;
+}
+
+html[data-telegram="true"] .product .favorite-button svg,
+html[data-telegram="true"] .product .favorite-button svg path {
+  color: inherit !important;
+  fill: currentColor !important;
+}
+
+html[data-telegram="true"] .product .favorite-button.is-favorite {
+  color: var(--favorite-color) !important;
+}
+
+html[data-telegram="true"] .product .favorite-button.is-favorite svg,
+html[data-telegram="true"] .product .favorite-button.is-favorite svg path {
+  color: inherit !important;
+  fill: currentColor !important;
+}
+
+/* Desktop: Show favorite button on hover */
+@media (hover: hover) {
+  .product:hover .favorite-button {
+    opacity: 1;
+  }
+  .product .favorite-button:hover {
+    background-color: var(--bg-overlay);
+    border: 1px solid var(--border-hover);
+  }
+  .product .favorite-button:hover .product .favorite-button svg {
+    color: var(--favorite-color);
+    fill: var(--favorite-color);
+  }
+}
+
+/* Touch: Always show favorite button (no hover available) */
+@media (hover: none) {
+  .product .favorite-button {
+    opacity: 1;
+  }
+}
+
+/* ============================================================
+   ZOOM BUTTON — desktop-only image zoom popup trigger
+   ============================================================ */
+
+.product .zoom-button {
+  width: 28px;
+  height: 28px;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  opacity: 0;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  pointer-events: auto;
+  cursor: pointer;
+  color: var(--text-tertiary);
+  transition: opacity 0.2s, border-color 0.2s;
+}
+
+.product .zoom-button svg {
+  width: 13px;
+  height: 13px;
+  fill: currentColor;
+  color: inherit;
+}
+
+/* Desktop: show on card hover */
+@media (hover: hover) {
+  .product:hover .zoom-button {
+    opacity: 1;
+  }
+  .product .zoom-button:hover {
+    border-color: var(--border-hover);
+  }
+}
+
+/* Touch: always hidden (desktop-only) */
+@media (hover: none) {
+  .product .zoom-button {
+    display: none;
+  }
+}
+
+/* ============================================================
+   PRICE ROW - Container for price and variant dropdown
+   ============================================================ */
+
+.price-row {
+  display: flex;
+  align-items: stretch;
+  min-height: 36px;
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+  /* Break out of the card's 6px padding so divider spans full width */
+  margin: 0 -6px -6px -6px;
+  margin-top: auto; /* Push price to bottom of card for consistent alignment */
+  border-top: 1px solid var(--divider);
+  border-radius: 0 0 11px 11px;
+  transition: background 0.15s;
+  isolation: isolate;
+}
+
+/* Construction-tape diagonal lines for coming-soon / test products */
+.product.coming-soon .price-row::after,
+.product.test-product .price-row::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: repeating-linear-gradient( -45deg, #292929 0px, #292929 1px, transparent 1px, transparent 8px );
+  opacity: 0.5;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Hover highlight on the price section */
+@media (hover: hover) {
+  .product:hover .price-row {
+    background: rgba(150, 150, 150, 0.08);
+  }
+  .product.special-product:hover .price-row {
+    background: rgba(255, 165, 0, 0.06);
+  }
+  /* Brighter highlight when product is in cart */
+  .product.has-cart-items:hover .price-row {
+    background: rgba(150, 150, 150, 0.16);
+  }
+  .product.special-product.has-cart-items:hover .price-row {
+    background: rgba(255, 165, 0, 0.12);
+  }
+  .product.special-product:hover .price-row::after {
+    background: repeating-linear-gradient( -45deg, var(--status-warning) 0px, var(--status-warning) 1px, transparent 1px, transparent 8px );
+    opacity: 0.2;
+  }
+}
+
+/* Always-on subtle highlight when product is in cart (mobile and desktop) */
+.product.has-cart-items .price-row {
+  background: rgba(150, 150, 150, 0.08);
+}
+
+.product.special-product.has-cart-items .price-row {
+  background: rgba(255, 165, 0, 0.05);
+}
+
+.price-row .price {
+  margin: 0;
+  flex: 1;
+  font-size: 13px;
+  padding: 5px 0 6px 9px;
+  display: flex;
+  align-items: center;
+}
+
+.price-row .price .disabled {
+  /*! font-size: 11px; */
+}
+
+/* "В корзине" text — styled like the price / "Скоро" */
+.card-in-cart-text {
+  font-weight: 400;
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 0;
+  flex: 1;
+  text-transform: none;
+  padding: 5px 0 6px 9px;
+  display: flex;
+  align-items: center;
+}
+
+/* ============================================================
+   VARIANT DROPDOWN - Product variant selector
+   Toggle button in button group, menu as direct child of card
+   ============================================================ */
+
+.variant-dropdown-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  background-color: var(--bg-secondary);
+  opacity: 0; /* Hidden by default on desktop, show on hover */
+  /* Ensure button receives pointer events above hover zones */
+  pointer-events: auto;
+}
+
+.variant-dropdown-toggle svg {
+  width: 14px;
+  height: 14px;
+  color: var(--text-tertiary);
+  fill: var(--text-tertiary);
+  stroke: none;
+}
+
+/* Desktop: Show variant dropdown on hover (like favorite button) */
+@media (hover: hover) {
+  .product:hover .variant-dropdown-toggle,
+  .profile-viewed-products-grid .product:hover .variant-dropdown-toggle {
+    opacity: 1;
+  }
+  .variant-dropdown-toggle:hover {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-hover);
+  }
+}
+
+/* Touch: Always show variant dropdown (no hover available) */
+@media (hover: none) {
+  .variant-dropdown-toggle {
+    opacity: 1;
+  }
+}
+
+/* Favorites page: Always show variant dropdown and zoom button */
+.favorites-items-list .variant-dropdown-toggle,
+.favorites-items-list .zoom-button {
+  opacity: 1;
+}
+
+/* ============================================================
+   TAG BUTTON — base styles (active states in favorites.css)
+   ============================================================ */
+
+.product-card-tag-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  background-color: var(--bg-secondary);
+  opacity: 0;
+  pointer-events: auto;
+}
+
+.product-card-tag-btn svg {
+  width: 14px;
+  height: 14px;
+  color: var(--text-tertiary);
+  fill: var(--text-tertiary);
+  stroke: none;
+}
+
+/* Desktop: show on product hover */
+@media (hover: hover) {
+  .product:hover .product-card-tag-btn {
+    opacity: 1;
+  }
+  .product-card-tag-btn:hover {
+    border-color: var(--border-hover);
+  }
+}
+
+/* Touch: always show */
+@media (hover: none) {
+  .product-card-tag-btn {
+    opacity: 1;
+  }
+}
+
+/* Tagged items are always visible (show the tag state at a glance) */
+.product-card-tag-btn.present,
+.product-card-tag-btn.wish {
+  opacity: 1;
+}
+
+/* Favorites page: always show all tag buttons */
+.favorites-items-list .product-card-tag-btn {
+  opacity: 1;
+}
+
+/* When menu is active, highlight the toggle button */
+.product:has(.variant-dropdown-menu.active) .variant-dropdown-toggle {
+  background: linear-gradient(135deg, var(--dropdown-accent-color-1), var(--dropdown-accent-color-2));
+  border-color: transparent;
+  opacity: 1; /* Always visible when menu is open */
+}
+
+.product:has(.variant-dropdown-menu.active) .variant-dropdown-toggle svg {
+  color: var(--text-inverse);
+  fill: var(--text-inverse);
+  stroke: none;
+}
+
+/* When tag dropdown is active, highlight the tag button */
+.product:has(.tag-dropdown.active) .product-card-tag-btn {
+  background: linear-gradient(135deg, var(--dropdown-accent-color-1), var(--dropdown-accent-color-2));
+  border-color: transparent;
+  opacity: 1;
+}
+
+.product:has(.tag-dropdown.active) .product-card-tag-btn svg {
+  color: var(--text-inverse);
+  fill: var(--text-inverse);
+}
+
+/* Variant dropdown - matches card-format-dropdown structure */
+.variant-dropdown-menu {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  right: 6px;
+  /* Match image aspect ratio so overlay fills the image area exactly */
+  aspect-ratio: 5/6;
+  background: var(--format-dropdown-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  z-index: 13; /* Lower than buttons (15) and format dropdown (14) */
+  display: none;
+  flex-direction: column;
+}
+
+.variant-dropdown-menu.active {
+  display: flex;
+}
+
+/* Variant dropdown header */
+.variant-dropdown-header {
+  padding: 10px 0 10px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  letter-spacing: 0.2px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* Variant options container */
+.variant-dropdown-options {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-content: flex-start;
+  overflow-y: auto;
+  min-height: 0;
+  border-top: 1px solid var(--divider);
+}
+
+.variant-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-primary);
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--divider);
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.variant-option:last-child {
+  border-bottom: none;
+}
+
+.variant-option:hover {
+  background: var(--dropdown-accent-hover);
+}
+
+.variant-option.active {
+  background: var(--dropdown-accent-active-bg);
+  color: var(--dropdown-accent-color-1);
+}
+
+/* Mobile adjustments for variant dropdown */
+@media (max-width: 1024px) {
+  .variant-dropdown-toggle {
+    width: 28px;
+    height: 28px;
+  }
+
+  .variant-dropdown-toggle svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .variant-option {
+    padding: 8px 10px;
+    font-size: 11px;
+  }
+}
+
+/* ============================================================
+   FIREFOX MOBILE PERFORMANCE OPTIMIZATIONS
+   ============================================================ */
+
+@supports (-moz-appearance: none) {
+  @media (max-width: 1024px) {
+    /* Reduce transition complexity for smoother scrolling */
+    .image-carousel .slides {
+      transition: transform 0.15s linear;
+      will-change: auto;
+    }
+
+    /* Simplify image fade-in for better performance */
+    .product img {
+      transition: opacity 0.1s linear;
+    }
+
+    /* Disable skeleton shimmer on image placeholder for performance */
+    .image-carousel .slide {
+      animation: none;
+      background-image: none;
+      background-color: var(--skeleton-bg-base);
+    }
+
+    /* Disable hover animations on mobile Firefox */
+    .product:hover {
+      animation: none;
+    }
+
+    .product.special-product:hover {
+      animation: none;
+    }
+  }
+}
+
+/* ============================================================
+   PRODUCT CARD ADD-TO-CART BUTTON & FORMAT DROPDOWN
+   Plus button at bottom-right with format selection dropdown
+   ============================================================ */
+
+/* Plus button integrated into price-row — takes 1/3 of the width */
+/* Set color on container so it cascades into SVG <use> shadow DOM (Safari fix) */
+.price-row-add-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-left: 1px solid var(--divider);
+  flex: 0 0 33%;
+  cursor: pointer;
+  transition: background 0.15s;
+  border-radius: 0 0 11px 0;
+  color: var(--text-tertiary);
+}
+
+.price-row-add-btn svg {
+  width: 14px;
+  height: 14px;
+  color: inherit !important;
+  fill: currentColor !important;
+  stroke: currentColor;
+}
+
+/* Chevron icon overrides (fill-based, no stroke) */
+.price-row-add-btn svg.add-btn-chevron {
+  width: 12px;
+  height: 12px;
+  fill: currentColor !important;
+  stroke: none;
+  transition: transform 0.3s ease;
+}
+.price-row-add-btn svg.add-btn-chevron.up {
+  transform: rotate(180deg);
+}
+
+@media (hover: hover) {
+  .price-row-add-btn:hover {
+    background: rgba(150, 150, 150, 0.15);
+  }
+   .card-in-cart-text:hover {
+    background: rgba(150, 150, 150, 0.15);
+  } 
+}
+
+/* Active state when dropdown is open */
+.product:has(.card-format-dropdown.active) .price-row-add-btn {
+  background: var(--bg-quaternary);
+  color: var(--text-primary);
+}
+
+.product:has(.card-format-dropdown.active) .price-row-add-btn svg {
+  color: inherit !important;
+  fill: currentColor !important;
+  stroke: currentColor;
+}
+.product:has(.card-format-dropdown.active) .price-row-add-btn svg.add-btn-chevron {
+  fill: currentColor !important;
+  stroke: none;
+}
+
+/* ============================================================
+   NOTIFY BUTTON — coming_soon products
+   Same dimensions and position as price-row-add-btn
+   ============================================================ */
+
+.price-row-notify-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-left: 1px solid var(--divider);
+  flex: 0 0 33%;
+  cursor: pointer;
+  transition: background 0.15s;
+  border-radius: 0 0 11px 0;
+}
+
+.price-row-notify-btn.notified {
+  color: var(--text-secondary);
+}
+
+.price-row-notify-btn .bell-icon {
+  width: 14px;
+  height: 14px;
+  fill: currentColor;
+  stroke: none;
+}
+
+/* SVG state switching: default = normal bell */
+.price-row-notify-btn .bell-normal { display: block; }
+.price-row-notify-btn .bell-active { display: none; }
+.price-row-notify-btn .bell-remove { display: none; }
+
+/* Hover (not yet subscribed): show active bell */
+@media (hover: hover) {
+  .price-row-notify-btn:not(.notified):hover .bell-normal { display: none; }
+  .price-row-notify-btn:not(.notified):hover .bell-active { display: block; }
+  .price-row-notify-btn:hover { background: rgba(150, 150, 150, 0.15); }
+}
+
+/* Subscribed state: show active bell */
+.price-row-notify-btn.notified .bell-normal { display: none; }
+.price-row-notify-btn.notified .bell-active { display: block; }
+
+/* Subscribed + hover: show remove bell */
+@media (hover: hover) {
+  .price-row-notify-btn.notified:hover .bell-active { display: none; }
+  .price-row-notify-btn.notified:hover .bell-remove { display: block; }
+}
+
+/* "В ожидании" — price text when subscribed, acts like card-in-cart-text */
+.price-row .price.notify-waiting {
+  cursor: pointer;
+  color: var(--text-secondary);
+}
+
+@media (hover: hover) {
+  .price-row .price.notify-waiting:hover {
+    background: rgba(150, 150, 150, 0.15);
+  }
+}
+
+/* Push card buttons behind format dropdown when open (not var/tag - those stay accessible) */
+.product.format-open .product-card-buttons {
+  z-index: 0;
+}
+
+/* Inset image when any dropdown is open so edges can't peek out behind it */
+.product.format-open .image-carousel,
+.product:has(.variant-dropdown-menu.active) .image-carousel,
+.product:has(.tag-dropdown.active) .image-carousel {
+  clip-path: inset(1px round 5px);
+}
+
+/* Format dropdown overlay - covers the image area of the product card */
+.card-format-dropdown {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  right: 6px;
+  /* Match image aspect ratio so overlay fills the image area exactly */
+  aspect-ratio: 5/6;
+  background: var(--format-dropdown-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  z-index: 14;
+  display: none;
+  flex-direction: column;
+}
+
+.card-format-dropdown.active {
+  display: flex;
+}
+
+/* Header row inside the overlay */
+.card-format-header {
+  padding: 10px 0 10px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  letter-spacing: 0.2px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* Options container - grid with subgrid children for aligned vertical divider */
+.card-format-options {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-content: flex-start;
+  overflow-y: auto;
+  min-height: 0;
+  border-top: 1px solid var(--divider);
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.card-format-options::-webkit-scrollbar {
+  display: none;
+}
+
+.card-format-option {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: subgrid;
+  align-items: stretch;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-primary);
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--divider);
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  transform: none !important;
+}
+
+@media (hover: hover) {
+  .card-format-option:hover {
+    background: var(--card-bg-hover);
+  }
+}
+
+/* Lighter background when format is in cart */
+.card-format-option.in-cart {
+  background: rgba(150, 150, 150, 0.06);
+}
+
+.card-format-label {
+  grid-column: 1;
+  grid-row: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  padding: 10px 0 10px 12px;
+}
+
+.card-format-price {
+  grid-column: 2;
+  grid-row: 1;
+  border-left: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 400;
+  text-align: right;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+/* Per-format variation row — overlays the label in grid column 1 for оригинальный products */
+.card-format-var-row {
+  grid-column: 1;
+  grid-row: 1;
+  z-index: 1;
+  position: relative;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding-left: 12px;
+  min-width: 0;
+}
+
+.card-format-var-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--status-info);
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.card-format-var-input {
+  width: 28px;
+  padding: 2px 3px;
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 500;
+  text-align: center;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.card-format-var-input:focus {
+  border-color: var(--link-color);
+}
+
+/* Per-format counter wrapper — overlays the hidden price in the same grid cell */
+.card-format-counter {
+  grid-column: 2;
+  grid-row: 1;
+  z-index: 1;
+  position: relative;
+  overflow: hidden;
+  border-left: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+}
+
+.card-format-minus,
+.card-format-plus {
+  flex: 1;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 4px;
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+  line-height: 1;
+  border-radius: 3px;
+}
+
+.card-format-qty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 2px;
+  min-width: 14px;
+  background: transparent;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+@media (hover: hover) {
+  .card-format-counter:has(.card-format-minus:hover)::before,
+  .card-format-counter:has(.card-format-plus:hover)::after {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+  }
+  .card-format-counter:has(.card-format-minus:hover)::before {
+    content: '';
+    background: linear-gradient(to right, var(--bg-quaternary), transparent);
+  }
+  .card-format-counter:has(.card-format-plus:hover)::after {
+    content: '';
+    background: linear-gradient(to left, var(--bg-quaternary), transparent);
+  }
+}
+
+/* "в корзине" state: price-row becomes a clickable area */
+.product.has-cart-items .price-row {
+  cursor: pointer;
+}
+
+/* ============================================================
+   MORE POSTERS BUTTON
+   Button at end of .products grid to show old posters modal
+   ============================================================ */
+
+.more-posters-btn {
+  box-sizing: border-box;
+  background-color: var(--bg-primary);
+  margin: 0;
+  padding: 6px;
+  border: 1px solid var(--product-card-border);
+  text-align: center;
+  border-radius: 12px;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+@media (hover: hover) {
+  .more-posters-btn:hover {
+    background-color: var(--product-card-hover-bg);
+    border: 1px solid var(--product-card-hover-border);
+    animation: pulse-grey-glow 3s infinite alternate;
+  }
+}
+
+.more-posters-btn-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.more-posters-btn-icon svg {
+  width: 24px;
+  height: 24px;
+  color: #121212;
+}
+
+.more-posters-btn-text {
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.3;
+  color: var(--text-primary);
+  padding: 0 8px;
+}
+
+.more-posters-btn {
+  width: 100%;
+  min-width: 0;
+}
+
+
+/* JS-driven layout: button is alone in its row → span full width and go horizontal */
+.more-posters-btn.is-alone-in-row {
+  grid-column: 1 / -1;
+  flex-direction: row !important;
+  padding: 16px 24px !important;
+}
+
+/* JS-driven layout: button shares a row → card-sized */
+.more-posters-btn:not(.is-alone-in-row) {
+  flex-direction: column;
+}
+
+/* ===== PRODUCT REMOVING STATE (favorites page) ===== */
+
+.product.removing {
+  pointer-events: none;
+}
+
+.product.removing .product-card-inner,
+.product.removing .product-card-buttons {
+  opacity: 0.35;
+}
+
+.product-remove-overlay {
+  position: absolute;
+  inset: 0;
+  background: var(--removing-overlay-bg);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+  pointer-events: auto;
+}
+
+.product-remove-undo {
+  padding: 8px 20px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+@media (hover: hover) {
+  .product-remove-undo:hover {
+    background: var(--bg-tertiary);
+  }
+}

@@ -1,0 +1,29 @@
+/* ===== SHARED COMPONENTS (MODULAR) ===== */
+/*
+ * This file imports modular component CSS files for better organization
+ * and maintainability. Each module focuses on a specific type of component.
+ *
+ * Week 4 Refactoring: Split large components.css (2260 lines, 40KB) into
+ * focused modules for easier navigation and maintenance.
+ */
+
+/* Modal Components: FAQ popups, image zoom, confirmation modals, toasts */
+@import './components/modals.css';
+
+/* Carousel Components: Product, gallery, and catalog carousels */
+@import './components/carousels.css';
+
+/* Form Components: Review, comment, and suggestion forms */
+@import './components/forms.css';
+
+/* Card & List Components: Reviews, comments, suggestions lists */
+@import './components/cards.css';
+
+/* UI Elements: Tabs, dropdowns, scroll-to-top button */
+@import './components/ui-elements.css';
+
+/* Tooltip: smart hover tooltips for icon-only buttons */
+@import './components/tooltip.css';
+
+/* Product Recommendations: horizontal scroll strips */
+@import './components/product-recommendations.css';

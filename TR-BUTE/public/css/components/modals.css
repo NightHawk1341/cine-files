@@ -1,0 +1,907 @@
+/* ===== MODAL COMPONENTS ===== */
+/* FAQ popups, image zoom, confirmation modals, and toast notifications */
+
+/* ===== FAQ POPUP (Mobile via showMobileModal / Desktop carousel) ===== */
+
+/* Override mobile-modal body height for FAQ content */
+.mobile-modal-body.scrollable:has(.faq-textbox) {
+  max-height: 72vh;
+}
+
+/* FAQ open button positioning inside mobile-modal body */
+.mobile-modal-body .faq-open-button {
+  width: 100%;
+  left: 0;
+  bottom: 8px;
+}
+
+.faq-textbox {
+  background-color: var(--card-bg);
+  color: var(--text-secondary);
+  font-size: 13px;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 10px;
+  padding-bottom: 20px;
+  line-height: 1.4;
+  margin-bottom: 10px;
+}
+
+.faq-textbox p {
+  margin-bottom: 10px;
+}
+
+.faq-textbox ul {
+  margin: 10px 0;
+  padding-left: 20px;
+}
+
+.faq-textbox li {
+  margin-bottom: 5px;
+}
+
+.faq-open-button {
+  font-size: 14px;
+  font-weight: 600;
+  background-color: var(--bg-secondary);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 40px;
+  padding: 12px 24px;
+  cursor: pointer;
+  transition: all 0.2s;
+  width: calc(100% - 40px);
+  position: sticky;
+  bottom: 12px;
+  left: 20px;
+  box-shadow: var(--shadow-md);
+  z-index: 2;
+}
+
+@media (max-width: 768px) {
+  .faq-open-button {
+    bottom: calc(20px + env(safe-area-inset-bottom, 0));
+    width: calc(100% - 32px);
+    left: 16px;
+  }
+}
+
+@media (hover: hover) {
+  .faq-open-button:hover {
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border-hover);
+    color: var(--text-primary);
+  }
+}
+
+/* ===== FAQ CAROUSEL (Desktop only) ===== */
+
+.faq-carousel-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: var(--bg-overlay);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  z-index: 20000;
+  opacity: 0;
+  visibility: hidden;
+  overflow: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.faq-carousel-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Backdrop for click-to-close (behind scene/buttons) */
+.faq-carousel-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  cursor: default;
+}
+
+/* Stories button — in flex flow above scene, always visible */
+.faq-carousel-stories-outer {
+  position: relative;
+  z-index: 1;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+}
+
+.faq-carousel-stories-outer:not(:empty) {
+  pointer-events: auto;
+}
+
+/* Pill button wrapping story circle + label */
+.faq-carousel-stories-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 40px;
+  padding: 6px 16px 6px 6px;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+  font-family: Montserrat, sans-serif;
+}
+
+@media (hover: hover) {
+  .faq-carousel-stories-btn:hover {
+    background: var(--bg-tertiary);
+    border-color: var(--border-hover);
+  }
+}
+
+.faq-carousel-stories-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+/* Scene: full-width row containing the track + side arrows */
+.faq-carousel-scene {
+  position: relative;
+  width: 100vw;
+  flex-shrink: 0;
+  z-index: 1;
+  /* height set by JS */
+}
+
+/* Track: absolutely positioned, centered via JS transform */
+.faq-carousel-track {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  display: flex;
+  align-items: stretch;
+  gap: 24px;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  /* transform: translateY(-50%) translateX(Xpx) — set by JS */
+}
+
+.faq-carousel-card {
+  flex-shrink: 0;
+  width: 440px;
+  /* height set by JS to equalise all cards */
+  overflow-y: auto;
+  background: var(--bg-primary);
+  border: 1.5px solid var(--border-color);
+  border-radius: 20px;
+  padding: 24px;
+  padding-bottom: 90px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  position: relative;
+  opacity: 1;
+  transform: scale(0.9);
+  filter: brightness(0.45);
+  transition: transform 0.4s ease, filter 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  cursor: pointer;
+}
+
+.faq-carousel-card::-webkit-scrollbar {
+  display: none;
+}
+
+.faq-carousel-card.active {
+  transform: scale(1);
+  filter: brightness(1);
+  border-color: var(--border-hover);
+  box-shadow: var(--modal-popup-shadow);
+  cursor: default;
+}
+
+/* Gradient behind sticky button */
+.faq-carousel-card::after {
+  content: '';
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100px;
+  background: linear-gradient(to top, var(--bg-primary) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.faq-carousel-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.faq-carousel-card-title {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text-primary);
+  flex: 1;
+}
+
+.faq-carousel-card .faq-textbox {
+  margin-bottom: 10px;
+}
+
+.faq-carousel-card .faq-open-button,
+.faq-carousel-overlay > .faq-open-button {
+  width: auto;
+  left: auto;
+  position: relative;
+  bottom: auto;
+}
+
+/* Carousel navigation arrows — inside scene, vertically centered */
+.faq-carousel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+@media (hover: hover) {
+  .faq-carousel-arrow:hover {
+    background: var(--bg-tertiary);
+    border-color: var(--border-hover);
+    color: var(--text-primary);
+  }
+}
+
+.faq-carousel-arrow.prev {
+  left: max(16px, calc(50% - 260px));
+}
+
+.faq-carousel-arrow.next {
+  right: max(16px, calc(50% - 260px));
+}
+
+/* Закрыть button — in flex flow right below scene */
+.faq-carousel-close-btn {
+  position: relative;
+  z-index: 1;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 40px;
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 28px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  font-family: Montserrat, sans-serif;
+}
+
+@media (hover: hover) {
+  .faq-carousel-close-btn:hover {
+    background: var(--bg-tertiary);
+    border-color: var(--border-hover);
+    color: var(--text-primary);
+  }
+}
+
+/* Page FAQ Button (appears next to page titles) - subtle hint style */
+.page-faq-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  width: 20px;
+  height: 20px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-left: 8px;
+  flex-shrink: 0;
+  padding: 0;
+  opacity: 0.5;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-inverse);
+  line-height: 1;
+}
+
+@media (hover: hover) {
+  .page-faq-button:hover {
+    opacity: 0.8;
+    border-color: rgba(255, 255, 255, 0.5);
+  }
+}
+
+.page-faq-button:active {
+  transform: scale(0.95);
+}
+
+/* Make page titles inline containers to accommodate FAQ button */
+/* Using inline (not inline-flex) so the button flows with text naturally */
+.page-header-title,
+.page-title,
+.picker-title,
+.catalog-title,
+.product-title,
+h1.title {
+  display: inline;
+  text-wrap: balance;
+}
+
+/* ===== IMAGE ZOOM POPUP ===== */
+
+.zoom-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10002;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  touch-action: none;
+}
+
+.zoom-overlay.active {
+  display: flex;
+}
+
+.zoom-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.zoom-content {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  max-width: min(95vw, 1600px);
+  max-height: 95vh;
+  box-shadow: none;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  z-index: 1;
+}
+
+/* On desktop zoom-cluster is transparent to the flex layout so the existing
+   indicators → wrapper → close-row column order is preserved unchanged. */
+.zoom-cluster {
+  display: contents;
+}
+
+.zoom-close-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.zoom-close-btn {
+  font-size: 14px;
+  font-weight: 600;
+  background-color: var(--bg-secondary);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 40px;
+  padding: 10px 28px;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  font-family: Montserrat, sans-serif;
+}
+
+@media (hover: hover) {
+  .zoom-close-btn:hover {
+    background-color: var(--bg-tertiary);
+    border-color: var(--border-hover);
+    color: var(--text-primary);
+  }
+}
+
+.zoom-wrapper {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background-color: var(--bg-secondary);
+  border-radius: 12px;
+}
+
+/* Narrow desktop: image goes edge-to-edge without the background box */
+@media (hover: hover) and (max-width: 768px) {
+  .zoom-wrapper {
+    background-color: transparent;
+    border-radius: 0;
+  }
+}
+
+.zoom-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.zoom-wrapper.loading::after {
+  content: '';
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  border-top-color: rgba(255, 255, 255, 0.85);
+  animation: zoom-spin 0.7s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes zoom-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes zoom-spin-centered {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Initial load: hide all chrome and show only a centered spinner */
+.zoom-overlay.zoom-loading-initial .zoom-wrapper,
+.zoom-overlay.zoom-loading-initial .zoom-close-row,
+.zoom-overlay.zoom-loading-initial .zoom-indicators {
+  visibility: hidden;
+}
+
+.zoom-overlay.zoom-loading-initial::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  border-top-color: rgba(255, 255, 255, 0.85);
+  animation: zoom-spin-centered 0.7s linear infinite;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.zoom-prev,
+.zoom-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  border: none;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  z-index: 10;
+  opacity: 0.85;
+}
+
+@media (hover: hover) {
+  .zoom-prev:hover,
+  .zoom-next:hover {
+    opacity: 1;
+  }
+}
+
+.zoom-prev {
+  left: 16px;
+}
+
+.zoom-next {
+  right: 16px;
+}
+
+/* Mobile: full-screen scroll-snap carousel with chrome above/below in flow */
+@media (hover: none) {
+  /* Allow horizontal pan so the carousel track can scroll natively.
+     overscroll-behavior: none prevents the iOS rubber-band Y-bounce that
+     appears when swiping diagonally across a pan-x container. */
+  .zoom-overlay {
+    touch-action: pan-x;
+    overscroll-behavior: none;
+  }
+
+  .zoom-content {
+    width: 100vw;
+    max-width: 100vw;
+    height: 100vh;
+    height: 100svh;
+    max-height: 100vh;
+    max-height: 100svh;
+    /* Center the cluster so indicators and close-row are flush against
+       the image rather than pinned to the viewport edges */
+    justify-content: center;
+  }
+
+  /* Cluster groups indicators + wrapper + close-row into a tight unit.
+     JS sets wrapper aspect-ratio after the first image loads, which shrinks
+     the cluster to match the image size and lets zoom-content center it. */
+  .zoom-cluster {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  /* Wrapper: sized by JS via aspect-ratio once image loads.
+     During loading, height is set inline by JS to fill available space. */
+  .zoom-wrapper {
+    flex: 0 0 auto;
+    width: 100%;
+    min-height: 0;
+    max-height: calc(100svh - 80px);
+    background-color: transparent;
+    border-radius: 0;
+    overflow: hidden;
+  }
+
+  /* Static desktop image hidden — carousel slides take over */
+  .zoom-wrapper > .zoom-image {
+    display: none;
+  }
+
+  /* Indicators in normal flow above the image */
+  .zoom-indicators {
+    position: static;
+    width: 100%;
+    margin-bottom: 0;
+    padding: 8px 0 4px;
+    z-index: auto;
+    pointer-events: none;
+  }
+
+  /* Close row in normal flow below the image */
+  .zoom-close-row {
+    position: static;
+    margin-top: 0;
+    padding: 4px 0 calc(8px + env(safe-area-inset-bottom, 0px));
+    z-index: auto;
+  }
+
+  /* Scroll-snap carousel track */
+  .zoom-carousel-track {
+    display: flex;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: none;
+    touch-action: pan-x;
+    height: 100%;
+    width: 100%;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .zoom-carousel-track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .zoom-slide {
+    flex: 0 0 100%;
+    width: 100%;
+    height: 100%;
+    scroll-snap-align: center;
+    /* Prevent fast swipes from jumping more than one image */
+    scroll-snap-stop: always;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background-color: var(--bg-primary);
+  }
+
+  .zoom-slide-img {
+    /* Full viewport width; height determined by natural aspect ratio.
+       Wrapper height is pre-calculated from the tallest image so all slides
+       share the same fixed height — no Y-shift during swipe.
+       Very tall images (taller than the wrapper) are clipped by the slide's
+       overflow: hidden, which is acceptable given the viewport cap. */
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: opacity 0.15s ease;
+  }
+
+  /* Arrows hidden on mobile — swipe to navigate */
+  .zoom-prev,
+  .zoom-next {
+    display: none;
+  }
+}
+
+
+.zoom-indicators {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: nowrap;
+  pointer-events: none;
+  margin-bottom: 10px;
+}
+
+.zoom-indicator {
+  width: 25px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--indicator-default);
+  transition: background 0.2s, width 0.2s;
+  border: none;
+  padding: 0;
+  pointer-events: auto;
+}
+
+.zoom-indicator.active {
+  background: var(--indicator-active);
+  width: 35px;
+}
+
+/* Zoom Deprecated Tag */
+.zoom-deprecated-tag {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.65);
+  color: var(--text-inverse);
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: default;
+  z-index: 2;
+}
+
+.zoom-deprecated-tooltip {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: var(--shadow-md);
+}
+
+.zoom-deprecated-tag:hover .zoom-deprecated-tooltip {
+  display: block;
+}
+
+.zoom-product-link {
+  display: inline-flex;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 600;
+  background-color: var(--bg-secondary);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 40px;
+  padding: 10px 28px;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  font-family: Montserrat, sans-serif;
+  text-decoration: none;
+  max-width: 50%;
+}
+
+@media (hover: hover) {
+  .zoom-product-link:hover {
+    background-color: var(--bg-tertiary);
+    border-color: var(--border-hover);
+    color: var(--text-primary);
+  }
+}
+
+.zoom-product-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ===== CONFIRMATION MODALS ===== */
+
+.confirmation-modal-content {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  padding: 2rem;
+  border-radius: 1rem;
+  text-align: center;
+  max-width: 340px;
+  width: 85%;
+  box-shadow: var(--shadow-lg);
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.confirmation-modal-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  line-height: 1;
+}
+
+.confirmation-modal.success .confirmation-modal-icon {
+  color: var(--status-success);
+}
+
+.confirmation-modal.error .confirmation-modal-icon {
+  color: var(--status-error);
+}
+
+.confirmation-modal.info .confirmation-modal-icon {
+  color: var(--status-info);
+}
+
+.confirmation-modal-message {
+  color: var(--text-primary);
+  font-size: 15px;
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+  white-space: pre-line;
+}
+
+.confirmation-modal-button {
+  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
+  color: var(--text-inverse);
+  border: none;
+  padding: 12px 32px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  width: 100%;
+}
+
+.confirmation-modal-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(251, 233, 138, 0.3);
+}
+
+.confirmation-modal-button:active {
+  transform: translateY(0);
+}
+
+.confirmation-modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  align-items: center;
+  justify-content: center;
+}
+
+.confirmation-modal-overlay.active {
+  display: flex;
+}
+
+.confirmation-modal {
+  background: var(--bg-primary);
+  border: 1.5px solid var(--border-hover);
+  border-radius: 20px;
+  padding: clamp(1.25rem, 1rem + 1.5vw, 1.875rem);
+  max-width: min(90%, 400px);
+  width: 90%;
+  box-shadow: var(--modal-popup-shadow);
+}
+
+.confirmation-modal-title {
+  font-size: clamp(1rem, 0.875rem + 0.5vw, 1.125rem); /* 16px to 18px fluid */
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: clamp(0.625rem, 0.5rem + 0.5vw, 0.75rem); /* 10px to 12px fluid */
+}
+
+.confirmation-modal-text {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+.confirmation-modal-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.confirmation-modal-button {
+  flex: 1;
+  padding: 12px 20px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-secondary);
+  color: var(--text-tertiary);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.confirmation-modal-button.confirm {
+  background-color: var(--status-error);
+  border: 1px solid color-mix(in srgb, var(--status-error) 70%, transparent);
+  color: var(--text-inverse);
+}
+
+@media (hover: hover) {
+  .confirmation-modal-button:hover {
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border-hover);
+    color: var(--text-secondary);
+  }
+  .confirmation-modal-button.confirm:hover {
+    background-color: color-mix(in srgb, var(--status-error) 85%, black);
+  }
+}
+
+
+/* Light theme: zoom overlay backdrop grain */
+html[data-theme="light"] .zoom-overlay::before,
+body[data-theme="light"] .zoom-overlay::before {
+  filter: invert(1);
+  opacity: 0.05;
+}

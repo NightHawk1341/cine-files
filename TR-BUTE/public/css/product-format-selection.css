@@ -1,0 +1,523 @@
+/* Product format selection, price row, and format dropdown */
+
+/* Format Selection */
+.format-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.format-group label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #a3a3a3;
+}
+
+.format-wrapper {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.format-dropdown {
+  position: relative;
+  flex: 1;
+}
+
+.format-select-button {
+  font-size: 14px;
+  font-weight: 500;
+  background-color: #1e1e1e;
+  color: #E0E0E0;
+  border: 1px solid #414141;
+  border-radius: 8px;
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  width: 100%;
+  text-align: left;
+  display: block;
+}
+
+@media (hover: hover) {
+  .format-select-button:hover {
+    background-color: #2b2b2b;
+    border: 1px solid #8f8f8f;
+  }
+}
+
+.format-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: black;
+  border: 1px solid #414141;
+  border-radius: 8px;
+  margin-top: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+}
+
+.format-dropdown-menu.hidden {
+  display: none;
+}
+
+.format-option {
+  padding: 10px 12px;
+  cursor: pointer;
+  background-color: #1e1e1e;
+  color: #818181;
+  border: none;
+  text-align: left;
+  transition: all 0.2s;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+@media (hover: hover) {
+  .format-option:hover {
+    background-color: #2b2b2b;
+    color: #a3a3a3;
+  }
+}
+
+.format-option.active {
+  background-color: #066fa3;
+  color: #9cddfd;
+  border-left: 3px solid #16a6ed;
+  box-shadow: inset 0 0 10px rgba(22, 166, 237, 0.3);
+}
+
+.format-option.in-cart {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.in-cart-count {
+  font-size: 11px;
+  color: #9cddfd;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.format-option.in-cart.active .in-cart-count {
+  color: #9cddfd;
+}
+
+.format-dimensions {
+  font-size: 12px;
+  color: #818181;
+  text-align: center;
+  padding: 10px 12px;
+  background-color: #1e1e1e;
+  border: 1px solid #414141;
+  border-radius: 8px;
+  min-width: 80px;
+  white-space: nowrap;
+}
+
+
+/* Product Price Row - at bottom of purchase card */
+.product-price-row {
+  display: flex;
+  align-items: stretch;
+  min-height: 44px;
+  position: relative;
+  overflow: visible;
+  /* Break out of card padding for full-width look - matches card padding */
+  margin-left: calc(-1 * clamp(0.9375rem, 0.75rem + 1.5vw, 1.875rem));
+  margin-right: calc(-1 * clamp(0.9375rem, 0.75rem + 1.5vw, 1.875rem));
+  margin-bottom: calc(-1 * clamp(0.9375rem, 0.75rem + 1.5vw, 1.875rem));
+  border-top: 1px solid var(--divider);
+  border-radius: 0 0 11px 11px;
+  transition: background 0.15s;
+  isolation: isolate;
+}
+
+/* Price info on the left - takes 2/3 of width */
+.product-price-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 8px 16px;
+  flex: 0 0 67%;
+  gap: 2px;
+}
+
+.product-price-current {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.product-price-old {
+  font-size: 14px;
+  color: var(--text-tertiary);
+  text-decoration: line-through;
+}
+
+/* Format select button on the right */
+.product-format-select-btn {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: 6px;
+  position: relative;
+  flex: 0 0 33%; /* Takes 1/3 width */
+  cursor: pointer;
+  transition: background 0.15s;
+  border-radius: 0 0 11px 0;
+  color: var(--text-tertiary);
+  font-size: 13px;
+  font-weight: 500;
+  background: transparent;
+  border: none;
+  padding: 0 12px;
+}
+
+/* Full-height divider on the left edge */
+.product-format-select-btn::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--divider);
+}
+
+.product-format-select-btn svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+/* Rotate chevron based on dropdown state */
+.product-format-select-btn svg.product-format-select-chevron.up {
+  transform: rotate(180deg);
+}
+
+@media (hover: hover) {
+  .product-format-select-btn:hover {
+    background: rgba(150, 150, 150, 0.08);
+  }
+}
+
+/* When format dropdown is open */
+.product-format-open .product-format-select-btn {
+  background: var(--dropdown-accent-active-bg);
+  color: var(--dropdown-accent-color-1);
+}
+
+/* When item is in cart - replace price with "В корзине" button */
+.product-price-row.has-cart-items .product-price-info {
+  flex: 1;
+}
+
+.product-cart-status-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px; /* Removed vertical padding for full-height dividers */
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+@media (hover: hover) {
+  .product-cart-status-btn:hover {
+    background: rgba(150, 150, 150, 0.08);
+  }
+}
+
+/* Delete button to clear all formats - appears after В корзине button */
+.product-cart-delete-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  flex: 0 0 auto; /* Auto width based on content */
+  min-width: 44px;
+  cursor: pointer;
+  transition: all 0.15s;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  color: var(--text-tertiary);
+  padding: 0 12px;
+}
+
+/* Full-height divider on the left edge */
+.product-cart-delete-btn::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--divider);
+}
+
+.product-cart-delete-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+@media (hover: hover) {
+  .product-cart-delete-btn:hover {
+    background: rgba(255, 107, 107, 0.1);
+    color: #ff6b6b;
+  }
+}
+
+/* Product Format Dropdown - expands within card between header and price-row */
+.product-format-dropdown {
+  display: none; /* Hidden by default */
+  flex-direction: column;
+  background: var(--bg-primary);
+  border-top: 1px solid var(--divider);
+  border-bottom: 1px solid var(--divider);
+  overflow: hidden;
+  /* Part of normal flow - pushes price-row down when visible */
+  /* Negative margin matches card padding to extend borders to edges */
+  margin: 0 calc(-1 * clamp(0.9375rem, 0.75rem + 1.5vw, 1.875rem));
+}
+
+.product-format-dropdown.active {
+  display: flex; /* Expands in card, pushing price-row down */
+}
+
+/* Format dropdown header */
+.product-format-header {
+  padding: 12px 15px 10px 15px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  letter-spacing: 0.2px;
+  flex-shrink: 0;
+  white-space: nowrap;
+  background: var(--bg-primary);
+}
+
+/* Format options container - grid with 3 columns */
+.product-format-options {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-content: flex-start;
+  overflow-y: visible;
+  min-height: 0;
+  background: var(--bg-primary);
+  border-top: 1px solid var(--divider);
+}
+
+/* Format option - 3-column grid: name | dimensions | price/counter */
+.product-format-option {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: subgrid;
+  align-items: stretch;
+  padding: 0;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-primary);
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--divider);
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+
+.product-format-option:last-child {
+  border-bottom: none;
+}
+
+/* Lighter background when format is in cart */
+.product-format-option.in-cart {
+  background: rgba(150, 150, 150, 0.06);
+}
+
+/* Column 1: Format name */
+.product-format-option-name {
+  grid-column: 1;
+  grid-row: 1;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  padding: 10px 0 10px 12px;
+  min-width: 0;
+}
+
+/* Column 2: Dimensions */
+.product-format-option-dimensions {
+  grid-column: 2;
+  grid-row: 1;
+  font-size: 10px;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  border-left: 1px solid var(--divider);
+  border-right: 1px solid var(--divider);
+}
+
+/* Column 3: Price wrapper (old price + current price on same line) */
+.product-format-option-price-wrapper {
+  grid-column: 3;
+  grid-row: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  padding: 10px 12px;
+}
+
+.product-format-option-price {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.product-format-option-price-old {
+  font-size: 9px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  text-decoration: line-through;
+  white-space: nowrap;
+}
+
+/* Column 3: Counter (overlays price wrapper when visible) */
+.product-format-option-counter {
+  grid-column: 3;
+  grid-row: 1;
+  z-index: 1;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  padding: 0 12px;
+}
+
+.product-format-counter-minus,
+.product-format-counter-plus {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 6px;
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+  line-height: 1;
+  border-radius: 3px;
+}
+
+.product-format-counter-qty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  min-width: 16px;
+  background: transparent;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+@media (hover: hover) {
+  .product-format-option-counter:has(.product-format-counter-minus:hover)::before,
+  .product-format-option-counter:has(.product-format-counter-plus:hover)::after {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+  }
+  .product-format-option-counter:has(.product-format-counter-minus:hover)::before {
+    content: '';
+    background: linear-gradient(to right, var(--bg-quaternary), transparent);
+  }
+  .product-format-option-counter:has(.product-format-counter-plus:hover)::after {
+    content: '';
+    background: linear-gradient(to left, var(--bg-quaternary), transparent);
+  }
+}
+
+/* In-cart badge */
+.product-format-in-cart-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  background: linear-gradient(135deg, var(--dropdown-accent-color-1), var(--dropdown-accent-color-2));
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-inverse);
+}
+
+.product-format-option:hover {
+  background: var(--dropdown-accent-hover);
+}
+
+.product-format-option.active {
+  background: linear-gradient(90deg, var(--dropdown-accent-active-bg), transparent);
+}
+
+.product-format-option.active .product-format-option-name {
+  color: var(--dropdown-accent-color-1);
+}
+
+.product-format-option.active .product-format-option-price {
+  color: var(--dropdown-accent-color-1);
+}
+
+@media (max-width: 768px) {
+  .product-format-option {
+    padding: 10px;
+    font-size: 11px;
+  }
+
+  .product-format-option-dimensions {
+    font-size: 9px;
+  }
+
+  .product-format-option-price {
+    font-size: 10px;
+  }
+
+  .product-format-option-price-old {
+    font-size: 8px;
+  }
+
+  .product-format-in-cart-badge {
+    min-width: 18px;
+    height: 18px;
+    font-size: 9px;
+  }
+}
+

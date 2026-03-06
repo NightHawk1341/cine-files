@@ -1,0 +1,562 @@
+/* ===================================================================
+   ORDER CARDS
+   =================================================================== */
+
+.order-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+  transition: all var(--transition-base);
+  box-shadow: var(--shadow-sm);
+}
+
+.order-card:hover {
+  border-color: var(--border-hover);
+  box-shadow: var(--shadow);
+}
+
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--spacing-md);
+  gap: var(--spacing-md);
+}
+
+.order-info h4 {
+  font-size: var(--font-base-alt);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-xs);  /* 4px */
+}
+
+.order-meta {
+  font-size: var(--font-sm-alt);
+  color: var(--text-secondary);
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--spacing-xs) calc(var(--spacing-sm) + 2px);  /* 4px 10px */
+  border-radius: var(--radius-full);
+  font-size: var(--font-sm);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+/* ===== Order Statuses ===== */
+
+.status-awaiting_calculation,
+.status-created {
+  background: var(--status-awaiting-calculation-bg);
+  color: var(--status-awaiting-calculation);
+}
+
+.status-awaiting_payment,
+.status-awaiting-payment {
+  background: var(--status-awaiting-payment-bg);
+  color: var(--status-awaiting-payment);
+}
+
+.status-paid {
+  background: var(--status-paid-bg);
+  color: var(--status-paid);
+}
+
+.status-awaiting_certificate,
+.status-confirmed {
+  background: var(--status-awaiting-certificate-bg);
+  color: var(--status-awaiting-certificate);
+}
+
+.status-shipped {
+  background: var(--status-shipped-bg);
+  color: var(--status-shipped);
+}
+
+.status-delivered {
+  background: var(--status-delivered-bg);
+  color: var(--status-delivered);
+}
+
+.status-on_hold,
+.status-on-hold {
+  background: var(--status-on-hold-bg);
+  color: var(--status-on-hold);
+}
+
+.status-refund_requested,
+.status-refund-requested {
+  background: var(--status-refund-requested-bg);
+  color: var(--status-refund-requested);
+}
+
+.status-refunded {
+  background: var(--status-refunded-bg);
+  color: var(--status-refunded);
+}
+
+.status-cancelled {
+  background: var(--status-cancelled-bg);
+  color: var(--status-cancelled);
+}
+
+/* Legacy statuses */
+
+.status-new,
+.status-pending,
+.status-evaluation,
+.status-reviewed {
+  background: var(--status-awaiting-calculation-bg);
+  color: var(--status-awaiting-calculation);
+}
+
+.status-accepted {
+  background: var(--status-awaiting-payment-bg);
+  color: var(--status-awaiting-payment);
+}
+
+.status-in-work,
+.status-in_work,
+.status-parcel_pending,
+.status-parcel-pending,
+.status-parcel_ready,
+.status-parcel-ready {
+  background: var(--status-paid-bg);
+  color: var(--status-paid);
+}
+
+.status-suggested {
+  background: var(--status-awaiting-calculation-bg);
+  color: var(--status-awaiting-calculation);
+}
+
+.order-details {
+  margin: var(--spacing-md) 0;
+  padding: var(--spacing-md);
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+}
+
+.order-item {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-sm);
+  font-size: var(--font-base);
+}
+
+.order-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+/* New Order Card Design with Table */
+.order-card-new {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  margin-bottom: var(--spacing-md);
+  overflow: hidden;
+  transition: all var(--transition-base);
+  box-shadow: var(--shadow-sm);
+}
+
+.order-card-new:hover {
+  border-color: var(--border-hover);
+  box-shadow: var(--shadow);
+}
+
+.order-card-header {
+  padding: var(--spacing-lg);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background var(--transition-base);
+}
+
+.order-card-main-info {
+  flex: 1;
+}
+
+.order-card-meta {
+  font-size: var(--font-sm-alt);
+  color: var(--text-secondary);
+  margin-top: var(--spacing-xs);  /* 4px */
+  display: flex;
+  gap: 4px 6px;
+  align-items: center;
+  flex-wrap: wrap;
+  line-height: 1.4;
+}
+
+.order-card-header-right {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.collapse-toggle-btn {
+  background: transparent;
+  border: none;
+  padding: var(--spacing-xs);  /* 4px */
+  cursor: pointer;
+  color: var(--text-secondary);
+  transition: all var(--transition-base);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.collapse-toggle-btn:hover {
+  color: var(--text-primary);
+}
+
+.collapse-arrow {
+  width: 20px;
+  height: 20px;
+  transition: transform var(--transition-base);
+}
+
+.order-card-details {
+  padding: 0 var(--spacing-lg) var(--spacing-lg) var(--spacing-lg);
+  border-top: 1px solid var(--border-color);
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.order-card-section {
+  margin-bottom: var(--spacing-md);
+}
+
+.order-section-title {
+  font-size: var(--font-sm);
+  font-weight: 700;
+  color: var(--text-tertiary);
+  margin-bottom: var(--spacing-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* Order Products Table */
+.order-products-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-base);
+}
+
+.order-products-table thead th {
+  text-align: left;
+  padding: var(--spacing-sm);
+  font-weight: 600;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-color);
+  font-size: var(--font-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.order-products-table tbody tr {
+  border-bottom: 1px solid var(--divider);
+  transition: background var(--transition-fast);
+}
+
+.order-products-table tbody tr:hover {
+  background: var(--bg-hover);
+}
+
+.order-products-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.order-products-table td {
+  padding: var(--spacing-sm);
+}
+
+/* Product variants grouped together */
+.variant-row {
+  background: var(--primary-bg-subtle);
+}
+
+.variant-row:hover {
+  background: var(--primary-muted) !important;
+}
+
+/* Admin modifications highlighting */
+.admin-added-row {
+  background: var(--warning-bg-light);
+}
+
+.admin-modified-row {
+  background: var(--warning-bg-subtle);
+}
+
+.deleted-row {
+  opacity: 0.4;
+  text-decoration: line-through;
+}
+
+.highlight-yellow {
+  background: var(--warning-bg-medium);
+  padding: var(--spacing-2xs) var(--spacing-xs);  /* 2px 4px */
+  border-radius: 3px;
+}
+
+.text-strike {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+/* Product name cell with image preview */
+.product-name-cell {
+  position: relative;
+}
+
+.product-image-preview {
+  display: none;
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-left: var(--spacing-md);
+  z-index: 1000;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-xs);  /* 4px */
+  box-shadow: var(--shadow-lg);
+  pointer-events: none;
+}
+
+.product-name-cell:hover .product-image-preview {
+  display: block;
+}
+
+.product-image-preview img {
+  width: 200px;
+  height: auto;
+  border-radius: var(--radius-sm);
+  display: block;
+}
+
+.product-property {
+  font-size: var(--font-sm);
+  color: var(--text-tertiary);
+  margin-top: var(--spacing-2xs);  /* 2px */
+}
+
+/* Notion Badge */
+.notion-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(100, 100, 100, 0.2);
+  color: var(--text-secondary);
+  font-size: 0.688rem;
+  font-weight: 700;
+  padding: var(--spacing-2xs) calc(var(--spacing-xs) + 2px);
+  border-radius: var(--radius-sm);
+  min-width: 20px;
+  letter-spacing: 0.5px;
+}
+
+/* Processed (in Notion) card styling */
+.order-card-processed {
+  opacity: 0.6;
+}
+
+.order-card-processed:hover {
+  opacity: 0.85;
+}
+
+/* Order select checkbox */
+.order-select-label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  margin-right: var(--spacing-sm);
+  flex-shrink: 0;
+}
+
+.order-select-checkbox {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: var(--brand-primary);
+}
+
+.order-card-selected {
+  border-color: var(--brand-primary) !important;
+  box-shadow: 0 0 0 1px var(--brand-primary), var(--shadow-sm) !important;
+  opacity: 1 !important;
+}
+
+/* Bulk action bar */
+.bulk-action-bar {
+  position: fixed;
+  bottom: -80px;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border-color);
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.2);
+  transition: bottom 0.3s ease;
+  padding: var(--spacing-md) var(--spacing-lg);
+}
+
+.bulk-action-bar.visible {
+  bottom: 0;
+}
+
+.bulk-action-bar-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.bulk-action-count {
+  font-weight: 600;
+  font-size: var(--font-base);
+  color: var(--text-primary);
+}
+
+.bulk-action-buttons {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+/* Notion export modal */
+.notion-export-modal {
+  max-height: 70vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.notion-mapping-list {
+  flex: 1;
+  overflow-y: auto;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.notion-mapping-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--bg-tertiary);
+  font-weight: 600;
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.notion-mapping-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-xs) var(--spacing-md);
+  align-items: center;
+  border-bottom: 1px solid var(--divider);
+}
+
+.notion-mapping-row:last-child {
+  border-bottom: none;
+}
+
+.notion-mapping-label {
+  font-size: var(--font-sm);
+  color: var(--text-primary);
+}
+
+.notion-mapping-input {
+  font-size: var(--font-sm) !important;
+  padding: var(--spacing-xs) var(--spacing-sm) !important;
+}
+
+.notion-export-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* ===================================================================
+   REVIEW CARDS
+   =================================================================== */
+
+.review-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-base);
+}
+
+.review-card:hover {
+  border-color: var(--border-hover);
+  box-shadow: var(--shadow);
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--spacing-sm);
+}
+
+.review-author {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: var(--font-base-alt);
+  margin-top: var(--spacing-2xs);  /* 2px */
+}
+
+.review-stars {
+  color: var(--warning);
+  font-size: var(--font-base);
+}
+
+.review-text {
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: var(--spacing-sm);
+  font-size: var(--font-base);
+}
+
+.review-product {
+  font-size: var(--font-sm-alt);
+  color: var(--text-tertiary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.review-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+

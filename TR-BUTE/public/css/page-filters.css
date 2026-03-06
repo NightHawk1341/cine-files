@@ -1,0 +1,506 @@
+/* ============================================================
+   PAGE FILTERS MODULE
+   Shared filter bar styles used across all pages.
+   Structure: .collapsible-content > .product-filters (pill)
+              > groups (search, filters, types, sort, reset, faq, collapse, extras)
+   Sticky positioning handled by parent (.products-header or .sticky-filter-wrapper).
+   ============================================================ */
+
+/* --- Collapsible wrapper (page-filters only; scoped to avoid breaking other .collapsible-content uses) --- */
+.pf-collapsible-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  overflow: visible;
+  max-height: none !important;
+  opacity: 1 !important;
+}
+
+@media (max-width: 1024px) {
+  .pf-collapsible-wrapper {
+    max-height: none !important;
+    overflow: visible;
+  }
+}
+
+/* --- Outer pill (grey bg) --- */
+.product-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--filter-pill-bg);
+  padding: 5px;
+  border-radius: 46px;
+  outline: 1px solid var(--filter-pill-border);
+}
+
+/* --- All filter groups share base layout --- */
+.filters-group,
+.types-group,
+.tags-group,
+.extras-group,
+.sort-dropdown-wrapper,
+.collapse-arrow-group,
+.search-toggle-group,
+.reset-group,
+.faq-group {
+  display: flex;
+  background-color: var(--filter-group-bg);
+  border: 1px solid var(--filter-group-border);
+  border-radius: 40px;
+  padding: 7px;
+  gap: 3px;
+}
+
+.search-toggle-group { gap: 5px; }
+
+/* --- Filter icon base --- */
+.filter-icon {
+  width: 12px;
+  color: var(--icon-color);
+  fill: var(--icon-color);
+  transform: scale(var(--icon-scale));
+}
+
+/* ===== SEARCH ===== */
+
+.search-inline-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.search-inline-wrapper input {
+  padding: 5px 0 5px 10px;
+  min-width: 120px;
+  max-width: 200px;
+  width: auto;
+  background-color: var(--filter-group-bg);
+  border: 1px solid var(--filter-group-border);
+  color: var(--text-primary);
+  border-radius: 40px;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease, width 0.2s ease;
+}
+
+@media (hover: hover) {
+  .search-inline-wrapper input:hover {
+    border: 1px solid var(--border-hover);
+    color: var(--text-secondary);
+  }
+}
+
+.search-inline-wrapper input.has-value {
+  box-shadow: 0 0 0.2rem var(--neutral-btn-glow), 0 0 1.5rem var(--neutral-btn-glow);
+  border: 1px solid var(--neutral-btn-active-border);
+  background: var(--neutral-btn-active-bg);
+  color: var(--neutral-btn-active-color);
+}
+
+.search-clear-inline {
+  position: absolute;
+  right: 5px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.search-inline-wrapper input:not(:placeholder-shown) ~ .search-clear-inline,
+.search-inline-wrapper input.has-value ~ .search-clear-inline {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.search-clear-inline svg {
+  width: 9px;
+  height: 9px;
+  color: var(--icon-color);
+  fill: var(--icon-color);
+  transform: scale(var(--icon-scale));
+}
+
+@media (hover: hover) {
+  .search-clear-inline:hover svg { transform: scale(1.1); }
+}
+
+.search-clear-inline:active { transform: scale(0.95); }
+
+/* Search panel visibility */
+.search-toggle-panel.hidden {
+  display: none;
+  pointer-events: none;
+}
+
+.search-toggle-panel:not(.hidden) {
+  pointer-events: auto;
+}
+
+/* ===== TOGGLE BUTTONS (search & sort compact icons) ===== */
+
+.search-toggle-button,
+.sort-toggle-button {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 40px;
+  padding: 7px 12px;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (hover: hover) {
+  .search-toggle-button:hover,
+  .sort-toggle-button:hover {
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border-hover);
+  }
+}
+
+.search-toggle-button.active-glow,
+.sort-toggle-button.active-glow {
+  box-shadow: 0 0 0.2rem var(--neutral-btn-glow), 0 0 1.5rem var(--neutral-btn-glow);
+  border: 1px solid var(--neutral-btn-active-border);
+  background: var(--neutral-btn-active-bg);
+}
+
+/* ===== FILTER BUTTONS (genre) ===== */
+
+.filter-button,
+.type-button {
+  font-size: 14px;
+  font-weight: normal;
+  background-color: var(--bg-secondary);
+  color: var(--text-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 40px;
+  padding: 5px 10px;
+  margin: 0 1px;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+}
+
+@media (hover: hover) {
+  .filter-button:hover {
+    background-color: var(--filter-btn-hover-bg);
+    border: 1px solid var(--filter-btn-hover-border);
+    color: var(--filter-btn-hover-color);
+  }
+  .type-button:hover {
+    background-color: var(--type-btn-hover-bg);
+    border: 1px solid var(--type-btn-hover-border);
+    color: var(--type-btn-hover-color);
+  }
+  .type-button[data-type="оригинал"]:hover {
+    background-color: var(--neutral-btn-hover-bg);
+    border: 1px solid var(--neutral-btn-hover-border);
+    color: var(--neutral-btn-hover-color);
+  }
+}
+
+.filter-button.active {
+  color: var(--filter-btn-active-color);
+  background-color: var(--filter-btn-active-bg);
+  border: 1px solid var(--filter-btn-active-border);
+  box-shadow: 0 0 0.2rem var(--filter-btn-glow), 0 0 1.5rem var(--filter-btn-glow);
+}
+
+.type-button.active {
+  color: var(--type-btn-active-color);
+  background-color: var(--type-btn-active-bg);
+  border: 1px solid var(--type-btn-active-border);
+  box-shadow: 0 0 0.2rem var(--type-btn-glow), 0 0 1.5rem var(--type-btn-glow);
+}
+
+.type-button[data-type="оригинал"].active {
+  color: var(--neutral-btn-active-color);
+  background-color: var(--neutral-btn-active-bg);
+  border: 1px solid var(--neutral-btn-active-border);
+  box-shadow: 0 0 0.2rem var(--neutral-btn-glow), 0 0 1.5rem var(--neutral-btn-glow);
+}
+
+@media (hover: hover) {
+  .filter-button.active:hover {
+    box-shadow: 0 0 0.4rem var(--filter-btn-glow), 0 0 2.5rem var(--filter-btn-glow);
+  }
+  .type-button.active:hover {
+    box-shadow: 0 0 0.4rem var(--type-btn-glow), 0 0 2.5rem var(--type-btn-glow);
+  }
+  .type-button[data-type="оригинал"].active:hover {
+    box-shadow: 0 0 0.4rem var(--neutral-btn-glow), 0 0 2.5rem var(--neutral-btn-glow);
+  }
+}
+
+/* ===== EXTRA FILTER BUTTONS (tags, masonry, etc.) ===== */
+/* Use same styling as filter-button but with neutral (non-genre) colors */
+
+.extra-filter-button {
+  font-size: 14px;
+  font-weight: normal;
+  background-color: var(--bg-secondary);
+  color: var(--text-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 40px;
+  padding: 5px 10px;
+  margin: 0 1px;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+}
+
+@media (hover: hover) {
+  .extra-filter-button:hover {
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border-hover);
+    color: var(--text-secondary);
+  }
+}
+
+.extra-filter-button.active {
+  background: var(--filter-active-bg);
+  border-color: var(--filter-active-border);
+  color: var(--filter-active-color);
+}
+
+@media (hover: hover) {
+  .extra-filter-button.active:hover {
+    box-shadow: 0 0 0.15rem var(--filter-active-border), 0 0 4px var(--filter-active-border);
+  }
+}
+
+/* ===== SORT DROPDOWN ===== */
+
+.sort-dropdown-wrapper {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  overflow: visible;
+  position: relative;
+  z-index: 1000;
+}
+
+.sort-dropdown-wrapper.hidden { display: none; }
+
+.sort-toggle-panel {
+  display: flex;
+  gap: 5px;
+  overflow: visible;
+}
+
+.sort-toggle-panel.hidden { display: none; }
+
+.sort-dropdown { position: relative; display: flex; overflow: visible; }
+
+.sort-dropdown button {
+  text-align: left;
+  text-wrap: nowrap;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 40px;
+  padding: 5px 10px;
+  cursor: pointer;
+  color: var(--text-tertiary);
+  line-height: 1.2;
+  transition: box-shadow 0.2s ease, background-color 0.2s, border-color 0.2s, color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+@media (hover: hover) {
+  .sort-dropdown button:hover {
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border-hover);
+    color: var(--text-secondary);
+  }
+}
+
+.sort-dropdown button.has-sort {
+  box-shadow: 0 0 0.2rem var(--neutral-btn-glow), 0 0 1.5rem var(--neutral-btn-glow);
+  border: 1px solid var(--neutral-btn-active-border);
+  background: var(--neutral-btn-active-bg);
+  color: var(--neutral-btn-active-color);
+}
+
+.sort-direction-arrow {
+  width: 10px;
+  height: 10px;
+  color: currentColor;
+  fill: currentColor;
+  transition: transform 0.2s ease;
+}
+
+.sort-direction-arrow.asc { transform: rotate(180deg); }
+.sort-direction-arrow.desc { transform: rotate(0deg); }
+
+.sort-dropdown ul {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: var(--filter-group-bg);
+  border-radius: 20px;
+  padding: 7px;
+  margin-top: 12px;
+  list-style: none;
+  z-index: 1100;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 140px;
+  border: 1px solid var(--filter-group-border);
+  outline: 10px solid var(--bg-primary);
+}
+
+.sort-dropdown ul li {
+  font-size: 14px;
+  font-weight: normal;
+  background-color: var(--bg-secondary);
+  color: var(--text-tertiary);
+  padding: 5px 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 40px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s, color 0.2s;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.sort-dropdown ul.hidden { display: none; }
+
+@media (hover: hover) {
+  .sort-dropdown ul li:hover {
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border-hover);
+    color: var(--text-secondary);
+  }
+}
+
+/* Mobile: center sort dropdown */
+@media (hover: none) and (pointer: coarse), (pointer: coarse) {
+  .sort-dropdown {
+    position: static;
+  }
+  .sort-dropdown ul {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 105%;
+    right: auto;
+    z-index: 10000;
+  }
+}
+
+/* ===== RESET BUTTON ===== */
+
+.reset-button {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 40px;
+  padding: 7px 12px;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (hover: hover) {
+  .reset-button:hover {
+    background-color: var(--reset-btn-hover-bg);
+    border: 1px solid var(--reset-btn-hover-border);
+  }
+}
+
+/* ===== FAQ BUTTON ===== */
+
+.faq-filter-button {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 40px;
+  padding: 7px;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (hover: hover) {
+  .faq-filter-button:hover {
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border-hover);
+  }
+}
+
+/* ===== COLLAPSE ARROW ===== */
+
+.collapse-arrow-button {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 40px;
+  padding: 7px 12px;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (hover: hover) {
+  .collapse-arrow-button:hover {
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border-hover);
+  }
+}
+
+.collapse-arrow-icon {
+  height: 12px;
+  width: 12px;
+  color: var(--icon-color);
+  fill: var(--icon-color);
+  transform: scale(var(--icon-scale)) rotate(0deg);
+  transition: transform 0.3s ease;
+}
+
+.collapse-arrow-icon.up { transform: scale(var(--icon-scale)) rotate(180deg); }
+.collapse-arrow-icon.down { transform: scale(var(--icon-scale)) rotate(0deg); }
+
+/* ===== COLLAPSED / EXPANDED STATE ===== */
+
+/* Mobile: hide filter groups when collapsed (no .active class) */
+@media (max-width: 1024px) {
+  .pf-collapsible-wrapper:not(.active) .filters-group,
+  .pf-collapsible-wrapper:not(.active) .types-group,
+  .pf-collapsible-wrapper:not(.active) .tags-group,
+  .pf-collapsible-wrapper:not(.active) .extras-group {
+    display: none;
+  }
+
+  /* Expanded: rounded rectangle instead of pill */
+  .pf-collapsible-wrapper.active .product-filters {
+    border-radius: 12px;
+  }
+}
+
+/* When expanded, hide compact toggle buttons */
+.pf-collapsible-wrapper.active .search-toggle-button,
+.pf-collapsible-wrapper.active .sort-toggle-button {
+  display: none;
+}
+
+/* When expanded, show panels */
+.pf-collapsible-wrapper.active .search-toggle-panel,
+.pf-collapsible-wrapper.active .sort-toggle-panel {
+  display: flex;
+}

@@ -1,0 +1,375 @@
+/* ===== FORM COMPONENTS ===== */
+/* Review, Comment, and Suggestion forms */
+
+/* Common Form Styles */
+.form-header {
+  font-size: 14px;
+  margin-bottom: 10px;
+  color: var(--text-primary);
+}
+
+.login-prompt {
+  padding: 20px;
+  text-align: center;
+  color: var(--text-secondary);
+  display: none;
+}
+
+.login-prompt.active {
+  display: block;
+}
+
+.login-prompt-link {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  display: inline;
+  color: var(--brand-primary);
+  text-decoration: underline wavy;
+  text-underline-offset: 3px;
+  text-decoration-color: color-mix(in srgb, var(--brand-primary) 55%, transparent);
+}
+
+.login-prompt-link:hover {
+  color: var(--brand-hover);
+  text-decoration-color: var(--brand-hover);
+}
+
+.form-content {
+  display: block;
+}
+
+.form-content.hidden {
+  display: none;
+}
+
+.sort-wrapper {
+  margin-bottom: 15px;
+}
+
+.sort-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-right: 8px;
+}
+
+.sort-select {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 6px 10px;
+  color: var(--text-primary);
+  font-size: 12px;
+}
+
+/* Review Form */
+.review-form {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 15px;
+  display: flex;
+  margin-bottom: 15px;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.review-form-rating {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.review-form-rating label {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.review-form-stars {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 12px;
+}
+
+.review-star-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-size: 28px;
+  color: var(--status-warning);
+  opacity: 0.3;
+  transition: opacity 0.2s, transform 0.1s;
+  line-height: 1;
+}
+
+/* Light theme star color */
+html[data-theme="light"] .review-star-btn,
+body[data-theme="light"] .review-star-btn {
+  color: var(--status-warning);
+}
+
+.review-star-btn.selected,
+.review-star-btn.hovered {
+  opacity: 1;
+}
+
+/* Single star hover for devices without JS */
+.review-star-btn:hover {
+  opacity: 1;
+}
+
+.review-star-btn:active {
+  transform: scale(0.9);
+}
+
+@media (hover: none) {
+  .review-star-btn {
+    opacity: 1;
+  }
+}
+
+/* Textarea container wrapper for positioning emoji button */
+.review-form-textarea-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.review-form-textarea {
+  width: 100%;
+  min-height: 80px;
+  max-height: 200px;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-primary);
+  padding: 10px 40px 10px 10px;
+  font-family: inherit;
+  font-size: 13px;
+  resize: none;
+  overflow-y: auto;
+}
+
+.review-form-textarea::placeholder {
+  color: var(--text-tertiary);
+}
+
+@media (hover: hover) {
+  .review-form-textarea:hover {
+    border-color: var(--border-hover);
+  }
+}
+
+.review-form-textarea:focus {
+  outline: none;
+  border-color: var(--link-color);
+  box-shadow: 0 0 0.2rem var(--link-color);
+}
+
+/* Emoji button inside textarea (top right) */
+.review-form-emoji-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 18px;
+  opacity: 0.6;
+}
+
+@media (hover: hover) {
+  .review-form-emoji-btn:hover {
+    opacity: 1;
+    background: var(--bg-tertiary);
+  }
+}
+
+.review-form-emoji-btn:active {
+  transform: scale(0.95);
+}
+
+/* Photo and stars row (legacy, kept for backwards compatibility) */
+.review-form-photo-stars-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* Feedback actions group - styled like products-header groups */
+.review-form-actions-group {
+  display: flex;
+  background-color: var(--filter-group-bg);
+  border: 1px solid var(--filter-group-border);
+  border-radius: 40px;
+  padding: 7px;
+  gap: 3px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.review-form-button {
+  background-color: var(--bg-secondary);
+  color: var(--text-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 40px;
+  padding: 5px 10px;
+  font-weight: normal;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+}
+
+@media (hover: hover) {
+  .review-form-button:hover {
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border-hover);
+  }
+}
+
+.review-form-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Comment Form */
+.comment-form {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 15px;
+  margin-bottom: 15px;
+}
+
+.comment-form-textarea {
+  width: 100%;
+  min-height: 80px;
+  max-height: 200px;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 12px;
+  color: var(--text-primary);
+  font-size: 13px;
+  resize: none;
+  overflow-y: auto;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+.comment-form-textarea::placeholder {
+  color: var(--text-tertiary);
+}
+
+@media (hover: hover) {
+  .comment-form-textarea:hover {
+    border-color: var(--border-active);
+  }
+}
+
+.comment-form-textarea:focus {
+  outline: none;
+  border-color: var(--icon-color);
+}
+
+.comment-form-button {
+  margin-top: 10px;
+  background: var(--icon-color);
+  color: var(--text-inverse);
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+@media (hover: hover) {
+  .comment-form-button:hover {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+  }
+}
+
+.comment-form-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Suggestion Form */
+.suggestion-form {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 15px;
+  margin-bottom: 15px;
+}
+
+.suggestion-form-textarea {
+  width: 100%;
+  min-height: 80px;
+  max-height: 200px;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 12px;
+  color: var(--text-primary);
+  font-size: 13px;
+  resize: none;
+  overflow-y: auto;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+.suggestion-form-textarea::placeholder {
+  color: var(--text-tertiary);
+}
+
+@media (hover: hover) {
+  .suggestion-form-textarea:hover {
+    border-color: var(--border-active);
+  }
+}
+
+.suggestion-form-textarea:focus {
+  outline: none;
+  border-color: var(--icon-color);
+}
+
+.suggestion-form-button {
+  margin-top: 10px;
+  background: var(--icon-color);
+  color: var(--text-inverse);
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+@media (hover: hover) {
+  .suggestion-form-button:hover {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+  }
+}
+
+.suggestion-form-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

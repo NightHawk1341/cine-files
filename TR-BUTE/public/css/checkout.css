@@ -1,0 +1,454 @@
+/* ============================================================
+   CHECKOUT PAGE STYLES
+   Styles for the dedicated checkout/order submission page
+   ============================================================ */
+
+/* Page overlay - full page container */
+.checkout-page-overlay {
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+/* Page content container */
+.checkout-page-content {
+  flex: 1;
+  max-width: 1009px;
+  margin: 0 auto;
+  padding: 20px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Page header */
+.checkout-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 16px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.checkout-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* ===== CART SUMMARY SECTION ===== */
+/* Shows items being ordered at the top of checkout */
+
+.checkout-cart-summary {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+/* Inline cart summary (within the form) */
+.checkout-cart-summary-inline {
+  background: rgba(251, 233, 138, 0.05);
+  border: 1px solid rgba(251, 233, 138, 0.2);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.checkout-cart-items-inline {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  /*! max-height: 300px; */
+  overflow-y: auto;
+}
+
+.checkout-edit-cart-btn {
+  display: block;
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.checkout-edit-cart-btn:hover {
+  color: var(--text-primary);
+}
+
+.checkout-cart-items {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+/* Cart totals */
+.checkout-cart-totals {
+  padding-top: 12px;
+  border-top: 1px solid var(--border-color);
+}
+
+.checkout-totals-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.checkout-totals-row:last-child {
+  margin-bottom: 0;
+}
+
+.checkout-totals-main {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* ===== FORM CONTAINER ===== */
+
+.checkout-form-container {
+}
+
+/* ===== TWO-COLUMN DESKTOP LAYOUT ===== */
+
+/* Desktop layout: Two columns side by side */
+@media (hover: hover) and (pointer: fine) and (min-width: 760px), (min-width: 1025px) {
+  .checkout-page-content {
+    max-width: 1009px;
+    width: 90%;
+  }
+
+  #checkoutForm {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 30px;
+    align-items: start;
+  }
+
+  /* Left column: Form fields */
+  .order-form-group {
+    grid-column: 1;
+    background: var(--card-bg);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    padding: 20px;
+  }
+
+  /* Personal info section: wraps multiple form groups — treat as one card */
+  #personal-info-section {
+    grid-column: 1;
+    background: var(--card-bg);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    padding: 20px;
+  }
+
+  /* Nested form groups inside personal-info already styled by parent card */
+  #personal-info-section .order-form-group {
+    background: none;
+    border: none;
+    border-radius: 0;
+    padding: 0 0 16px;
+  }
+
+  #personal-info-section .order-form-group:last-of-type {
+    padding-bottom: 0;
+  }
+
+  /* Discount section (cert + promo) stays in left column */
+  .cart-discount-section {
+    grid-column: 1;
+  }
+
+  /* Right column wrapper: sticky container for cart summary + order total */
+  .checkout-right-column {
+    grid-column: 2;
+    grid-row: 1 / span 20;
+    position: sticky;
+    top: 100px;
+    align-self: start;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  /* Submit button stays at bottom of left column */
+  .order-submit-button {
+    grid-column: 1;
+  }
+
+  /* Cert-only info banner stays in left column */
+  #certificate-pdf-only-info {
+    grid-column: 1;
+  }
+}
+
+/* ===== RESPONSIVE STYLES ===== */
+
+@media (max-width: 768px) {
+  .checkout-page-content {
+    padding: 0 10px 16px;
+  }
+
+  .checkout-header {
+    padding-bottom: 12px;
+    margin-bottom: 16px;
+  }
+
+  .checkout-title {
+    font-size: 20px;
+  }
+
+  .checkout-cart-summary {
+    padding: 12px;
+    margin-bottom: 16px;
+  }
+
+  .checkout-cart-items {
+    max-height: 150px;
+  }
+
+  .checkout-form-container {
+    padding: 0;
+  }
+}
+
+/* ===== ORDER FORM SUMMARY (Bottom of form) ===== */
+/* Override cart.css order summary styles for checkout page */
+
+.checkout-page-content .order-form-summary {
+  padding: 16px;
+  background: rgba(251, 233, 138, 0.05);
+  border: 1px solid rgba(251, 233, 138, 0.2);
+  border-radius: 12px;
+}
+
+.checkout-page-content .order-summary-total {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--brand-primary);
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-color);
+}
+
+/* ===== PHONE INPUT CUSTOMIZATION ===== */
+
+/* Custom styling for intl-tel-input to fix CSP and styling issues */
+.intl-tel-input {
+  width: 100%;
+}
+
+.intl-tel-input .iti__selected-flag {
+  padding: 0 8px 0 12px;
+  background-color: transparent;
+}
+
+.intl-tel-input .iti__country-list {
+  background-color: var(--card-bg, #2a2a2a);
+  border: 1px solid var(--border-color, #3a3a3a);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  max-height: 200px;
+}
+
+.intl-tel-input .iti__country {
+  padding: 8px 12px;
+  color: var(--text-primary, #e0e0e0);
+}
+
+.intl-tel-input .iti__country:hover {
+  background-color: var(--bg-hover, #3a3a3a);
+}
+
+.intl-tel-input .iti__country.iti__highlight {
+  background-color: var(--brand-primary, #fbe98a);
+  color: var(--bg-primary, #1a1a1a);
+}
+
+.intl-tel-input .iti__dial-code {
+  color: var(--text-secondary, #8b8b8b);
+}
+
+.intl-tel-input .iti__country-name {
+  color: var(--text-primary, #e0e0e0);
+}
+
+/* Hide dropdown arrow when allowDropdown is false (Russia only mode) */
+.intl-tel-input .iti__arrow {
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 4px solid var(--text-tertiary, #666);
+}
+
+.intl-tel-input.iti--allow-dropdown .iti__flag-container:hover .iti__selected-flag {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Personal info: locked (greyed-out) until provider + delivery type are chosen */
+.personal-info-locked {
+  opacity: 0.45;
+  pointer-events: none;
+  user-select: none;
+  transition: opacity 0.25s ease;
+}
+
+#personal-info-section:not(.personal-info-locked) {
+  opacity: 1;
+  transition: opacity 0.25s ease;
+}
+
+.personal-info-locked-hint {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  margin-bottom: 12px;
+  padding: 7px 10px;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--border-color);
+}
+
+/* Hide hint once section is unlocked */
+#personal-info-section:not(.personal-info-locked) .personal-info-locked-hint {
+  display: none;
+}
+
+.checkout-variation-warning {
+  background-color: var(--status-error-bg);
+  border: 1px solid color-mix(in srgb, var(--status-error) 30%, transparent);
+  border-radius: 12px;
+  padding: 8px 12px;
+  margin-bottom: 16px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--status-error);
+  line-height: 1.5;
+}
+
+.checkout-variation-warning a,
+.checkout-variation-warning button {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  display: inline;
+  color: var(--status-error);
+  text-decoration: underline wavy;
+  text-underline-offset: 3px;
+  text-decoration-color: color-mix(in srgb, var(--status-error) 60%, transparent);
+}
+
+.order-form-group.has-error {
+  border-color: var(--status-error);
+}
+
+/* Field-level validation error highlighting */
+.field-error {
+  border-color: var(--status-error) !important;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--status-error) 30%, transparent);
+}
+
+.field-error::placeholder {
+  color: color-mix(in srgb, var(--status-error) 60%, transparent);
+}
+
+/* "Back to cart" hint link below promo/cert section */
+.checkout-cart-link-hint {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+.checkout-cart-link-hint a {
+  color: var(--text-tertiary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-color: color-mix(in srgb, var(--text-tertiary) 50%, transparent);
+  transition: color 0.15s;
+}
+
+@media (hover: hover) {
+  .checkout-cart-link-hint a:hover {
+    color: var(--text-secondary);
+    text-decoration-color: var(--text-secondary);
+  }
+}
+
+/* ===== SAVED ADDRESS SELECTOR ===== */
+.saved-address-selector {
+  margin-bottom: 16px;
+}
+.saved-address-selector-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+.saved-address-chips {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: 4px;
+}
+.saved-address-chips::-webkit-scrollbar {
+  display: none;
+}
+.saved-address-chip {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 12px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  color: var(--text-primary);
+  transition: border-color 0.15s, background 0.15s;
+  max-width: 200px;
+}
+.saved-address-chip.active {
+  border-color: var(--brand-primary);
+  background: var(--brand-muted);
+}
+@media (hover: hover) {
+  .saved-address-chip:hover {
+    border-color: var(--border-hover);
+  }
+  .saved-address-chip.active:hover {
+    border-color: var(--brand-primary);
+  }
+}
+.saved-address-chip .chip-label {
+  font-size: 12px;
+  font-weight: 600;
+}
+.saved-address-chip .chip-addr {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.saved-address-chip.new-address {
+  color: var(--text-secondary);
+  font-size: 12px;
+  justify-content: center;
+  min-width: 80px;
+}

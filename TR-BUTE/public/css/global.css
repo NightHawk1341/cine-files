@@ -1,0 +1,1301 @@
+/* ===== GLOBAL STYLES ===== */
+/* Base styles for all pages: variables, resets, typography, utilities */
+
+/* CRITICAL: @import must be at top before any other rules (except @charset) */
+/* Import SPA router transition styles */
+@import url('/css/router.css');
+
+/* Import grain overlay styles */
+@import url('/css/grain.css');
+
+/* Import shared page layout base styles */
+@import url('/css/page-layouts.css');
+
+/* Import tooltip component styles */
+@import url('/css/components/tooltip.css');
+
+/* Import shared masonry filter pill styles */
+@import url('/css/masonry-filters.css');
+
+/* Import star backdrop decoration */
+@import url('/css/star-backdrop.css');
+
+/* Import shared page screen component (error / empty / nav screens) */
+@import url('/css/page-screen.css');
+
+/* ===== LOCAL FONT: MONTSERRAT ===== */
+/* Stored locally to avoid Google services restrictions in Russia */
+
+/* Thin (100) */
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 100;
+  font-display: swap;
+  src: url('/fonts/Montserrat-Thin.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Montserrat';
+  font-style: italic;
+  font-weight: 100;
+  font-display: swap;
+  src: url('/fonts/Montserrat-ThinItalic.woff2') format('woff2');
+}
+
+/* Extra Light (200) */
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 200;
+  font-display: swap;
+  src: url('/fonts/Montserrat-ExtraLight.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Montserrat';
+  font-style: italic;
+  font-weight: 200;
+  font-display: swap;
+  src: url('/fonts/Montserrat-ExtraLightItalic.woff2') format('woff2');
+}
+
+/* Light (300) */
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url('/fonts/Montserrat-Light.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Montserrat';
+  font-style: italic;
+  font-weight: 300;
+  font-display: swap;
+  src: url('/fonts/Montserrat-LightItalic.woff2') format('woff2');
+}
+
+/* Regular (400) */
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/Montserrat-Regular.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Montserrat';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/Montserrat-Italic.woff2') format('woff2');
+}
+
+/* Medium (500) */
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/Montserrat-Medium.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Montserrat';
+  font-style: italic;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/Montserrat-MediumItalic.woff2') format('woff2');
+}
+
+/* Semi Bold (600) */
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/Montserrat-SemiBold.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Montserrat';
+  font-style: italic;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/Montserrat-SemiBoldItalic.woff2') format('woff2');
+}
+
+/* Bold (700) */
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/Montserrat-Bold.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Montserrat';
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/Montserrat-BoldItalic.woff2') format('woff2');
+}
+
+/* Extra Bold (800) */
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url('/fonts/Montserrat-ExtraBold.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Montserrat';
+  font-style: italic;
+  font-weight: 800;
+  font-display: swap;
+  src: url('/fonts/Montserrat-ExtraBoldItalic.woff2') format('woff2');
+}
+
+/* Black (900) */
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: url('/fonts/Montserrat-Black.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Montserrat';
+  font-style: italic;
+  font-weight: 900;
+  font-display: swap;
+  src: url('/fonts/Montserrat-BlackItalic.woff2') format('woff2');
+}
+
+/* ===== 0. FOUC PREVENTION ===== */
+/* Prevent flash of unstyled content during initial page load */
+
+/* Default: hide body on all browsers */
+body {
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* Hide body until page is ready */
+html.page-loading body {
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
+/* Show body when ready */
+html.page-ready body {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transition: opacity 0.15s ease-in;
+}
+
+/* ===== THEME TRANSITION CONTROL ===== */
+/* Disable all transitions during theme switch for instant, simultaneous update */
+html.theme-transition-disable,
+html.theme-transition-disable *,
+html.theme-transition-disable *::before,
+html.theme-transition-disable *::after {
+  transition: none !important;
+}
+
+/* Extra aggressive FOUC prevention for Firefox */
+@-moz-document url-prefix() {
+  body {
+    opacity: 0 !important;
+    visibility: hidden !important;
+  }
+
+  html.page-ready body {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transition: opacity 0.15s ease-in;
+  }
+}
+
+/* ===== 1. CSS VARIABLES ===== */
+:root {
+  /* Layout spacing variables - must match actual component sizes */
+  --header-height: clamp(3.25rem, 3rem + 1vw, 3.75rem); /* Matches header.css height exactly */
+  --bottom-nav-height: 76px; /* Taller to accommodate icon + label */
+  --footer-height: auto;
+
+  /* Typography */
+  --font-size-mobile: 18px;
+  --font-size-desktop: 16px;
+  --heading-mobile: 24px;
+  --heading-desktop: 32px;
+  --icon-scale: 1;
+
+  /* Page title sizes */
+  --page-title-size: 20px;
+  --page-title-size-mobile: 18px;
+
+  /* Mobile page spacing */
+  --page-padding-top-mobile: 14px;
+  --page-padding-bottom-mobile: 60px;
+
+  /* ===== THEME COLOR SYSTEM ===== */
+  /* All colors are defined here for easy theming */
+  /* Use these variables throughout all CSS files */
+
+  /* Brand Colors - Yellow-gold (matches logo SVG) */
+  --brand-primary: #fbe98a;      /* Main brand color (matches logo) */
+  --brand-secondary: #f5d963;    /* Secondary brand (slightly deeper gold) */
+  --brand-hover: #edd84e;        /* Brand color on hover */
+  --brand-muted: rgba(251, 233, 138, 0.15); /* Brand with transparency */
+
+  /* Background Colors - Dark theme (default) */
+  --bg-primary: #121212;         /* Main page background */
+  --bg-primary-t: rgba(18, 18, 18, 0); /* bg-primary at 0 opacity for banding-free gradients */
+  --bg-secondary: #1e1e1e;       /* Cards, elevated surfaces */
+  --bg-tertiary: #2b2b2b;        /* Hover states, inputs */
+  --bg-quaternary: #3a3a3a;      /* Active states */
+  --bg-overlay: rgba(0, 0, 0, 0.8); /* Modal overlays */
+  --removing-overlay-bg: rgba(18, 18, 18, 0.72); /* Pending-removal overlay on cart/favorites items */
+  --black: #000000;              /* Pure black for backgrounds and text */
+
+  /* Text Colors */
+  --text-primary: #E0E0E0;       /* Main text */
+  --text-secondary: #a3a3a3;     /* Secondary text */
+  --text-tertiary: #818181;      /* Muted text, placeholders */
+  --text-inverse: #121212;       /* Text on light backgrounds */
+
+  /* Border Colors */
+  --border-color: rgba(65, 65, 65, 0.5);      /* Default borders */
+  --border-hover: rgba(143, 143, 143, 0.5);   /* Border on hover */
+  --border-active: rgba(255, 149, 0, 0.5);    /* Active/focus borders */
+  --divider: rgba(65, 65, 65, 0.3);           /* Subtle dividers */
+
+  /* Status Colors - General purpose (used across non-order UI) */
+  --status-pending: #FFC107;     /* Yellow - waiting/pending */
+  --status-pending-bg: rgba(255, 193, 7, 0.15);
+  --status-info: #2196F3;        /* Blue - information */
+  --status-info-bg: rgba(33, 150, 243, 0.15);
+  --status-success: #4CAF50;     /* Green - completed/success */
+  --status-success-bg: rgba(76, 175, 80, 0.15);
+  --status-warning: #FF9800;     /* Orange - needs attention */
+  --status-warning-bg: rgba(255, 152, 0, 0.15);
+  --status-error: #F44336;       /* Red - error/cancelled */
+  --status-error-bg: rgba(244, 67, 54, 0.15);
+
+  /* Order Status Colors - Single source of truth for order badges */
+  --status-awaiting-calculation: #FFC107;
+  --status-awaiting-calculation-bg: rgba(255, 193, 7, 0.15);
+  --status-awaiting-payment: #FF9800;
+  --status-awaiting-payment-bg: rgba(255, 152, 0, 0.15);
+  --status-paid: #81C784;
+  --status-paid-bg: rgba(129, 199, 132, 0.15);
+  --status-awaiting-certificate: #64B5F6;
+  --status-awaiting-certificate-bg: rgba(100, 181, 246, 0.15);
+  --status-shipped: #2196F3;
+  --status-shipped-bg: rgba(33, 150, 243, 0.15);
+  --status-delivered: #4CAF50;
+  --status-delivered-bg: rgba(76, 175, 80, 0.15);
+  --status-on-hold: #9E9E9E;
+  --status-on-hold-bg: rgba(158, 158, 158, 0.15);
+  --status-refund-requested: #CE93D8;
+  --status-refund-requested-bg: rgba(206, 147, 216, 0.15);
+  --status-refunded: #9C27B0;
+  --status-refunded-bg: rgba(156, 39, 176, 0.15);
+  --status-cancelled: #F44336;
+  --status-cancelled-bg: rgba(244, 67, 54, 0.15);
+
+  /* Interactive Colors */
+  --link-color: #66b3db;         /* Links */
+  --link-hover: #8ec8e8;         /* Links on hover */
+  --favorite-color: #e91e63;     /* Heart/favorite */
+  --telegram-color: #0088cc;     /* Telegram brand */
+  --yandex-color: #FC3F1D;       /* Yandex brand */
+
+  /* Shadow Colors */
+  --shadow-color: rgba(0, 0, 0, 0.3);
+  --shadow-sm: 0 1px 2px var(--shadow-color);
+  --shadow-md: 0 2px 8px var(--shadow-color);
+  --shadow-lg: 0 8px 16px var(--shadow-color);
+
+  /* Triple-border popup shadow — inner gap + thick ring + gap + thin ring + drop shadow */
+  --modal-popup-shadow: 0 0 0 9px rgba(30, 30, 30), 0 0 0 10px var(--border-hover);
+
+  /* Skeleton Loading */
+  --skeleton-bg-base: rgba(255, 255, 255, 0.05);
+  --skeleton-bg-highlight: rgba(255, 255, 255, 0.1);
+
+  /* Legacy aliases for backwards compatibility */
+  --icon-color: var(--brand-primary);
+  --primary: var(--brand-secondary);
+  --primary-hover: var(--brand-hover);
+
+  /* Active page color */
+  --active-page-color: #fbe98a;
+
+  /* Glassmorphism (kept as vars for compat, now solid) */
+  --glass-bg: var(--bg-secondary);
+  --glass-border: var(--border-color);
+
+  /* Tab colors */
+  --tab-inactive-bg: var(--bg-secondary);
+  --tab-inactive-border: var(--border-color);
+  --tab-active-bg: var(--bg-primary);
+  --tab-counter-bg: rgba(6, 111, 163, 0.2);
+  --tab-counter-border: rgba(6, 111, 163, 0.4);
+  --tab-counter-color: #66b3db;
+  --tab-counter-active-bg: rgba(6, 111, 163, 0.3);
+  --tab-counter-active-color: #9cddfd;
+
+  /* Card backgrounds */
+  --card-bg: var(--bg-secondary);
+  --card-bg-hover: var(--bg-tertiary);
+  --card-border: var(--border-color);
+  --card-border-hover: var(--border-hover);
+
+  /* Product card specific */
+  --product-card-border: #292929;
+  --product-card-hover-bg: #1c1c1c;
+  --product-card-hover-border: #6b6b6b;
+  --product-special-hover-bg: #26241a;
+  --product-special-hover-border: #fbe98a;
+
+  /* Format dropdown backgrounds - darker for better contrast */
+  --format-dropdown-bg: #0f0f0f;
+
+  /* Indicator colors */
+  --indicator-default: #616161;
+  --indicator-active: #a3a3a3;
+
+  /* Filter button colors */
+  --filter-active-bg: rgba(251, 233, 138, 0.15);
+  --filter-active-border: #fbe98a;
+  --filter-active-color: #fbe98a;
+
+  /* Products header filter button colors */
+  /* Category filter (blue theme) */
+  --filter-btn-hover-bg: #0d2e3f;
+  --filter-btn-hover-border: #0088CC;
+  --filter-btn-hover-color: #0088CC;
+  --filter-btn-active-bg: #066fa3;
+  --filter-btn-active-border: #16a6ed;
+  --filter-btn-active-color: #9cddfd;
+  --filter-btn-glow: #0088CC;
+
+  /* Type filter (orange theme) */
+  --type-btn-hover-bg: #2d1f0e;
+  --type-btn-hover-border: #ff8c00;
+  --type-btn-hover-color: #ff8c00;
+  --type-btn-active-bg: #994d00;
+  --type-btn-active-border: #ff8c00;
+  --type-btn-active-color: #ffb366;
+  --type-btn-glow: #ff8c00;
+
+  /* Neutral/grey button states */
+  --neutral-btn-hover-bg: var(--bg-tertiary);
+  --neutral-btn-hover-border: var(--border-hover);
+  --neutral-btn-hover-color: var(--border-hover);
+  --neutral-btn-active-bg: #313131;
+  --neutral-btn-active-border: #848484;
+  --neutral-btn-active-color: #c8c8c8;
+  --neutral-btn-glow: #666;
+
+  /* Reset button (red theme) */
+  --reset-btn-hover-bg: #522525;
+  --reset-btn-hover-border: #B51010;
+
+  /* Gift button (green theme) */
+  --gift-btn-hover-bg: #2d3d2d;
+  --gift-btn-hover-border: #4a7c59;
+
+  /* Filter group container */
+  --filter-group-bg: black;
+  --filter-group-border: #414141;
+  --filter-group-shadow: #414141;
+
+  /* Filter pill (outer wrapper around filter groups) */
+  --filter-pill-bg: var(--bg-primary);
+  --filter-pill-border: #2a2a2a;
+
+  /* Dropdown accent colors (used for variant/format dropdown active states) */
+  --dropdown-accent-color-1: #667eea;
+  --dropdown-accent-color-2: #764ba2;
+  --dropdown-accent-hover: rgba(150, 150, 150, 0.08);
+  --dropdown-accent-active-bg: rgba(102, 126, 234, 0.1);
+}
+
+/* ===== LIGHT THEME ===== */
+/* Support both html and body selectors for early application */
+html[data-theme="light"],
+body[data-theme="light"] {
+  /* Background Colors - warm parchment palette, easier on the eyes than pure white */
+  --bg-primary: #f2ede4;
+  --bg-primary-t: rgba(242, 237, 228, 0);
+  --bg-secondary: #e8e2d8;
+  --bg-tertiary: #dcd5c8;
+  --bg-quaternary: #cfc7b8;
+  --bg-overlay: rgba(30, 20, 10, 0.55);
+  --removing-overlay-bg: rgba(242, 237, 228, 0.75); /* Pending-removal overlay on cart/favorites items */
+
+  /* Text Colors */
+  --text-primary: #1c160e;
+  --text-secondary: #4a4035;
+  --text-tertiary: #6b6055;
+  --text-inverse: #f2ede4;
+
+  /* Border Colors */
+  --border-color: rgba(80, 60, 30, 0.15);
+  --border-hover: rgba(80, 60, 30, 0.3);
+  --border-active: rgba(37, 150, 190, 0.5);
+  --divider: rgba(80, 60, 30, 0.1);
+
+  /* Shadow Colors */
+  --shadow-color: rgba(30, 20, 10, 0.14);
+  --shadow-sm: 0 1px 3px var(--shadow-color);
+  --shadow-md: 0 2px 8px var(--shadow-color);
+  --shadow-lg: 0 8px 24px var(--shadow-color);
+
+  --modal-popup-shadow: 0 0 0 9px rgba(30, 30, 30), 0 0 0 10px var(--border-hover);
+
+  /* Skeleton Loading */
+  --skeleton-bg-base: rgba(80, 60, 30, 0.08);
+  --skeleton-bg-highlight: rgba(80, 60, 30, 0.14);
+
+  /* Brand Colors - dark golden for legibility on warm background */
+  --brand-primary: #9a7b00;        /* Deep gold (readable on parchment) */
+  --brand-secondary: #7a5f00;      /* Darker gold */
+  --brand-hover: #6b5200;          /* Even darker on hover */
+  --brand-muted: rgba(154, 123, 0, 0.12);
+  --icon-color: var(--brand-primary);
+  --primary: var(--brand-secondary);
+  --primary-hover: var(--brand-hover);
+
+  /* Active page color */
+  --active-page-color: #2596be;
+
+  /* Status Colors - adjusted for warm background */
+  --status-pending: #b45309;
+  --status-pending-bg: rgba(180, 83, 9, 0.12);
+  --status-warning: #b45309;
+  --status-warning-bg: rgba(180, 83, 9, 0.12);
+  --status-info: #1a6fa3;
+  --status-info-bg: rgba(26, 111, 163, 0.12);
+  --status-success: #2e7d32;
+  --status-success-bg: rgba(46, 125, 50, 0.12);
+  --status-error: #c62828;
+  --status-error-bg: rgba(198, 40, 40, 0.12);
+
+  /* Order Status Colors - light theme */
+  --status-awaiting-calculation: #b45309;
+  --status-awaiting-calculation-bg: rgba(180, 83, 9, 0.12);
+  --status-awaiting-payment: #b45309;
+  --status-awaiting-payment-bg: rgba(180, 83, 9, 0.12);
+  --status-paid: #388e3c;
+  --status-paid-bg: rgba(56, 142, 60, 0.15);
+  --status-awaiting-certificate: #1976d2;
+  --status-awaiting-certificate-bg: rgba(25, 118, 210, 0.12);
+  --status-shipped: #1565c0;
+  --status-shipped-bg: rgba(21, 101, 192, 0.12);
+  --status-delivered: #2e7d32;
+  --status-delivered-bg: rgba(46, 125, 50, 0.12);
+  --status-on-hold: #5a5248;
+  --status-on-hold-bg: rgba(90, 82, 72, 0.12);
+  --status-refund-requested: #8e24aa;
+  --status-refund-requested-bg: rgba(142, 36, 170, 0.12);
+  --status-refunded: #7b1fa2;
+  --status-refunded-bg: rgba(123, 31, 162, 0.12);
+  --status-cancelled: #c62828;
+  --status-cancelled-bg: rgba(198, 40, 40, 0.12);
+
+  /* Link color - teal accent */
+  --link-color: #2596be;
+  --link-hover: #1a6f8f;
+
+  /* Tab colors */
+  --tab-active-bg: var(--bg-primary);
+  --tab-counter-bg: rgba(26, 111, 163, 0.12);
+  --tab-counter-border: rgba(26, 111, 163, 0.3);
+  --tab-counter-color: #1a6fa3;
+  --tab-counter-active-bg: rgba(26, 111, 163, 0.2);
+  --tab-counter-active-color: #0d4f78;
+
+  /* Card backgrounds */
+  --card-bg: var(--bg-secondary);
+  --card-bg-hover: var(--bg-tertiary);
+  --card-border: var(--border-color);
+  --card-border-hover: var(--border-hover);
+
+  /* Product card specific */
+  --product-card-border: rgba(80, 60, 30, 0.14);
+  --product-card-hover-bg: rgba(80, 60, 30, 0.06);
+  --product-card-hover-border: rgba(80, 60, 30, 0.28);
+  --product-special-hover-bg: rgba(154, 123, 0, 0.08);
+  --product-special-hover-border: var(--brand-primary);
+
+  /* Format dropdown backgrounds - slightly darker for better contrast */
+  --format-dropdown-bg: rgba(80, 60, 30, 0.08);
+
+  /* Indicator colors */
+  --indicator-default: #b8aa98;
+  --indicator-active: #5a5248;
+
+  /* Filter button colors */
+  --filter-active-bg: rgba(37, 150, 190, 0.12);
+  --filter-active-border: #2596be;
+  --filter-active-color: #2596be;
+
+  /* Products header filter button colors - light theme */
+  --filter-btn-hover-bg: rgba(37, 150, 190, 0.1);
+  --filter-btn-hover-border: #2596be;
+  --filter-btn-hover-color: #2596be;
+  --filter-btn-active-bg: rgba(37, 150, 190, 0.2);
+  --filter-btn-active-border: #1a6f8f;
+  --filter-btn-active-color: #0d4f78;
+  --filter-btn-glow: rgba(37, 150, 190, 0.35);
+
+  /* Type filter (gold theme for light) */
+  --type-btn-hover-bg: rgba(154, 123, 0, 0.1);
+  --type-btn-hover-border: #9a7b00;
+  --type-btn-hover-color: #9a7b00;
+  --type-btn-active-bg: rgba(154, 123, 0, 0.18);
+  --type-btn-active-border: #7a5f00;
+  --type-btn-active-color: #5a4400;
+  --type-btn-glow: rgba(154, 123, 0, 0.35);
+
+  /* Neutral/grey button states - light theme */
+  --neutral-btn-hover-bg: var(--bg-tertiary);
+  --neutral-btn-hover-border: var(--border-hover);
+  --neutral-btn-hover-color: var(--text-secondary);
+  --neutral-btn-active-bg: rgba(80, 60, 30, 0.1);
+  --neutral-btn-active-border: rgba(80, 60, 30, 0.35);
+  --neutral-btn-active-color: var(--text-primary);
+  --neutral-btn-glow: rgba(80, 60, 30, 0.18);
+
+  /* Reset button (red theme) - light theme */
+  --reset-btn-hover-bg: rgba(198, 40, 40, 0.1);
+  --reset-btn-hover-border: #c62828;
+
+  /* Gift button (green theme) - light theme */
+  --gift-btn-hover-bg: rgba(46, 125, 50, 0.1);
+  --gift-btn-hover-border: #2e7d32;
+
+  /* Filter group container - light theme */
+  --filter-group-bg: var(--bg-primary);
+  --filter-group-border: var(--border-color);
+  --filter-group-shadow: var(--border-color);
+
+  /* Filter pill - light theme */
+  --filter-pill-bg: var(--bg-secondary);
+  --filter-pill-border: var(--border-color);
+
+  /* Dropdown accent colors - light theme */
+  --dropdown-accent-color-1: #4f46e5;
+  --dropdown-accent-color-2: #7c3aed;
+  --dropdown-accent-hover: rgba(80, 60, 30, 0.06);
+  --dropdown-accent-active-bg: rgba(79, 70, 229, 0.1);
+
+  /* Black color for light theme */
+  --black: #1c160e;              /* Dark brown text for contrast on light backgrounds */
+}
+/* ===== 2. FOCUS & TAP RESETS ===== */
+/* No default selection outline */
+button:focus,
+input:focus,
+select:focus,
+textarea:focus,
+a:focus,
+*:focus {
+    outline: none !important;
+}
+
+/* Prevent tap highlight globally on all elements */
+* {
+    -webkit-tap-highlight-color: transparent !important;
+}
+
+/* Suppress iOS long-press callout in all mini-app environments */
+html[data-miniapp="true"] *,
+html[data-telegram="true"] * {
+    -webkit-touch-callout: none;
+}
+
+/* Prevent text selection on interactive elements on touch devices */
+button,
+a:not([contenteditable]),
+.btn,
+.nav-button,
+.product-card,
+.carousel-slide,
+.format-option,
+.counter-button,
+[role="button"],
+[onclick] {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+}
+
+/* Allow selection in text input fields and content areas */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="search"],
+input[type="tel"],
+input[type="url"],
+textarea,
+[contenteditable="true"],
+.product-description,
+.review-text,
+.comment-text {
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+}
+
+/* ===== 3. GLOBAL RESETS ===== */
+html {
+  margin: 0;
+  padding: 0;
+  overflow-y: scroll; /* Explicitly enable vertical scroll */
+  /* Use min-height instead of height for proper footer positioning */
+  min-height: 100%;
+  /* Allow pull-to-refresh by not restricting overscroll behavior */
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  font-family: Montserrat, sans-serif;
+  font-size: var(--font-size-mobile);
+  background-color: var(--black);
+  color: var(--text-primary);
+  width: 100%;
+  box-sizing: border-box;
+  /* Use min-height to ensure footer can be pushed to bottom.
+     dvh (dynamic viewport height) accounts for mobile address bar changes. */
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: clip;
+  /* Enable momentum scrolling on iOS */
+  -webkit-overflow-scrolling: touch;
+  /* Smooth transition for theme changes */
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Touch-action only for touch devices - prevents interference with desktop wheel scroll */
+@media (hover: none) and (pointer: coarse) {
+  html,
+  body {
+    /* Allow vertical touch scrolling and pinch zoom */
+    touch-action: pan-y pinch-zoom;
+  }
+}
+
+body.popup-open {
+  overflow: hidden;
+  touch-action: none;
+  overscroll-behavior: none;
+}
+
+main {
+  flex: 1 0 auto;
+  /* Ensure main content is above grain layers (z-index: 1) for proper scroll handling */
+  position: relative;
+  z-index: 2;
+}
+
+/* Page content containers - expand to fill available space for sticky footer */
+.products,
+.faq-page-overlay,
+.catalog-page-overlay,
+.info-page,
+.product-page-overlay,
+.favorites-page-overlay,
+.cart-page-overlay,
+.picker-page-overlay,
+.customers-page-overlay,
+.profile-page-overlay,
+.certificate-page-container,
+.checkout-page-overlay,
+.legal-page,
+.order-page-overlay,
+.faq-page-overlay,
+.catalog-page-overlay {
+  /* flex-grow: 1 expands container to push footer to bottom of viewport when content is short */
+  /* flex-shrink: 0 prevents content from shrinking */
+  /* flex-basis: auto uses content's intrinsic size */
+  /* Footer height is controlled by its own styles (margin-top: auto, flex-shrink: 0) */
+  flex: 1 0 auto;
+}
+
+*, *::before, *::after {
+  font-family: inherit;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button, input, select, textarea { font-family: inherit; }
+
+/* Prevent touch flickering on interactive elements (Firefox mobile) */
+a, button, [role="button"], label {
+  touch-action: manipulation;
+}
+
+/* ===== 4. Z-INDEX ORGANIZATION ===== */
+.header { z-index: 999; }
+.bottom-nav { z-index: 1001; }
+.products-header,
+.sticky-filter-wrapper {
+  z-index: 998;
+}
+.gallery-popup-overlay,
+.favorites-popup-overlay,
+.picker-popup-overlay,
+.cart-popup-overlay,
+.product-popup-overlay,
+.suggestions-popup-overlay { z-index: 10000; }
+.faq-popup-overlay { z-index: 20000; }
+.faq-carousel-overlay { z-index: 20000; }
+.gallery-zoom-overlay { z-index: 20000; }
+.confirmation-modal-overlay { z-index: 10001; }
+.toast-container { z-index: 10003; }
+
+/* ===== STICKY FILTER WRAPPER =====
+   Shared outer wrapper for filter sections across pages.
+   Matches .products-header structure: transparent sticky shell
+   with padding that creates spacing below the fixed header.
+   The visual pill (inner filter element) is centered within. */
+.sticky-filter-wrapper {
+  position: -webkit-sticky;
+  position: sticky;
+  top: var(--header-height);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 15px 5px 5px 5px;
+  width: 100%;
+  margin-bottom: 20px;
+  transition: top 0.3s ease;
+}
+
+@media (max-width: 1024px) {
+  .sticky-filter-wrapper {
+    position: relative;
+    top: auto;
+    transition: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .sticky-filter-wrapper {
+    margin-bottom: 15px;
+  }
+}
+
+/* Desktop: gradient below header creates smooth fade between header and content */
+@media (min-width: 1025px) {
+  .products-header::before,
+  .sticky-filter-wrapper::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 164%;
+    background: linear-gradient(to bottom, var(--black), var(--bg-primary-t));
+    pointer-events: none;
+    z-index: -1;
+  }
+}
+
+/* Filters fixed above bottom nav when scrolled past (matches bottom nav visibility) */
+@media (hover: none) and (pointer: coarse), (max-width: 768px) {
+  .filters-at-bottom {
+    position: fixed !important;
+    bottom: var(--actual-bottom-nav-height, 60px);
+    top: auto !important;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background-color: var(--bg-primary);
+    padding: 6px 5px 8px;
+    margin: 0;
+    border-radius: 0;
+    outline: none;
+    overflow: visible;
+    border-top: 1px solid var(--border-color);
+  }
+
+  .filters-at-bottom > * {
+    border-radius: 0;
+    outline: none;
+    margin: 0;
+    background-color: transparent;
+    border-color: transparent;
+  }
+
+  .filters-at-bottom > * > * {
+    border-radius: 0;
+    background-color: transparent;
+    border-color: transparent;
+  }
+
+  /* Filter buttons lose their border/outline in bottom position */
+  .filters-at-bottom [class*="-filter-btn"] {
+    border-color: transparent;
+    outline: none;
+  }
+
+  .filters-at-bottom::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 100%;
+    height: 50px;
+    background: linear-gradient(to bottom, transparent, var(--black));
+    pointer-events: none;
+  }
+}
+
+/* ===== 5. SVG ICONS - GLOBAL STYLES ===== */
+/* Firefox-compatible SVG coloring using fill property directly */
+svg {
+  color: var(--icon-color);
+  fill: var(--icon-color);
+}
+
+/* Target SVG elements with explicit fill for Firefox compatibility */
+svg path,
+svg circle,
+svg rect,
+svg polygon,
+svg polyline,
+svg line {
+  fill: inherit;
+  stroke: inherit;
+}
+
+/* Use elements need special handling for Firefox */
+svg use {
+  fill: inherit;
+  color: inherit;
+}
+
+.header-logo,
+.header-logo-compact,
+.header-logo-compact-small {
+  color: var(--icon-color);
+  fill: var(--icon-color);
+}
+
+/* ===== 6. BUTTON UTILITY CLASSES ===== */
+.btn-icon {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: all 0.2s;
+}
+
+@media (hover: hover) {
+  .btn-icon:hover svg {
+    color: var(--text-primary);
+  }
+
+  .btn-icon:hover svg path,
+  .btn-icon:hover svg circle,
+  .btn-icon:hover svg rect {
+    fill: var(--text-primary);
+    stroke: var(--text-primary);
+  }
+}
+
+.btn-icon svg {
+  color: var(--text-tertiary);
+  transition: color 0.2s;
+}
+
+.btn-icon svg path,
+.btn-icon svg circle,
+.btn-icon svg rect {
+  fill: var(--text-tertiary);
+  stroke: var(--text-tertiary);
+  transition: fill 0.2s, stroke 0.2s;
+}
+
+.btn-carousel {
+  background: transparent;
+  border: none;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  user-select: none;
+  padding: 14px;
+}
+
+.btn-filter {
+  font-size: 14px;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 40px;
+  padding: 7px 12px;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (hover: hover) {
+  .btn-filter:hover {
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border-hover);
+  }
+}
+
+.btn-favorite {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+  padding: 5px 10px;
+  position: relative;
+}
+
+@media (hover: hover) {
+  .btn-favorite:hover {
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border-hover);
+  }
+
+  .btn-favorite:hover svg:not(.favorite-hover) {
+    display: none;
+  }
+
+  .btn-favorite:hover svg.favorite-hover {
+    display: block;
+  }
+}
+
+.btn-favorite svg {
+  width: 16px;
+  height: 16px;
+  color: var(--text-tertiary);
+}
+
+/* Target path directly to override global svg path styling */
+.btn-favorite svg path {
+  fill: var(--text-tertiary);
+  stroke: none;
+}
+
+.btn-favorite.is-favorite svg {
+  color: var(--favorite-color);
+}
+
+.btn-favorite.is-favorite svg path {
+  fill: var(--favorite-color);
+}
+
+.btn-favorite.is-favorite svg.favorite-hover {
+  display: none;
+}
+
+/* Telegram browser overrides for btn-favorite - ensure colors aren't affected by Telegram theme injection */
+html[data-telegram="true"] .btn-favorite svg,
+html[data-telegram="true"] .btn-favorite svg path {
+  color: var(--text-tertiary) !important;
+  fill: var(--text-tertiary) !important;
+}
+
+html[data-telegram="true"] .btn-favorite.is-favorite svg,
+html[data-telegram="true"] .btn-favorite.is-favorite svg path {
+  color: var(--favorite-color) !important;
+  fill: var(--favorite-color) !important;
+}
+
+/* ===== 7. RESPONSIVE TYPOGRAPHY ===== */
+@media (min-width: 768px) {
+  body { font-size: var(--font-size-desktop); }
+  h1 { font-size: var(--heading-desktop); }
+}
+
+/* ===== 8. UTILITY CLASSES ===== */
+.desktop-only { display: flex; }
+.mobile-only { display: none; }
+
+/* Show mobile-only elements on touch devices (pointer: coarse), regardless of width */
+@media (hover: none) and (pointer: coarse) {
+  .desktop-only { display: none !important; }
+  .mobile-only { display: flex !important; }
+}
+
+/* Show mobile-only elements on narrow desktop when header nav is hidden */
+@media (hover: hover) and (max-width: 768px) {
+  .desktop-only { display: none !important; }
+  .mobile-only { display: flex !important; }
+}
+
+/* ===== 8.1. IMAGE RELOAD OVERLAY ===== */
+/* Shown over failed images with an arrow button */
+.img-reload-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 10;
+  border-radius: inherit;
+}
+
+/* Ensure container has visible area when image fails to load */
+.img-reload-overlay ~ img,
+.product-review-image:has(.img-reload-overlay) {
+  min-height: 80px;
+}
+
+/* Loading spinner shown while image is loading */
+.img-loading-spinner {
+  width: 44px;
+  height: 44px;
+  border: 3px solid rgba(255, 255, 255, 0.25);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+.img-reload-btn {
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #fff;
+  padding: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.img-reload-btn svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+@media (hover: hover) {
+  .img-reload-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: scale(1.1);
+  }
+}
+
+/* Ensure containers for reload overlay have position: relative */
+.product-carousel-slide,
+.image-carousel .slide,
+.product-review-image,
+.background-card {
+  position: relative;
+}
+
+/* ===== 9. TOAST NOTIFICATIONS ===== */
+/* ===== TOAST CONTAINER ===== */
+/* Fixed container; toasts are absolutely positioned inside it.
+   JS sets container height = newest toast's height so older toasts can peek below.
+   JS overrides pointer-events to 'auto' when toasts are present. */
+.toast-container {
+  position: fixed;
+  pointer-events: none;
+  z-index: 10003;
+  bottom: auto;
+  right: auto;
+  left: auto;
+  top: auto;
+  transition: height 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Desktop: top-right, below header */
+@media (min-width: 1025px) {
+  .toast-container {
+    top: calc(var(--header-height, 60px) + 12px);
+    right: 20px;
+    left: auto;
+    bottom: auto;
+    width: 340px;
+  }
+}
+
+/* Mobile: top-center, below header */
+@media (max-width: 1024px) {
+  .toast-container {
+    top: calc(var(--header-height, 60px) + 6px);
+    left: 50%;
+    right: auto;
+    bottom: auto;
+    transform: translateX(-50%);
+    width: calc(100vw - 32px);
+  }
+}
+
+/* ===== TOAST STACK EFFECT ===== */
+/* All toasts anchor to top: 0 of the container (newest is always right below the header).
+   Older toasts (higher stack index) peek below the newest via translateY.
+   data-stack-index is set by JS: 0 = newest, 1 = 2nd, 2 = 3rd (oldest shown) */
+.toast-notification[data-stack-index="1"]:not(.toast-entering):not(.toast-leaving) {
+  transform: translateY(6px) scaleX(0.96);
+  pointer-events: none;
+}
+.toast-notification[data-stack-index="2"]:not(.toast-entering):not(.toast-leaving) {
+  transform: translateY(12px) scaleX(0.92);
+  pointer-events: none;
+}
+
+/* When expanded, all stacked toasts are fully interactive (inline JS transforms take over position) */
+.toast-container.toast-expanded .toast-notification[data-stack-index="1"],
+.toast-container.toast-expanded .toast-notification[data-stack-index="2"] {
+  pointer-events: auto;
+}
+
+/* ===== INDIVIDUAL TOAST ===== */
+.toast-notification {
+  pointer-events: auto;
+  padding: 13px 18px;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-size: 14px;
+  text-align: center;
+  color: var(--text-primary);
+  box-sizing: border-box;
+  /* Absolute within the fixed container so all toasts anchor to the same top edge */
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+              opacity 0.25s ease;
+}
+
+.toast-notification a {
+  color: var(--brand-primary);
+  text-decoration: underline wavy;
+  text-underline-offset: 3px;
+  text-decoration-color: color-mix(in srgb, var(--brand-primary) 55%, transparent);
+  cursor: pointer;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.toast-notification a:hover {
+  color: var(--brand-hover);
+  text-decoration-color: var(--brand-hover);
+}
+
+/* Desktop toast: cursor pointer (click to dismiss) */
+@media (min-width: 1025px) {
+  .toast-notification {
+    cursor: pointer;
+  }
+}
+
+/* Mobile toast: cursor grab (swipe up to dismiss) */
+@media (max-width: 1024px) {
+  .toast-notification {
+    cursor: grab;
+  }
+}
+
+/* ===== TOAST ANIMATIONS ===== */
+
+/* Desktop: slide in from the right */
+@keyframes toastSlideInRight {
+  from { transform: translateX(110%); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+@keyframes toastSlideOutRight {
+  from { transform: translateX(0);    opacity: 1; }
+  to   { transform: translateX(110%); opacity: 0; }
+}
+
+/* Mobile: slide in from slightly above final position */
+@keyframes toastSlideInDown {
+  from { transform: translateY(-10px); opacity: 0; }
+  to   { transform: translateY(0);     opacity: 1; }
+}
+@keyframes toastFadeOutUp {
+  from { transform: translateY(0);     opacity: 1; }
+  to   { transform: translateY(-48px); opacity: 0; }
+}
+
+@media (min-width: 1025px) {
+  .toast-notification.toast-entering {
+    animation: toastSlideInRight 0.28s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+  .toast-notification.toast-leaving {
+    animation: toastSlideOutRight 0.22s ease-in forwards;
+  }
+}
+
+@media (max-width: 1024px) {
+  .toast-notification.toast-entering {
+    animation: toastSlideInDown 0.28s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+  .toast-notification.toast-leaving {
+    animation: toastFadeOutUp 0.22s ease-in forwards;
+  }
+}
+
+/* ===== 10. PAGE TITLE SPACING ===== */
+/* Reduce space between header and page title on mobile.
+   Centralised here so individual page CSS files don't need their own override. */
+@media (max-width: 768px) {
+  .faq-page-overlay,
+  .favorites-page-overlay,
+  .cart-page-overlay,
+  .picker-page-overlay,
+  .profile-page-overlay,
+  .customers-page-overlay,
+  .catalog-page-overlay,
+  .order-page-overlay,
+  .certificate-page-container,
+  .checkout-page-overlay,
+  .info-page,
+  .legal-page {
+    padding-top: var(--page-padding-top-mobile);
+  }
+}
+
+/* ===== 11. SKELETON LOADERS ===== */
+/* Main skeleton styles are in /public/css/skeleton.css */
+/* Using the theme-aware skeleton-loading animation defined there */
+

@@ -1,0 +1,391 @@
+/* ============================================================
+   INFO PAGE - REDESIGNED LANDING PAGE
+   Modern landing page with animations and image rain effect
+   ============================================================ */
+
+/* ===== CSS VARIABLES ===== */
+:root {
+  --info-primary: #ff8a3d;
+  --info-primary-light: #ff9d5c;
+  --info-primary-dark: #ff6b3d;
+  --info-bg-dark: #1a1a1a;
+  --info-bg-card: #292929;
+  --info-bg-card-hover: #333333;
+  --info-border: #414141;
+  --info-border-accent: rgba(255, 138, 61, 0.3);
+  --info-text-primary: #E0E0E0;
+  --info-text-secondary: #a3a3a3;
+  --info-text-muted: #737373;
+
+  /* Animation timings */
+  --info-transition-fast: 0.2s;
+  --info-transition-normal: 0.3s;
+  --info-transition-slow: 0.5s;
+
+  /* Spacing */
+  --info-section-gap: 120px;
+  --info-section-gap-mobile: 80px;
+}
+
+/* ===== BASE STYLES ===== */
+.info-page {
+  width: 100%;
+  padding-top: 20px;
+  padding-bottom: 60px;
+  position: relative;
+}
+
+/* ===== IMAGE RAIN EFFECT (DESKTOP ONLY) ===== */
+.image-rain-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+/* Horizontal gradient overlay for readability - solid center, transparent edges.
+   z-index must exceed the highest rain drop z-index (5) so the fade covers all layers. */
+.image-rain-container::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to right,
+    var(--bg-primary-t)                        0%,
+    color-mix(in srgb, var(--bg-primary) 70%, var(--bg-primary-t)) 15%,
+    color-mix(in srgb, var(--bg-primary) 90%, var(--bg-primary-t)) 35%,
+    var(--bg-primary)                          50%,
+    color-mix(in srgb, var(--bg-primary) 90%, var(--bg-primary-t)) 65%,
+    color-mix(in srgb, var(--bg-primary) 70%, var(--bg-primary-t)) 85%,
+    var(--bg-primary-t)                        100%
+  );
+  pointer-events: none;
+  z-index: 6;
+}
+
+/* Outer: position, filter, z-index, and load-fade opacity.
+   left is updated each RAF frame by JS for cursor avoidance (no CSS transform here —
+   using CSS individual transform properties would displace the inner's rotation pivot).
+   overflow must be visible so the inner's fall animation is not clipped to the outer
+   div's height (the inner starts above the viewport and translates downward). */
+.rain-drop {
+  position: absolute;
+  border-radius: 8px;
+  opacity: 0;
+}
+
+/* Placeholder skeleton before image loads */
+.rain-drop.placeholder {
+  background: var(--skeleton-bg-base);
+}
+
+/* Fade in when image loads */
+.rain-drop.loaded {
+  opacity: 1;
+  transition: opacity 0.5s ease-in;
+}
+
+/* Inner: fall animation lives here so its transform-origin (center of its own bbox)
+   is never displaced by the parent's left/top changes. This keeps the rotation pivot
+   correctly centred on the image at all times. */
+.rain-drop-inner {
+  width: 100%;
+  height: 100%;
+  animation: rainFall linear infinite;
+  will-change: transform, opacity;
+  --drop-rotation: 0deg;
+  transform-origin: center center;
+}
+
+.rain-drop img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes rainFall {
+  0% {
+    transform: translateY(0) rotate(var(--drop-rotation));
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(calc(400vh + 500px)) rotate(calc(var(--drop-rotation) + 10deg));
+    opacity: 0;
+  }
+}
+
+/* All page content has higher z-index than rain and gradient */
+.info-page > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* ===== COMMON SECTION TITLE ===== */
+.info-section-title {
+  font-size: 42px;
+  font-weight: 800;
+  color: var(--info-text-primary);
+  text-align: center;
+  margin-bottom: 48px;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, var(--info-text-primary) 0%, var(--info-text-secondary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ===== BUTTON STYLES ===== */
+.info-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 32px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all var(--info-transition-normal) cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  border: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.info-btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.info-btn:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.info-btn-primary {
+  background: linear-gradient(135deg, var(--info-primary) 0%, var(--info-primary-dark) 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 16px rgba(255, 138, 61, 0.4);
+}
+
+.info-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(255, 138, 61, 0.5);
+}
+
+.info-btn-primary:active {
+  transform: translateY(0);
+}
+
+.info-btn-secondary {
+  background: var(--info-bg-card);
+  color: var(--info-text-primary);
+  border: 2px solid var(--info-border-accent);
+}
+
+.info-btn-secondary:hover {
+  background: var(--info-bg-card-hover);
+  border-color: var(--info-primary);
+  box-shadow: 0 4px 16px rgba(255, 138, 61, 0.2);
+}
+
+/* ============================================================
+   ABOUT US (TEAM) SECTION
+   ============================================================ */
+
+.info-team {
+  max-width: 900px;
+  margin: 0 auto var(--info-section-gap);
+  padding: 0 40px;
+  text-align: center;
+}
+
+.info-team-description {
+  font-size: 17px;
+  color: var(--info-text-secondary);
+  line-height: 1.9;
+  margin: 0;
+}
+
+.info-team-description p {
+  margin-bottom: 20px;
+}
+
+.info-team-description p:last-child {
+  margin-bottom: 0;
+}
+
+.info-team-description strong {
+  color: var(--info-primary);
+  font-weight: 700;
+}
+
+/* ============================================================
+   MOBILE RESPONSIVE STYLES
+   ============================================================ */
+
+@media (max-width: 768px) {
+  :root {
+    --info-section-gap: var(--info-section-gap-mobile);
+  }
+
+  /* Disable scroll animations on mobile - show content immediately */
+  .info-section,
+  .info-feature-card {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .info-page {
+    padding-bottom: 100px;
+  }
+
+  .info-section-title {
+    font-size: 32px;
+    margin-bottom: 32px;
+  }
+
+  /* Team section */
+  .info-team {
+    margin-bottom: var(--info-section-gap-mobile);
+    padding: 0 20px;
+  }
+
+  .info-team-description {
+    font-size: 16px;
+  }
+
+/* ============================================================
+   LIGHT THEME OVERRIDES
+   ============================================================ */
+
+html[data-theme="light"] {
+  /* Info page specific light theme variables */
+  --info-primary: #c2410c;
+  --info-primary-light: #d97706;
+  --info-primary-dark: #9a3412;
+  --info-bg-dark: #f5f5f5;
+  --info-bg-card: #f0ece4;
+  --info-bg-card-hover: #e8e2d8;
+  --info-border: #d0c8b8;
+  --info-border-accent: rgba(194, 65, 12, 0.3);
+  --info-text-primary: #1a1a1a;
+  --info-text-secondary: #555555;
+  --info-text-muted: #777777;
+  /* Override global background for rain gradient overlay */
+  --bg-primary: #ffffff;
+  --bg-primary-t: rgba(255, 255, 255, 0);
+}
+
+/* Rain placeholder and depth darkening use CSS vars / JS filter — no light-theme overrides needed */
+
+/* Light theme rain gradient overlay */
+html[data-theme="light"] .image-rain-container::after {
+  background: linear-gradient(
+    to right,
+    var(--bg-primary-t)                        0%,
+    color-mix(in srgb, var(--bg-primary) 70%, var(--bg-primary-t)) 15%,
+    color-mix(in srgb, var(--bg-primary) 90%, var(--bg-primary-t)) 35%,
+    var(--bg-primary)                          50%,
+    color-mix(in srgb, var(--bg-primary) 90%, var(--bg-primary-t)) 65%,
+    color-mix(in srgb, var(--bg-primary) 70%, var(--bg-primary-t)) 85%,
+    var(--bg-primary-t)                        100%
+  );
+}
+
+/* Light theme hero text gradient */
+html[data-theme="light"] .info-hero-title {
+  background: linear-gradient(135deg, var(--info-text-primary) 0%, var(--info-text-secondary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Light theme section title gradient */
+html[data-theme="light"] .info-section-title {
+  background: linear-gradient(135deg, var(--info-text-primary) 0%, var(--info-text-secondary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Light theme button shadows */
+html[data-theme="light"] .info-btn-primary {
+  box-shadow: 0 4px 16px rgba(194, 65, 12, 0.3);
+}
+
+html[data-theme="light"] .info-btn-primary:hover {
+  box-shadow: 0 8px 24px rgba(194, 65, 12, 0.4);
+}
+
+/* Light theme card shadows and backgrounds */
+html[data-theme="light"] .info-feature-card {
+  background: rgba(255, 255, 255, 0.8);
+  border-color: rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+html[data-theme="light"] .info-feature-card:hover {
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+}
+
+html[data-theme="light"] .info-feature-icon {
+  background: linear-gradient(135deg, rgba(194, 65, 12, 0.15) 0%, rgba(194, 65, 12, 0.08) 100%);
+}
+
+html[data-theme="light"] .info-feature-card:hover .info-feature-icon {
+  background: linear-gradient(135deg, rgba(194, 65, 12, 0.25) 0%, rgba(194, 65, 12, 0.15) 100%);
+}
+
+/* Light theme formats section */
+html[data-theme="light"] .info-formats {
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+/* Light theme carousel wrapper */
+html[data-theme="light"] .poster-carousel-wrapper {
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+/* Light theme cinefiles section */
+html[data-theme="light"] .info-cinefiles-content {
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+html[data-theme="light"] .info-cinefiles-text .info-section-title {
+  -webkit-text-fill-color: var(--info-primary);
+}
+
+/* Light theme legal items */
+html[data-theme="light"] .info-legal-item {
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+html[data-theme="light"] .info-legal-item:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}

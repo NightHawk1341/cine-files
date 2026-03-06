@@ -1,0 +1,521 @@
+/**
+ * Skeleton Loaders
+ * Reusable skeleton loading components for improved perceived performance
+ * Uses theme variables from global.css for automatic dark/light theme support
+ */
+
+/* Skeleton-specific variables (non-color) */
+:root {
+  --skeleton-border-radius: 8px;
+  --skeleton-animation-duration: 1.2s;
+  --skeleton-animation-timing: ease-in-out;
+}
+
+/* Note: --skeleton-bg-base and --skeleton-bg-highlight are defined in global.css
+   and automatically switch between dark/light theme */
+
+/* Base skeleton animation */
+@keyframes skeleton-loading {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+.skeleton {
+  background-color: var(--skeleton-bg-base);
+  background-image: linear-gradient(
+    90deg,
+    var(--skeleton-bg-base) 0px,
+    var(--skeleton-bg-highlight) 40px,
+    var(--skeleton-bg-base) 80px
+  );
+  background-size: 200px 100%;
+  background-repeat: no-repeat;
+  border-radius: var(--skeleton-border-radius);
+  display: inline-block;
+  animation: skeleton-loading var(--skeleton-animation-duration) var(--skeleton-animation-timing) infinite;
+}
+
+/* Skeleton variants */
+.skeleton-text {
+  height: 12px;
+  width: 100%;
+  border-radius: 4px;
+}
+
+.skeleton-title {
+  height: 20px;
+  width: 60%;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.skeleton-line {
+  height: 14px;
+  width: 100%;
+  border-radius: 4px;
+  margin-bottom: 6px;
+  background-color: var(--skeleton-bg-base);
+  background-image: linear-gradient(
+    90deg,
+    var(--skeleton-bg-base) 0px,
+    var(--skeleton-bg-highlight) 40px,
+    var(--skeleton-bg-base) 80px
+  );
+  background-size: 200px 100%;
+  background-repeat: no-repeat;
+  animation: skeleton-loading var(--skeleton-animation-duration) var(--skeleton-animation-timing) infinite;
+}
+
+.skeleton-circle {
+  border-radius: 50%;
+  background-color: var(--skeleton-bg-base);
+  background-image: linear-gradient(
+    90deg,
+    var(--skeleton-bg-base) 0px,
+    var(--skeleton-bg-highlight) 40px,
+    var(--skeleton-bg-base) 80px
+  );
+  background-size: 200px 100%;
+  background-repeat: no-repeat;
+  animation: skeleton-loading var(--skeleton-animation-duration) var(--skeleton-animation-timing) infinite;
+}
+
+.skeleton-button {
+  height: 40px;
+  width: 120px;
+  border-radius: 8px;
+}
+
+.skeleton-rect {
+  background-color: var(--skeleton-bg-base);
+  background-image: linear-gradient(
+    90deg,
+    var(--skeleton-bg-base) 0px,
+    var(--skeleton-bg-highlight) 40px,
+    var(--skeleton-bg-base) 80px
+  );
+  background-size: 200px 100%;
+  background-repeat: no-repeat;
+  animation: skeleton-loading var(--skeleton-animation-duration) var(--skeleton-animation-timing) infinite;
+}
+
+/* Product card skeleton */
+.skeleton-product-card {
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Product skeleton in grid - must match actual .product dimensions */
+.product-skeleton.product.skeleton {
+  /* Override inline-block from .skeleton base class */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Skeleton fills its grid cell — sizing comes from the auto-fill grid */
+
+/* Hide pre-rendered skeletons 13-18 on mobile/touch (show first 12).
+   12 fills ≥2 rows at every fluid column count (2–6 cols). */
+@media (max-width: 1024px) {
+  .products .product-skeleton:nth-child(n+13),
+  .catalog-items-list .product-skeleton:nth-child(n+13),
+  .favorites-items-list .product-skeleton:nth-child(n+13) {
+    display: none;
+  }
+}
+
+.skeleton-product-image {
+  width: 100%;
+  padding-top: 120%; /* 5:6 aspect ratio (6/5 * 100% = 120%) to match actual product cards */
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.skeleton-product-image .skeleton {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.skeleton-product-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.skeleton-product-title {
+  height: 16px;
+  width: 80%;
+  border-radius: 4px;
+}
+
+.skeleton-product-price {
+  height: 20px;
+  width: 40%;
+  border-radius: 4px;
+}
+
+/* Order card skeleton */
+.skeleton-order-card {
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.skeleton-order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.skeleton-order-id {
+  height: 18px;
+  width: 100px;
+  border-radius: 4px;
+}
+
+.skeleton-order-status {
+  height: 24px;
+  width: 80px;
+  border-radius: 12px;
+}
+
+.skeleton-order-content {
+  display: flex;
+  gap: 12px;
+}
+
+.skeleton-order-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.skeleton-order-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.skeleton-order-item-title {
+  height: 14px;
+  width: 70%;
+  border-radius: 4px;
+}
+
+.skeleton-order-item-property {
+  height: 12px;
+  width: 50%;
+  border-radius: 4px;
+}
+
+.skeleton-order-total {
+  height: 20px;
+  width: 120px;
+  border-radius: 4px;
+  align-self: flex-end;
+}
+
+/* Cart item skeleton */
+.skeleton-cart-item {
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.skeleton-cart-image {
+  width: 100px;
+  height: 100px;
+  border-radius: 8px;
+  flex-shrink: 0;
+  background-color: var(--skeleton-bg-base);
+  background-image: linear-gradient(
+    90deg,
+    var(--skeleton-bg-base) 0px,
+    var(--skeleton-bg-highlight) 40px,
+    var(--skeleton-bg-base) 80px
+  );
+  background-size: 200px 100%;
+  background-repeat: no-repeat;
+  animation: skeleton-loading var(--skeleton-animation-duration) var(--skeleton-animation-timing) infinite;
+}
+
+.skeleton-cart-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.skeleton-cart-title {
+  height: 16px;
+  width: 70%;
+  border-radius: 4px;
+  background-color: var(--skeleton-bg-base);
+  background-image: linear-gradient(
+    90deg,
+    var(--skeleton-bg-base) 0px,
+    var(--skeleton-bg-highlight) 40px,
+    var(--skeleton-bg-base) 80px
+  );
+  background-size: 200px 100%;
+  background-repeat: no-repeat;
+  animation: skeleton-loading var(--skeleton-animation-duration) var(--skeleton-animation-timing) infinite;
+}
+
+.skeleton-cart-property {
+  height: 14px;
+  width: 40%;
+  border-radius: 4px;
+  background-color: var(--skeleton-bg-base);
+  background-image: linear-gradient(
+    90deg,
+    var(--skeleton-bg-base) 0px,
+    var(--skeleton-bg-highlight) 40px,
+    var(--skeleton-bg-base) 80px
+  );
+  background-size: 200px 100%;
+  background-repeat: no-repeat;
+  animation: skeleton-loading var(--skeleton-animation-duration) var(--skeleton-animation-timing) infinite;
+}
+
+.skeleton-cart-quantity {
+  height: 32px;
+  width: 100px;
+  border-radius: 8px;
+  margin-top: auto;
+  background-color: var(--skeleton-bg-base);
+  background-image: linear-gradient(
+    90deg,
+    var(--skeleton-bg-base) 0px,
+    var(--skeleton-bg-highlight) 40px,
+    var(--skeleton-bg-base) 80px
+  );
+  background-size: 200px 100%;
+  background-repeat: no-repeat;
+  animation: skeleton-loading var(--skeleton-animation-duration) var(--skeleton-animation-timing) infinite;
+}
+
+/* Product detail skeleton */
+.skeleton-product-detail {
+  display: flex;
+  flex-direction: row;
+  gap: 40px;
+  padding: 40px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.skeleton-product-gallery {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 0 1 auto;
+  max-width: fit-content;
+}
+
+.skeleton-main-image {
+  width: 100%;
+  padding-top: 100%;
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.skeleton-main-image .skeleton {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.skeleton-thumbnails {
+  display: flex;
+  gap: 8px;
+}
+
+.skeleton-thumbnail {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+}
+
+.skeleton-product-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.skeleton-product-heading {
+  height: 32px;
+  width: 80%;
+  border-radius: 6px;
+}
+
+.skeleton-product-description {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.skeleton-description-line {
+  height: 14px;
+  border-radius: 4px;
+}
+
+.skeleton-description-line:nth-child(1) {
+  width: 100%;
+}
+
+.skeleton-description-line:nth-child(2) {
+  width: 90%;
+}
+
+.skeleton-description-line:nth-child(3) {
+  width: 70%;
+}
+
+.skeleton-product-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.skeleton-add-to-cart {
+  height: 48px;
+  flex: 1;
+  border-radius: 8px;
+}
+
+.skeleton-favorite-btn {
+  height: 48px;
+  width: 48px;
+  border-radius: 8px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 968px) {
+  .skeleton-product-detail {
+    flex-direction: column;
+    gap: 24px;
+    padding: 20px;
+  }
+
+  .skeleton-product-gallery {
+    order: 1;
+    max-width: 100%;
+  }
+
+  .skeleton-product-content {
+    order: 2;
+  }
+}
+
+/* Loading container */
+.skeleton-container {
+  width: 100%;
+  padding: 20px;
+}
+
+/* Grid layout for catalog */
+.skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(160px, 100%), 1fr));
+  gap: 16px;
+  padding: 20px;
+}
+
+@media (hover: hover) and (pointer: fine), (min-width: 1025px) {
+  .skeleton-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 200px));
+    justify-content: center;
+  }
+}
+
+/* List layout for orders */
+.skeleton-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+}
+
+/* Fade in animation when content loads */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-in;
+}
+
+/* Skeleton fade-in used when skeletons are replaced with content */
+.skeleton-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.skeleton-fade-in > * {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Hide skeleton elements during page-loading state on body */
+body.page-loading .skeleton-hidden-while-loading {
+  visibility: hidden;
+}
+
+/* Ensure skeletons are visible during page-loading */
+body.page-loading .skeleton {
+  visibility: visible;
+}
+
+/* ============================================================
+   FIREFOX MOBILE PERFORMANCE OPTIMIZATIONS
+   Disable skeleton shimmer animation for better scroll performance.
+   ============================================================ */
+@supports (-moz-appearance: none) {
+  @media (max-width: 1024px) {
+    /* Use static background instead of animated shimmer */
+    .skeleton,
+    .skeleton-line,
+    .skeleton-circle,
+    .skeleton-rect,
+    .skeleton-cart-image,
+    .skeleton-cart-title,
+    .skeleton-cart-property,
+    .skeleton-cart-quantity {
+      animation: none;
+      background-image: none;
+      background-color: var(--skeleton-bg-base);
+    }
+  }
+}

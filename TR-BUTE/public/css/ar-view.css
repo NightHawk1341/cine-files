@@ -1,0 +1,1517 @@
+/* ===== AR VIEW PAGE STYLES ===== */
+/* AR camera view for poster visualization - keeps header/bottom-nav visible */
+
+/* ===== BODY ADJUSTMENTS FOR AR PAGE ===== */
+/* Remove the body padding that header.css adds, since AR page is full-screen fixed */
+body.ar-page-active {
+  padding-top: 0 !important;
+  overflow: hidden; /* Prevent body scroll on AR page */
+}
+
+/* ===== HEADER/NAV ADJUSTMENTS FOR AR ===== */
+/* Keep header and bottom-nav visible, but hide footer */
+
+/* Fallback for browsers without :has() support - uses body class */
+body.ar-page-active .footer {
+  display: none !important;
+}
+
+body:has(.ar-view-page) .footer {
+  display: none !important;
+}
+
+/* Make header semi-transparent on AR page */
+body.ar-page-active .header,
+body:has(.ar-view-page) .header {
+  background: rgba(0, 0, 0, 0.85) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Make bottom-nav semi-transparent on AR page */
+body.ar-page-active .bottom-nav,
+body:has(.ar-view-page) .bottom-nav {
+  background: rgba(0, 0, 0, 0.85) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-top-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* ===== PAGE LAYOUT ===== */
+
+.ar-view-page {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh; /* Dynamic viewport height for mobile browsers */
+  background-color: var(--black);
+  /* z-index 500 - above normal content but below header (999) and bottom-nav (1001) */
+  z-index: 500;
+  overflow: hidden;
+}
+
+/* Telegram Mini App fixes */
+@supports (height: 100dvh) {
+  .ar-view-page {
+    height: 100dvh;
+  }
+}
+
+/* Safari standalone mode */
+@media all and (display-mode: standalone) {
+  .ar-view-page {
+    height: 100vh;
+    height: 100dvh;
+  }
+}
+
+/* ===== AR HEADER BAR (Hidden - using main header instead) ===== */
+
+.ar-header-bar {
+  display: none; /* Main header is now visible, hide this redundant bar */
+}
+
+.ar-back-btn {
+  width: 44px;
+  height: 44px;
+  background: rgba(30, 30, 30, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-primary);
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.ar-back-btn:active {
+  transform: scale(0.95);
+  background: rgba(50, 50, 50, 0.9);
+}
+
+.ar-back-btn svg {
+  width: 20px;
+  height: 20px;
+  stroke: var(--text-primary);
+}
+
+.ar-back-btn svg path,
+.ar-back-btn svg line,
+.ar-back-btn svg polyline {
+  fill: none;
+  stroke: var(--text-primary);
+}
+
+.ar-header-title {
+  flex: 1;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  padding-right: 56px; /* Balance the back button */
+}
+
+/* Legacy classes for compatibility */
+.ar-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  z-index: 10001;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 16px;
+  padding-top: env(safe-area-inset-top);
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.7) 0%, transparent 100%);
+}
+
+.ar-header-back {
+  width: 44px;
+  height: 44px;
+  background: rgba(30, 30, 30, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-primary);
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.ar-header-back:active {
+  transform: scale(0.95);
+  background: rgba(50, 50, 50, 0.9);
+}
+
+.ar-header-back svg {
+  width: 20px;
+  height: 20px;
+  stroke: var(--text-primary);
+}
+
+.ar-header-back svg path,
+.ar-header-back svg line,
+.ar-header-back svg polyline {
+  fill: none;
+  stroke: var(--text-primary);
+}
+
+/* ===== AR BOTTOM NAV ===== */
+
+.ar-bottom-nav {
+  z-index: 10001;
+}
+
+/* ===== PERMISSION SCREEN ===== */
+
+.ar-permission-screen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, var(--bg-primary) 0%, #0a0a0a 100%);
+  padding: 20px;
+  /* Accommodate header and bottom-nav */
+  padding-top: calc(20px + 60px); /* header height */
+  padding-bottom: calc(20px + 70px); /* bottom-nav height */
+  z-index: 10;
+  /* Ensure pointer events work on this screen */
+  pointer-events: auto;
+}
+
+.ar-permission-content {
+  text-align: center;
+  max-width: 340px;
+  pointer-events: auto; /* Ensure children receive pointer events */
+}
+
+.ar-permission-icon {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 24px;
+  background: rgba(6, 111, 163, 0.15);
+  border: 2px solid rgba(22, 166, 237, 0.3);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9cddfd;
+}
+
+.ar-permission-icon svg {
+  stroke: #9cddfd;
+}
+
+.ar-permission-icon svg path,
+.ar-permission-icon svg circle {
+  fill: none;
+  stroke: #9cddfd;
+}
+
+.ar-permission-content h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 12px;
+}
+
+.ar-permission-content p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 0 0 28px;
+  line-height: 1.5;
+}
+
+.ar-permission-btn {
+  width: 100%;
+  padding: 16px 24px;
+  background: #066fa3;
+  color: #9cddfd;
+  border: 1px solid #16a6ed;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.2s;
+  box-shadow: 0 0 0.2rem #0088CC, 0 0 1.5rem #0088CC;
+  /* Ensure button is clickable on mobile */
+  pointer-events: auto;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: rgba(0, 136, 204, 0.3);
+}
+
+.ar-permission-btn svg {
+  stroke: #9cddfd;
+}
+
+.ar-permission-btn svg path,
+.ar-permission-btn svg circle {
+  fill: none;
+  stroke: #9cddfd;
+}
+
+.ar-permission-btn:active {
+  transform: scale(0.98);
+}
+
+.ar-upload-btn {
+  width: 100%;
+  padding: 14px 24px;
+  margin-top: 12px;
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.2s;
+  /* Ensure button is clickable on mobile */
+  pointer-events: auto;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: rgba(255, 255, 255, 0.1);
+}
+
+.ar-upload-btn svg {
+  stroke: var(--text-secondary);
+}
+
+.ar-upload-btn svg path,
+.ar-upload-btn svg rect,
+.ar-upload-btn svg circle,
+.ar-upload-btn svg polyline {
+  fill: none;
+  stroke: var(--text-secondary);
+}
+
+.ar-upload-btn:hover {
+  border-color: var(--border-hover);
+  color: var(--text-primary);
+}
+
+.ar-upload-btn:active {
+  transform: scale(0.98);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* ===== MAIN AR CONTAINER ===== */
+
+.ar-main-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ===== BACKGROUND (VIDEO/IMAGE) ===== */
+
+.ar-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.ar-background video,
+.ar-background img {
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  width: 100% !important;
+  height: 100% !important;
+  transform: translate(-50%, -50%) !important;
+  -webkit-transform: translate(-50%, -50%) !important;
+  /* Show full video/image - black bars are acceptable, no cropping */
+  object-fit: contain !important;
+  object-position: center center !important;
+  background: var(--black);
+}
+
+/* ===== THREE.JS CANVAS ===== */
+
+.ar-three-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100% !important;
+  height: 100% !important;
+  touch-action: none;
+}
+
+/* ===== BOTTOM CONTROLS PANEL ===== */
+
+.ar-controls-panel {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  padding: 12px 16px;
+  padding-bottom: calc(12px + 70px + env(safe-area-inset-bottom)); /* Account for bottom nav */
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.6) 70%, transparent 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ===== COLLAPSED CONTROLS (products-header style) ===== */
+
+.ar-collapsed-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.ar-collapsed-group {
+  display: flex;
+  background-color: var(--filter-group-bg);
+  border: 1px solid var(--filter-group-border);
+  border-radius: 40px;
+  padding: 7px;
+  gap: 3px;
+}
+
+/* AR mode indicator */
+.ar-mode-group {
+  padding: 7px 12px;
+}
+
+.ar-mode-indicator {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-tertiary);
+  background: var(--bg-tertiary);
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.ar-mode-indicator.real-ar {
+  color: #4ade80;
+  background: rgba(74, 222, 128, 0.15);
+  border: 1px solid rgba(74, 222, 128, 0.3);
+}
+
+.ar-mode-indicator.preview-mode {
+  color: #facc15;
+  background: rgba(250, 204, 21, 0.15);
+  border: 1px solid rgba(250, 204, 21, 0.3);
+}
+
+/* Info group - size and frame display */
+.ar-info-group {
+  padding: 7px 14px;
+  gap: 8px;
+  align-items: center;
+}
+
+.ar-collapsed-item {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.ar-size-item {
+  color: var(--filter-btn-active-color);
+}
+
+.ar-frame-item {
+  color: var(--type-btn-active-color);
+}
+
+.ar-collapsed-divider {
+  color: var(--text-tertiary);
+  font-weight: 400;
+}
+
+/* Action buttons group */
+.ar-actions-group {
+  gap: 3px;
+}
+
+.ar-collapsed-btn {
+  width: 32px;
+  height: 32px;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--text-tertiary);
+}
+
+.ar-collapsed-btn svg {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+}
+
+.ar-collapsed-btn svg path,
+.ar-collapsed-btn svg circle,
+.ar-collapsed-btn svg line,
+.ar-collapsed-btn svg rect,
+.ar-collapsed-btn svg polyline {
+  fill: none;
+  stroke: currentColor;
+}
+
+.ar-collapsed-btn:hover {
+  background-color: var(--bg-tertiary);
+  border-color: var(--border-hover);
+  color: var(--text-primary);
+}
+
+.ar-collapsed-btn:active {
+  transform: scale(0.95);
+}
+
+/* Collapse arrow group */
+.ar-collapse-arrow-group {
+  padding: 7px;
+}
+
+.ar-collapse-btn {
+  width: 32px;
+  height: 32px;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.ar-collapse-btn:hover {
+  background-color: var(--bg-tertiary);
+  border-color: var(--border-hover);
+}
+
+.ar-collapse-btn:active {
+  transform: scale(0.95);
+}
+
+.ar-collapse-arrow-icon {
+  height: 12px;
+  width: 12px;
+  color: var(--icon-color);
+  stroke: var(--icon-color);
+  transform: rotate(0deg);
+  transition: transform 0.3s ease;
+}
+
+.ar-collapse-arrow-icon polyline {
+  fill: none;
+  stroke: var(--icon-color);
+}
+
+.ar-collapse-arrow-icon.up {
+  transform: rotate(180deg);
+}
+
+.ar-collapse-arrow-icon.down {
+  transform: rotate(0deg);
+}
+
+/* ===== EXPANDED CONTROLS (collapsible) ===== */
+
+.ar-expanded-controls {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  pointer-events: none;
+  transition: max-height 0.3s ease, opacity 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ===== CONTROL GROUPS (products-header style) ===== */
+
+.ar-control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ar-control-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ar-control-buttons {
+  display: flex;
+  gap: 8px;
+  background: var(--filter-group-bg);
+  border: 1px solid var(--filter-group-border);
+  border-radius: 12px;
+  padding: 4px;
+  box-shadow: 0 0 0.2rem var(--filter-group-shadow);
+}
+
+.ar-control-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 10px 12px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 0;
+}
+
+.ar-control-btn .ar-btn-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.ar-control-btn .ar-btn-subtitle {
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+}
+
+/* Hover state */
+.ar-control-btn:hover:not(.active) {
+  background: var(--filter-btn-hover-bg);
+  border-color: var(--filter-btn-hover-border);
+}
+
+.ar-control-btn:hover:not(.active) .ar-btn-title {
+  color: var(--filter-btn-hover-color);
+}
+
+/* Active state (blue theme like category filter) */
+.ar-control-btn.active {
+  background: var(--filter-btn-active-bg);
+  border-color: var(--filter-btn-active-border);
+  box-shadow: 0 0 0.2rem var(--filter-btn-glow), 0 0 0.8rem var(--filter-btn-glow);
+}
+
+.ar-control-btn.active .ar-btn-title {
+  color: var(--filter-btn-active-color);
+}
+
+.ar-control-btn.active .ar-btn-subtitle {
+  color: rgba(156, 221, 253, 0.7);
+}
+
+/* Frame buttons use orange theme */
+#ar-frame-buttons .ar-control-btn:hover:not(.active) {
+  background: var(--type-btn-hover-bg);
+  border-color: var(--type-btn-hover-border);
+}
+
+#ar-frame-buttons .ar-control-btn:hover:not(.active) .ar-btn-title {
+  color: var(--type-btn-hover-color);
+}
+
+#ar-frame-buttons .ar-control-btn.active {
+  background: var(--type-btn-active-bg);
+  border-color: var(--type-btn-active-border);
+  box-shadow: 0 0 0.2rem var(--type-btn-glow), 0 0 0.8rem var(--type-btn-glow);
+}
+
+#ar-frame-buttons .ar-control-btn.active .ar-btn-title {
+  color: var(--type-btn-active-color);
+}
+
+#ar-frame-buttons .ar-control-btn.active .ar-btn-subtitle {
+  color: rgba(255, 179, 102, 0.7);
+}
+
+/* ===== GAP SLIDER ===== */
+
+.ar-triptych-controls {
+  margin-top: 4px;
+}
+
+.ar-gap-slider-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--filter-group-bg);
+  border: 1px solid var(--filter-group-border);
+  border-radius: 12px;
+  padding: 12px 16px;
+}
+
+#ar-gap-slider {
+  flex: 1;
+  height: 4px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--bg-tertiary);
+  border-radius: 2px;
+  outline: none;
+}
+
+#ar-gap-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background: #066fa3;
+  border: 2px solid #9cddfd;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 0 0.2rem #0088CC;
+}
+
+#ar-gap-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  background: #066fa3;
+  border: 2px solid #9cddfd;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 0 0.2rem #0088CC;
+}
+
+.ar-gap-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--filter-btn-active-color);
+  min-width: 50px;
+  text-align: right;
+}
+
+/* ===== ACTION BUTTONS ===== */
+
+.ar-action-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.ar-action-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.ar-action-btn svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  stroke: currentColor;
+}
+
+.ar-action-btn svg path,
+.ar-action-btn svg circle,
+.ar-action-btn svg line,
+.ar-action-btn svg polyline {
+  fill: none;
+  stroke: currentColor;
+}
+
+.ar-search-btn {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+
+.ar-search-btn:hover {
+  border-color: var(--border-hover);
+  color: var(--text-primary);
+}
+
+.ar-search-btn:active {
+  transform: scale(0.98);
+}
+
+.ar-product-btn {
+  background: #066fa3;
+  color: #9cddfd;
+  border: 1px solid #16a6ed;
+  box-shadow: 0 0 0.2rem #0088CC, 0 0 1rem #0088CC;
+}
+
+.ar-product-btn:active {
+  transform: scale(0.98);
+}
+
+/* ===== SEARCH MODAL ===== */
+
+.ar-search-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 10100;
+  display: flex;
+  flex-direction: column;
+}
+
+.ar-search-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.ar-search-modal-content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  max-height: 80vh;
+  background: var(--bg-primary);
+  border-radius: 20px 20px 0 0;
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.ar-search-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.ar-search-modal-header h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.ar-search-modal-close {
+  width: 36px;
+  height: 36px;
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-tertiary);
+  transition: all 0.2s;
+}
+
+.ar-search-modal-close:hover {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.ar-search-modal-close svg {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+}
+
+.ar-search-modal-close svg line {
+  fill: none;
+  stroke: currentColor;
+}
+
+.ar-search-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 20px;
+  padding: 12px 16px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+}
+
+.ar-search-input-wrapper svg {
+  color: var(--text-tertiary);
+  stroke: var(--text-tertiary);
+  flex-shrink: 0;
+}
+
+.ar-search-input-wrapper svg circle,
+.ar-search-input-wrapper svg line {
+  fill: none;
+  stroke: var(--text-tertiary);
+}
+
+.ar-search-input-wrapper input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-size: 16px;
+  outline: none;
+}
+
+.ar-search-input-wrapper input::placeholder {
+  color: var(--text-tertiary);
+}
+
+.ar-search-clear {
+  width: 24px;
+  height: 24px;
+  background: var(--bg-tertiary);
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-tertiary);
+}
+
+.ar-search-clear svg {
+  width: 12px;
+  height: 12px;
+  stroke: currentColor;
+}
+
+.ar-search-clear svg line {
+  fill: none;
+  stroke: currentColor;
+}
+
+.ar-search-results {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 20px 20px;
+  padding-bottom: max(20px, env(safe-area-inset-bottom));
+}
+
+.ar-search-result-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+
+.ar-search-result-item:hover {
+  background: var(--card-bg-hover);
+  border-color: var(--border-hover);
+}
+
+.ar-search-result-item:active {
+  transform: scale(0.99);
+}
+
+.ar-search-result-image {
+  width: 56px;
+  height: 56px;
+  border-radius: 8px;
+  object-fit: cover;
+  background: var(--bg-tertiary);
+  flex-shrink: 0;
+}
+
+.ar-search-result-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.ar-search-result-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ar-search-result-subtitle {
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+.ar-search-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-tertiary);
+  font-size: 14px;
+}
+
+/* ===== RESPONSIVE ===== */
+
+@media (min-width: 768px) {
+  .ar-controls-panel {
+    max-width: 500px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 20px 20px 0 0;
+    padding: 16px 24px;
+    padding-bottom: calc(16px + 70px + env(safe-area-inset-bottom));
+  }
+
+  .ar-control-buttons {
+    padding: 6px;
+  }
+
+  .ar-control-btn {
+    padding: 12px 16px;
+  }
+
+  .ar-search-modal-content {
+    max-width: 480px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
+/* ===== LIGHT THEME ===== */
+
+html[data-theme="light"] .ar-view-page,
+body[data-theme="light"] .ar-view-page {
+  background-color: #f5f5f5;
+}
+
+html[data-theme="light"] .ar-permission-screen,
+body[data-theme="light"] .ar-permission-screen {
+  background: linear-gradient(180deg, var(--bg-primary) 0%, #e8e8e8 100%);
+}
+
+html[data-theme="light"] .ar-permission-icon,
+body[data-theme="light"] .ar-permission-icon {
+  background: rgba(21, 101, 192, 0.1);
+  border-color: rgba(21, 101, 192, 0.3);
+  color: var(--status-info);
+}
+
+html[data-theme="light"] .ar-header-back,
+html[data-theme="light"] .ar-collapsed-btn,
+html[data-theme="light"] .ar-collapse-btn,
+body[data-theme="light"] .ar-header-back,
+body[data-theme="light"] .ar-collapsed-btn,
+body[data-theme="light"] .ar-collapse-btn {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+html[data-theme="light"] .ar-header,
+body[data-theme="light"] .ar-header {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, transparent 100%);
+}
+
+html[data-theme="light"] .ar-controls-panel,
+body[data-theme="light"] .ar-controls-panel {
+  background: linear-gradient(0deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.8) 70%, transparent 100%);
+}
+
+html[data-theme="light"] .ar-header-title,
+body[data-theme="light"] .ar-header-title {
+  text-shadow: 0 1px 3px rgba(255, 255, 255, 0.5);
+}
+
+/* ===== DEPTH MODEL LOADING OVERLAY ===== */
+
+.ar-depth-loading {
+  position: fixed;
+  inset: 0;
+  z-index: 10050;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.9);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: opacity 0.3s ease;
+}
+
+.ar-depth-loading-content {
+  text-align: center;
+  max-width: 300px;
+  padding: 24px;
+}
+
+.ar-depth-loading-spinner {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 20px;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  border-top-color: #16a6ed;
+  border-radius: 50%;
+  animation: ar-spin 1s linear infinite;
+}
+
+@keyframes ar-spin {
+  to { transform: rotate(360deg); }
+}
+
+.ar-depth-loading-text {
+  font-size: 14px;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+}
+
+.ar-depth-loading-progress {
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.ar-depth-loading-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #066fa3, #16a6ed);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.ar-depth-loading-percent {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+/* ===== WEBXR SURFACE DETECTION OVERLAY ===== */
+
+.ar-surface-detection {
+  position: fixed;
+  inset: 0;
+  z-index: 10030;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.ar-surface-content {
+  text-align: center;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ar-surface-icon {
+  margin-bottom: 12px;
+}
+
+.ar-surface-icon svg {
+  stroke: #16a6ed;
+  animation: ar-surface-pulse 2s ease-in-out infinite;
+}
+
+@keyframes ar-surface-pulse {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.1); }
+}
+
+.ar-surface-text {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.ar-surface-hint {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+/* Surface found state */
+.ar-surface-detection.surface-found .ar-surface-icon svg {
+  stroke: #22c55e;
+  animation: none;
+}
+
+.ar-surface-detection.surface-found .ar-surface-text {
+  color: #22c55e;
+}
+
+/* ===== AR TAP TO PLACE HINT ===== */
+
+.ar-tap-to-place-hint {
+  position: fixed;
+  bottom: 200px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10020;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 12px 20px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.ar-tap-to-place-hint span {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-align: center;
+  display: block;
+}
+
+/* ===== AR PLACEMENT HINT ===== */
+
+.ar-placement-hint {
+  position: fixed;
+  bottom: 140px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10020;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 10px 20px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  pointer-events: none;
+  animation: ar-hint-fade-in 0.3s ease-out;
+}
+
+.ar-placement-hint span {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+@keyframes ar-hint-fade-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+/* Auto-hide after a few seconds */
+.ar-placement-hint.hiding {
+  animation: ar-hint-fade-out 0.3s ease-in forwards;
+}
+
+@keyframes ar-hint-fade-out {
+  from { opacity: 1; transform: translateX(-50%) translateY(0); }
+  to { opacity: 0; transform: translateX(-50%) translateY(10px); }
+}
+
+/* ===== DEPTH DEBUG OVERLAY (development) ===== */
+
+.ar-depth-debug {
+  position: fixed;
+  top: 70px;
+  right: 10px;
+  z-index: 10002;
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 8px;
+  padding: 8px;
+  display: none;
+}
+
+.ar-depth-debug canvas {
+  width: 120px;
+  height: 90px;
+  border-radius: 4px;
+}
+
+.ar-depth-info {
+  font-size: 10px;
+  color: #fff;
+  margin-top: 4px;
+  text-align: center;
+}
+
+/* ===== CORNER PLACEMENT MODE ===== */
+
+.ar-corner-mode-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10025;
+  /* No background - keep video feed fully visible */
+  background: transparent;
+  /* Allow clicks to pass through to canvas for corner placement */
+  pointer-events: none;
+}
+
+.ar-corner-mode-hint {
+  position: absolute;
+  /* Position at bottom where main AR controls are */
+  bottom: 120px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: 16px 24px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  text-align: center;
+  min-width: 280px;
+  max-width: 90vw;
+  /* Enable pointer events for buttons in the hint */
+  pointer-events: auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+#ar-corner-mode-text {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  display: block;
+  margin-bottom: 10px;
+}
+
+.ar-corner-mode-progress {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.ar-corner-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  transition: all 0.3s ease;
+}
+
+.ar-corner-dot.placed {
+  background: #22c55e;
+  border-color: #4ade80;
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.6);
+}
+
+.ar-corner-dot.active {
+  background: #16a6ed;
+  border-color: #9cddfd;
+  box-shadow: 0 0 8px rgba(22, 166, 237, 0.6);
+  animation: ar-corner-dot-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes ar-corner-dot-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+.ar-corner-mode-buttons {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+}
+
+.ar-corner-btn {
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid;
+}
+
+.ar-corner-reset-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: var(--text-secondary);
+}
+
+.ar-corner-reset-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: var(--text-primary);
+}
+
+.ar-corner-done-btn {
+  background: #066fa3;
+  border-color: #16a6ed;
+  color: #9cddfd;
+  box-shadow: 0 0 0.2rem #0088CC;
+}
+
+.ar-corner-done-btn:hover:not(:disabled) {
+  background: #0880b8;
+  box-shadow: 0 0 0.4rem #0088CC;
+}
+
+.ar-corner-done-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.ar-corner-cancel-btn {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #f87171;
+}
+
+.ar-corner-cancel-btn:hover {
+  background: rgba(239, 68, 68, 0.25);
+  border-color: rgba(239, 68, 68, 0.5);
+}
+
+.ar-corner-btn:active {
+  transform: scale(0.96);
+}
+
+/* Corner markers container */
+.ar-corner-markers {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* Individual corner marker */
+.ar-corner-marker {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.ar-corner-marker::before,
+.ar-corner-marker::after {
+  content: '';
+  position: absolute;
+  background: #22c55e;
+  border-radius: 2px;
+  box-shadow: 0 0 6px rgba(34, 197, 94, 0.8);
+}
+
+/* Crosshair horizontal line */
+.ar-corner-marker::before {
+  width: 100%;
+  height: 3px;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+}
+
+/* Crosshair vertical line */
+.ar-corner-marker::after {
+  width: 3px;
+  height: 100%;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+}
+
+/* Corner number label */
+.ar-corner-marker-label {
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #22c55e;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Marker when off-screen */
+.ar-corner-marker.off-screen {
+  opacity: 0.5;
+}
+
+.ar-corner-marker.off-screen::before,
+.ar-corner-marker.off-screen::after {
+  background: rgba(255, 165, 0, 0.8);
+}
+
+/* Connection lines between corners */
+.ar-corner-line {
+  position: absolute;
+  background: rgba(34, 197, 94, 0.6);
+  height: 2px;
+  transform-origin: left center;
+  pointer-events: none;
+  box-shadow: 0 0 4px rgba(34, 197, 94, 0.5);
+}
+
+/* Corner mode button in collapsed controls */
+.ar-corner-mode-btn {
+  position: relative;
+}
+
+.ar-corner-mode-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.ar-corner-mode-btn.active {
+  background: rgba(34, 197, 94, 0.2);
+  border-color: rgba(34, 197, 94, 0.5);
+  color: #4ade80;
+}

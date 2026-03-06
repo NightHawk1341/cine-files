@@ -1,0 +1,92 @@
+/* ============================================================
+   MASONRY FILTERS MODULE
+   Shared filter pill buttons for masonry galleries.
+   Used on: customers, product pages.
+   Outer pill (grey) > inner group (black) > buttons (grey).
+   ============================================================ */
+
+/* Outer pill — grey wrapper.
+   Sticky positioning handled by parent .sticky-filter-wrapper. */
+.masonry-filters {
+  display: flex;
+  justify-content: center;
+  padding: 5px;
+  background-color: var(--filter-pill-bg);
+  outline: 1px solid var(--filter-pill-border);
+  border: none;
+  border-radius: 46px;
+}
+
+/* Inner group — black pill */
+.masonry-filter-group {
+  display: flex;
+  gap: 3px;
+  flex-wrap: wrap;
+  padding: 7px;
+  background-color: var(--filter-group-bg);
+  border: 1px solid var(--filter-group-border);
+  border-radius: 40px;
+}
+
+.masonry-filter-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 40px;
+  color: var(--text-tertiary);
+  font-size: 14px;
+  font-weight: normal;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+}
+
+@media (hover: hover) {
+  .masonry-filter-btn:hover {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-hover);
+    color: var(--text-secondary);
+  }
+}
+
+.masonry-filter-btn.active {
+  background: var(--filter-active-bg);
+  border-color: var(--filter-active-border);
+  color: var(--filter-active-color);
+}
+
+@media (hover: hover) {
+  .masonry-filter-btn.active:hover {
+    box-shadow: 0 0 0.15rem var(--filter-active-border), 0 0 4px var(--filter-active-border);
+  }
+}
+
+.masonry-filter-btn .filter-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  background: var(--tab-counter-bg);
+  border: 1px solid var(--tab-counter-border);
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--tab-counter-color);
+}
+
+.masonry-filter-btn.active .filter-count {
+  background: var(--filter-active-bg);
+  border-color: var(--filter-active-border);
+  color: var(--filter-active-color);
+}
+
+@media (max-width: 768px) {
+  .masonry-filter-btn {
+    font-size: 13px;
+    padding: 4px 9px;
+  }
+}

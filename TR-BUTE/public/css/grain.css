@@ -1,0 +1,198 @@
+/* ===== GRAIN OVERLAY ===== */
+/* Full-page grain texture overlay with animated flip */
+
+/* Grain flip animation - cycles through 4 flip states */
+@keyframes grainFlip {
+  0%, 24.9% { transform: scale(1, 1); }
+  25%, 49.9% { transform: scale(-1, 1); }
+  50%, 74.9% { transform: scale(-1, -1); }
+  75%, 99.9% { transform: scale(1, -1); }
+  100% { transform: scale(1, 1); }
+}
+
+/* === PAGE GRAIN (covers entire viewport) === */
+.page-grain-layer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 1;
+  background-image: url("/images/TRIBUTE_GRAIN_WHITE.png");
+  background-size: 1000px 1000px;
+  background-repeat: repeat;
+  background-position: var(--pos-offset, 0) var(--pos-offset, 0);
+  animation: grainFlip 0.5s steps(1) infinite var(--flip-delay, 0s);
+  /* Ensure grain stays fixed even when transforms are applied to ancestors */
+  /* Using containment and transform to create isolated layer */
+  will-change: transform;
+  transform: translateZ(0);
+  contain: layout style;
+  backface-visibility: hidden;
+  /* Start hidden until grain image is loaded to prevent glitchy texture-by-texture loading */
+  opacity: 0;
+  transition: opacity 0.4s ease-out;
+}
+
+/* Fade in grain once image is preloaded */
+.page-grain-layer.grain-loaded {
+  /* Opacity will be set by the specific dark/light layer styles */
+}
+
+/* Hide page grain when modal with backdrop blur is open */
+/* The modal backdrop will have its own grain */
+body.modal-backdrop-active .page-grain-layer {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+/* Dark theme: dark grains more visible, light grains subtle */
+.page-grain-dark {
+  filter: invert(1);
+}
+
+.page-grain-dark.grain-loaded {
+  opacity: 0.12;
+}
+
+.page-grain-light {
+  filter: none;
+}
+
+.page-grain-light.grain-loaded {
+  opacity: 0.06;
+}
+
+/* Mobile: slightly reduce grain opacity for better visibility on smaller screens */
+/* Mobile screens often have higher DPI and different color calibration */
+@media (max-width: 1024px) {
+  .page-grain-dark.grain-loaded {
+    opacity: 0.10;
+  }
+  .page-grain-light.grain-loaded {
+    opacity: 0.05;
+  }
+}
+
+/* Light theme: invert grains + reduce opacity */
+html[data-theme="light"] .page-grain-dark,
+body[data-theme="light"] .page-grain-dark {
+  filter: invert(1);
+}
+
+html[data-theme="light"] .page-grain-dark.grain-loaded,
+body[data-theme="light"] .page-grain-dark.grain-loaded {
+  opacity: 0.06;
+}
+
+html[data-theme="light"] .page-grain-light,
+body[data-theme="light"] .page-grain-light {
+  filter: invert(1);
+}
+
+html[data-theme="light"] .page-grain-light.grain-loaded,
+body[data-theme="light"] .page-grain-light.grain-loaded {
+  opacity: 0.03;
+}
+
+/* === GRAIN Z-INDEX EXCLUSIONS === */
+/* Elements that should appear ABOVE page grain (z-index > 1) */
+/* Note: products-header already has z-index: 998 defined elsewhere */
+
+/* Products grid container - above page grain */
+/* Applied on all pages: main, favorites, catalog, profile */
+.products {
+  position: relative;
+  z-index: 2;
+}
+
+/* Product cards - above page grain, no grain applied */
+.product {
+  position: relative;
+  z-index: 1;
+  isolation: isolate;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* Product images - explicitly above any grain */
+/* GPU compositing for smooth touch interactions */
+.product img,
+.product .image-carousel,
+.product .slides,
+.product .slide {
+  position: relative;
+  z-index: 1;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* Footer - above page grain */
+.footer {
+  position: relative;
+  z-index: 2;
+}
+
+/* === PAGE CONTENT OVERLAYS (above page grain) === */
+/* All page wrapper/overlay containers must be above page grain (z-index: 1) */
+/* Main page containers (.products, .footer) are handled above */
+.product-page-overlay,
+.catalog-page-overlay,
+.favorites-page-overlay,
+.cart-page-overlay,
+.checkout-page-overlay,
+.profile-page-overlay,
+.faq-page-overlay,
+.order-page-overlay,
+.picker-page-overlay,
+.customers-page-overlay,
+.certificate-page-container,
+.info-page,
+.legal-page,
+.ar-view-page {
+  position: relative;
+  z-index: 2;
+}
+
+/* === BACKDROP GRAIN (for modal/popup backdrops with blur) === */
+/* When modal with backdrop blur is open, page grain is hidden */
+/* This grain applies to the backdrop itself */
+.backdrop-grain-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image: url("/images/TRIBUTE_GRAIN_WHITE.png");
+  background-size: 1000px 1000px;
+  background-repeat: repeat;
+  background-position: var(--pos-offset, 0) var(--pos-offset, 0);
+  animation: grainFlip 0.5s steps(1) infinite var(--flip-delay, 0s);
+}
+
+.backdrop-grain-dark {
+  filter: invert(1);
+  opacity: 0.10;
+}
+
+.backdrop-grain-light {
+  filter: none;
+  opacity: 0.05;
+}
+
+html[data-theme="light"] .backdrop-grain-dark,
+body[data-theme="light"] .backdrop-grain-dark {
+  filter: invert(1);
+  opacity: 0.05;
+}
+
+html[data-theme="light"] .backdrop-grain-light,
+body[data-theme="light"] .backdrop-grain-light {
+  filter: invert(1);
+  opacity: 0.025;
+}
+
+

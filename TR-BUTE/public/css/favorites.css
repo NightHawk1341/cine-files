@@ -1,0 +1,294 @@
+/* ============================================================
+   FAVORITES PAGE
+   Full page styles for favorites (product grid handled by module)
+   ============================================================ */
+
+/* Base overlay + content layout from page-layouts.css */
+
+/* Override: transparent background for favorites grid */
+.favorites-page-content {
+  background: transparent;
+}
+
+/* Header layout from page-layouts.css */
+
+/* Title */
+.favorites-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Product grid container */
+.favorites-items-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(160px, 100%), 1fr));
+  gap: 16px;
+}
+
+@media (hover: hover) and (pointer: fine), (min-width: 1025px) {
+  /* Mirror the products grid on the content wrapper so the header
+     and filters align to the same column tracks instead of the full container width. */
+  .favorites-page-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 200px));
+    justify-content: center;
+    column-gap: 16px;
+    row-gap: 0;
+  }
+  .favorites-header,
+  .sticky-filter-wrapper,
+  .favorites-items-list {
+    grid-column: 1 / -1;
+  }
+  .favorites-items-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 200px));
+    justify-content: center;
+  }
+}
+
+/* Narrow desktop: force 2 equal columns so layout doesn't collapse to 1 */
+@media (hover: hover) and (pointer: fine) and (max-width: 435px) {
+  .favorites-page-content {
+    grid-template-columns: repeat(2, 1fr);
+    justify-content: normal;
+  }
+  .favorites-items-list {
+    grid-template-columns: repeat(2, 1fr);
+    justify-content: normal;
+  }
+}
+
+/* Custom scrollbar for page content */
+.favorites-page-content {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.favorites-page-content::-webkit-scrollbar {
+  display: none;
+}
+
+/* ===== MOBILE STYLES ===== */
+
+@media (max-width: 768px) {
+  /* Reduce content padding on mobile */
+  .favorites-page-content {
+    padding: 0 10px 20px 10px; /* Match main page .products mobile padding */
+  }
+
+  /* Smaller header elements */
+  .favorites-header {
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+  }
+
+  .favorites-title {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .favorites-page-content {
+    padding-bottom: 20px; /* Reduced spacing - footer handles bottom-nav clearance */
+  }
+}
+
+/* Filter styles handled by page-filters.css module */
+
+/* ===== PRODUCT CARD TAG SELECTOR ===== */
+/* Base styles in product-grid.css; only active states here */
+
+.product-card-tag-btn.present {
+  background: linear-gradient(135deg, #ff6b9d, #c44569);
+}
+
+.product-card-tag-btn.present svg {
+  color: #fff;
+  stroke: #fff;
+}
+
+.product-card-tag-btn.wish {
+  background: linear-gradient(135deg, #4facfe, #00f2fe);
+}
+
+.product-card-tag-btn.wish svg {
+  color: #fff;
+  stroke: #fff;
+}
+
+/* Empty state for favorites list */
+.favorites-empty-state {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  color: var(--text-tertiary);
+  font-size: 15px;
+  text-align: center;
+  padding: 40px 20px;
+  width: 100%;
+}
+
+/* Tag dropdown - matches card-format-dropdown structure */
+.tag-dropdown {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  right: 6px;
+  /* Match image aspect ratio so overlay fills the image area exactly */
+  aspect-ratio: 5/6;
+  background: var(--format-dropdown-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  z-index: 13; /* Lower than buttons (15) and format dropdown (14) */
+  display: none;
+  flex-direction: column;
+}
+
+.tag-dropdown.active {
+  display: flex;
+}
+
+/* Tag dropdown header */
+.tag-dropdown-header {
+  padding: 10px 0 10px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  letter-spacing: 0.2px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* Tag options container */
+.tag-dropdown-options {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-content: flex-start;
+  overflow-y: auto;
+  min-height: 0;
+  border-top: 1px solid var(--divider);
+}
+
+.tag-dropdown-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border: none;
+  border-bottom: 1px solid var(--divider);
+  background: transparent;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background 0.15s;
+  width: 100%;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.tag-dropdown-option:last-child {
+  border-bottom: none;
+}
+
+.tag-dropdown-option svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.tag-dropdown-option:hover {
+  background: rgba(150, 150, 150, 0.08);
+}
+
+.tag-dropdown-option.tag-present {
+  background: rgba(255, 107, 157, 0.12);
+}
+
+.tag-dropdown-option.tag-present svg {
+  display: none; /* Hide icon */
+}
+
+.tag-dropdown-option.tag-present:hover {
+  background: rgba(255, 107, 157, 0.2);
+}
+
+.tag-dropdown-option.tag-present.active {
+  background: rgba(255, 107, 157, 0.25);
+  color: #ff6b9d;
+}
+
+.tag-dropdown-option.tag-wish {
+  background: rgba(79, 172, 254, 0.12);
+}
+
+.tag-dropdown-option.tag-wish svg {
+  display: none; /* Hide icon */
+}
+
+.tag-dropdown-option.tag-wish:hover {
+  background: rgba(79, 172, 254, 0.2);
+}
+
+.tag-dropdown-option.tag-wish.active {
+  background: rgba(79, 172, 254, 0.25);
+  color: #4facfe;
+}
+
+/* Mobile adjustments for tag dropdowns */
+@media (max-width: 768px) {
+  .product-card-tag-btn {
+    width: 28px;
+    height: 28px;
+  }
+
+  .product-card-tag-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .tag-dropdown-option {
+    padding: 8px 10px;
+    font-size: 11px;
+  }
+
+  .tag-dropdown-option svg {
+    width: 12px;
+    height: 12px;
+  }
+}
+
+/* ===== SHARED WISHLIST BANNER ===== */
+
+.shared-wishlist-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  background: var(--status-info-bg);
+  color: var(--status-info);
+  border: 1px solid var(--status-info);
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.shared-wishlist-own-link {
+  color: var(--link-color);
+  text-decoration: none;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+@media (hover: hover) {
+  .shared-wishlist-own-link:hover {
+    text-decoration: underline;
+  }
+}
