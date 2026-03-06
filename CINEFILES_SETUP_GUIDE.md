@@ -178,42 +178,32 @@ Note: Email notification vars (`POSTBOX_API_KEY_ID`, etc.) are not yet wired int
 
 ## Phase 3: Database Setup
 
-CineFiles uses **Prisma ORM** for database management. The schema is defined in `prisma/schema.prisma` and Prisma handles migrations, type generation, and seeding.
+CineFiles uses **Prisma ORM** for type-safe queries in the application code, but schema changes are applied **manually via Supabase Dashboard SQL editor** (same workflow as TR-BUTE).
 
-### 3.1 — Install Dependencies & Generate Prisma Client
+### 3.1 — Create Tables
 
-```bash
-npm install
-# postinstall hook runs `prisma generate` automatically
-```
+- [ ] Open Supabase Dashboard → SQL Editor
+- [ ] Copy and run the contents of `SQL_SCHEMA.sql`
+- [ ] Verify tables exist (13 tables: users, auth_tokens, categories, articles, tags, article_tags, tmdb_entities, tmdb_cache, comments, media, app_settings, collections, collection_articles)
 
-### 3.2 — Push Schema to Database
+### 3.2 — Seed Initial Data
 
-With your `DATABASE_URL` set in `.env.local`:
-
-```bash
-# Push the Prisma schema to your Supabase database (creates all tables)
-npm run db:push
-```
-
-This reads `prisma/schema.prisma` and creates all tables in your Supabase PostgreSQL. Use `db:push` for initial setup. For subsequent schema changes in development, use `npm run db:migrate`.
-
-- [ ] Verify tables exist in Supabase dashboard (12 tables: users, auth_tokens, categories, articles, tags, article_tags, tmdb_entities, tmdb_cache, comments, media, collections, app_settings, collection_articles)
-
-### 3.3 — Seed Initial Data
-
-```bash
-npm run db:seed
-```
-
-This runs `prisma/seed.ts` via `tsx` and creates:
+- [ ] Run the seed SQL in Supabase Dashboard SQL Editor (or use `npm run db:seed` if you have terminal access)
+- [ ] Seed creates:
   - Default categories (news, reviews, articles, interviews, lists, analysis)
   - Default app_settings
   - Your admin user account
 
-### 3.4 — Reference: SQL Schema
+### 3.3 — Schema Change Workflow
 
-`SQL_SCHEMA.sql` in the repo root is a **reference file** generated from the Prisma schema. Do NOT run it manually — it exists for documentation and for inspecting the schema without Prisma tooling. If you need to make schema changes, edit `prisma/schema.prisma` and run `npm run db:migrate`.
+When Claude or you modify the schema:
+
+1. Claude updates `prisma/schema.prisma` (the source of truth for Prisma types)
+2. Claude provides the `ALTER TABLE` / `CREATE TABLE` SQL for you to run in Supabase Dashboard
+3. Claude regenerates `SQL_SCHEMA.sql` to keep the reference file in sync
+4. Prisma Client types are regenerated automatically on `npm install` (via `postinstall` hook) or by Claude running `npm run db:generate`
+
+**Never run `prisma db push` or `prisma migrate` against the production database** — all schema changes go through Supabase Dashboard manually, same as TR-BUTE.
 
 ---
 
