@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { prisma } from '@/lib/db';
+import { supabase, camelizeKeys } from '@/lib/db';
 import Link from 'next/link';
 import styles from '@/styles/pages/tags.module.css';
 
@@ -22,14 +22,24 @@ const TAG_TYPE_LABELS: Record<string, string> = {
 
 const TAG_TYPE_ORDER = ['movie', 'tv', 'person', 'genre', 'franchise', 'studio', 'topic', 'game', 'anime'];
 
+interface TagRow {
+  slug: string;
+  nameRu: string;
+  tagType: string;
+  articleCount: number;
+}
+
 export default async function TagsPage() {
-  const tags = await prisma.tag.findMany({
-    where: { articleCount: { gt: 0 } },
-    orderBy: { articleCount: 'desc' },
-  });
+  const { data } = await supabase
+    .from('tags')
+    .select('*')
+    .gt('article_count', 0)
+    .order('article_count', { ascending: false });
+
+  const tags = camelizeKeys<TagRow[]>(data || []);
 
   // Group by type
-  const grouped = new Map<string, typeof tags>();
+  const grouped = new Map<string, TagRow[]>();
   for (const tag of tags) {
     const group = grouped.get(tag.tagType) || [];
     group.push(tag);

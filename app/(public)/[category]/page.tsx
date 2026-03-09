@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { prisma } from '@/lib/db';
+import { supabase, camelizeKeys } from '@/lib/db';
 import { notFound } from 'next/navigation';
 import { ArticleCard } from '@/components/article/ArticleCard';
 import styles from '@/styles/pages/category.module.css';
@@ -10,10 +10,18 @@ interface CategoryPageProps {
   searchParams: Promise<{ page?: string }>;
 }
 
+interface CategoryRow {
+  id: number;
+  slug: string;
+  nameRu: string;
+  description: string | null;
+}
+
 export async function generateMetadata({ params }: CategoryPageProps): Promise<Metadata> {
   const { category: slug } = await params;
-  const cat = await prisma.category.findUnique({ where: { slug } });
-  if (!cat) return { title: 'Категория не найдена' };
+  const { data } = await supabase.from('categories').select('*').eq('slug', slug).single();
+  if (!data) return { title: 'Категория не найдена' };
+  const cat = camelizeKeys<CategoryRow>(data);
 
   return {
     title: `${cat.nameRu} — CineFiles`,
@@ -25,30 +33,50 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
   };
 }
 
+const ARTICLE_SELECT = `
+  *,
+  category:categories(*),
+  author:users!author_id(id, display_name, avatar_url),
+  tags:article_tags(*, tag:tags(*))
+`;
+
 export default async function CategoryPage({ params, searchParams }: CategoryPageProps) {
   const { category: slug } = await params;
   const { page: pageStr } = await searchParams;
   const page = Math.max(1, parseInt(pageStr || '1'));
   const limit = 20;
 
-  const cat = await prisma.category.findUnique({ where: { slug } });
-  if (!cat) notFound();
+  const { data: catData } = await supabase.from('categories').select('*').eq('slug', slug).single();
+  if (!catData) notFound();
+  const cat = camelizeKeys<CategoryRow>(catData);
 
-  const [articles, total] = await Promise.all([
-    prisma.article.findMany({
-      where: { categoryId: cat.id, status: 'published' },
-      include: {
-        category: true,
-        author: { select: { id: true, displayName: true, avatarUrl: true } },
-        tags: { include: { tag: true } },
-      },
-      orderBy: [{ isPinned: 'desc' }, { publishedAt: 'desc' }],
-      skip: (page - 1) * limit,
-      take: limit,
-    }),
-    prisma.article.count({ where: { categoryId: cat.id, status: 'published' } }),
+  const from = (page - 1) * limit;
+  const to = from + limit - 1;
+
+  const [articlesResult, countResult] = await Promise.all([
+    supabase
+      .from('articles')
+      .select(ARTICLE_SELECT)
+      .eq('category_id', cat.id)
+      .eq('status', 'published')
+      .order('is_pinned', { ascending: false })
+      .order('published_at', { ascending: false })
+      .range(from, to),
+    supabase
+      .from('articles')
+      .select('*', { count: 'exact', head: true })
+      .eq('category_id', cat.id)
+      .eq('status', 'published'),
   ]);
 
+  const articles = camelizeKeys<Array<{
+    id: number; slug: string; title: string; lead: string | null;
+    coverImageUrl: string | null; coverImageAlt: string | null;
+    publishedAt: string | null; viewCount: number; commentCount: number;
+    author: { displayName: string | null };
+    tags: Array<{ tag: { slug: string; nameRu: string } }>;
+  }>>(articlesResult.data || []);
+  const total = countResult.count || 0;
   const totalPages = Math.ceil(total / limit);
 
   return (
@@ -70,7 +98,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
                 lead={article.lead}
                 coverImageUrl={article.coverImageUrl}
                 coverImageAlt={article.coverImageAlt}
-                publishedAt={article.publishedAt?.toISOString()}
+                publishedAt={article.publishedAt}
                 authorName={article.author.displayName}
                 viewCount={article.viewCount}
                 commentCount={article.commentCount}

@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { prisma } from '@/lib/db';
+import { supabase, camelizeKeys } from '@/lib/db';
 import { notFound } from 'next/navigation';
 import { ArticleCard } from '@/components/article/ArticleCard';
 import styles from '@/styles/pages/collections.module.css';
@@ -8,24 +8,45 @@ interface CollectionPageProps {
   params: Promise<{ slug: string }>;
 }
 
-async function getCollection(slug: string) {
-  return prisma.collection.findUnique({
-    where: { slug },
-    include: {
-      articles: {
-        orderBy: { sortOrder: 'asc' },
-        include: {
-          article: {
-            include: {
-              category: true,
-              author: { select: { id: true, displayName: true, avatarUrl: true } },
-              tags: { include: { tag: true } },
-            },
-          },
-        },
-      },
-    },
-  });
+interface CollectionData {
+  id: number;
+  slug: string;
+  title: string;
+  description: string | null;
+  coverImageUrl: string | null;
+  articles: Array<{
+    sortOrder: number;
+    article: {
+      id: number; slug: string; title: string; lead: string | null; status: string;
+      coverImageUrl: string | null; coverImageAlt: string | null;
+      publishedAt: string | null; viewCount: number; commentCount: number;
+      category: { slug: string };
+      author: { id: number; displayName: string | null; avatarUrl: string | null };
+      tags: Array<{ tag: { slug: string; nameRu: string } }>;
+    };
+  }>;
+}
+
+async function getCollection(slug: string): Promise<CollectionData | null> {
+  const { data } = await supabase
+    .from('collections')
+    .select(`
+      *,
+      articles:collection_articles(
+        sort_order,
+        article:articles(
+          *,
+          category:categories(*),
+          author:users!author_id(id, display_name, avatar_url),
+          tags:article_tags(*, tag:tags(*))
+        )
+      )
+    `)
+    .eq('slug', slug)
+    .single();
+
+  if (!data) return null;
+  return camelizeKeys<CollectionData>(data);
 }
 
 export async function generateMetadata({ params }: CollectionPageProps): Promise<Metadata> {
@@ -77,7 +98,7 @@ export default async function CollectionPage({ params }: CollectionPageProps) {
               lead={article.lead}
               coverImageUrl={article.coverImageUrl}
               coverImageAlt={article.coverImageAlt}
-              publishedAt={article.publishedAt?.toISOString()}
+              publishedAt={article.publishedAt}
               authorName={article.author.displayName}
               viewCount={article.viewCount}
               commentCount={article.commentCount}

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
+import { supabase, camelizeKeys } from '@/lib/db';
 import { getAuthUser, handleApiError, jsonError } from '@/lib/api-utils';
 
 interface RouteParams {
@@ -19,32 +19,35 @@ export async function PUT(request: Request, { params }: RouteParams) {
       return jsonError('body is required', 400);
     }
 
-    const comment = await prisma.comment.findUnique({
-      where: { id: commentId },
-      select: { userId: true, status: true },
-    });
+    const { data: comment } = await supabase
+      .from('comments')
+      .select('user_id, status')
+      .eq('id', commentId)
+      .single();
 
     if (!comment || comment.status !== 'visible') {
       return jsonError('Comment not found', 404);
     }
 
     // Users can only edit their own comments
-    if (comment.userId !== user.userId && user.role !== 'admin') {
+    if (comment.user_id !== user.userId && user.role !== 'admin') {
       return jsonError('Forbidden', 403);
     }
 
-    const updated = await prisma.comment.update({
-      where: { id: commentId },
-      data: {
+    const { data: updated } = await supabase
+      .from('comments')
+      .update({
         body: body.trim(),
-        updatedAt: new Date(),
-      },
-      include: {
-        user: { select: { id: true, displayName: true, avatarUrl: true } },
-      },
-    });
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', commentId)
+      .select(`
+        *,
+        user:users!user_id(id, display_name, avatar_url)
+      `)
+      .single();
 
-    return NextResponse.json({ comment: updated });
+    return NextResponse.json({ comment: camelizeKeys(updated) });
   } catch (error) {
     return handleApiError(error);
   }
@@ -58,27 +61,36 @@ export async function DELETE(_request: Request, { params }: RouteParams) {
     const { id } = await params;
     const commentId = parseInt(id);
 
-    const comment = await prisma.comment.findUnique({
-      where: { id: commentId },
-      select: { userId: true, articleId: true },
-    });
+    const { data: comment } = await supabase
+      .from('comments')
+      .select('user_id, article_id')
+      .eq('id', commentId)
+      .single();
 
     if (!comment) return jsonError('Comment not found', 404);
 
     // Only comment author or admin can delete
-    if (comment.userId !== user.userId && user.role !== 'admin') {
+    if (comment.user_id !== user.userId && user.role !== 'admin') {
       return jsonError('Forbidden', 403);
     }
 
-    await prisma.comment.update({
-      where: { id: commentId },
-      data: { status: 'deleted' },
-    });
+    await supabase
+      .from('comments')
+      .update({ status: 'deleted' })
+      .eq('id', commentId);
 
-    await prisma.article.update({
-      where: { id: comment.articleId },
-      data: { commentCount: { decrement: 1 } },
-    });
+    // Decrement comment count
+    const { data: art } = await supabase
+      .from('articles')
+      .select('comment_count')
+      .eq('id', comment.article_id)
+      .single();
+    if (art) {
+      await supabase
+        .from('articles')
+        .update({ comment_count: Math.max(0, art.comment_count - 1) })
+        .eq('id', comment.article_id);
+    }
 
     return NextResponse.json({ message: 'Comment deleted' });
   } catch (error) {

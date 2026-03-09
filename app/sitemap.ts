@@ -1,5 +1,5 @@
 import { MetadataRoute } from 'next';
-import { prisma } from '@/lib/db';
+import { supabase, camelizeKeys } from '@/lib/db';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.APP_URL || 'https://cinefiles.ru';
@@ -13,45 +13,46 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   try {
-    const categories = await prisma.category.findMany({ select: { slug: true } });
-    const categoryPages: MetadataRoute.Sitemap = categories.map((cat) => ({
+    const { data: categoriesData } = await supabase.from('categories').select('slug');
+    const categoryPages: MetadataRoute.Sitemap = (categoriesData || []).map((cat) => ({
       url: `${baseUrl}/${cat.slug}`,
       changeFrequency: 'daily',
       priority: 0.9,
     }));
 
-    const articles = await prisma.article.findMany({
-      where: { status: 'published' },
-      select: {
-        slug: true,
-        updatedAt: true,
-        publishedAt: true,
-        category: { select: { slug: true } },
-      },
-      orderBy: { publishedAt: 'desc' },
-    });
+    const { data: articlesData } = await supabase
+      .from('articles')
+      .select('slug, updated_at, published_at, category:categories(slug)')
+      .eq('status', 'published')
+      .order('published_at', { ascending: false });
+
+    const articles = camelizeKeys<Array<{
+      slug: string; updatedAt: string | null; publishedAt: string | null;
+      category: { slug: string };
+    }>>(articlesData || []);
+
     const articlePages: MetadataRoute.Sitemap = articles.map((article) => ({
       url: `${baseUrl}/${article.category.slug}/${article.slug}`,
-      lastModified: article.updatedAt || article.publishedAt || new Date(),
+      lastModified: article.updatedAt || article.publishedAt || new Date().toISOString(),
       changeFrequency: 'weekly',
       priority: 0.7,
     }));
 
-    const tags = await prisma.tag.findMany({
-      where: { articleCount: { gt: 0 } },
-      select: { slug: true },
-    });
-    const tagPages: MetadataRoute.Sitemap = tags.map((tag) => ({
+    const { data: tagsData } = await supabase
+      .from('tags')
+      .select('slug')
+      .gt('article_count', 0);
+    const tagPages: MetadataRoute.Sitemap = (tagsData || []).map((tag) => ({
       url: `${baseUrl}/tag/${tag.slug}`,
       changeFrequency: 'weekly',
       priority: 0.6,
     }));
 
-    const collections = await prisma.collection.findMany({
-      where: { isVisible: true },
-      select: { slug: true },
-    });
-    const collectionPages: MetadataRoute.Sitemap = collections.map((col) => ({
+    const { data: collectionsData } = await supabase
+      .from('collections')
+      .select('slug')
+      .eq('is_visible', true);
+    const collectionPages: MetadataRoute.Sitemap = (collectionsData || []).map((col) => ({
       url: `${baseUrl}/collection/${col.slug}`,
       changeFrequency: 'weekly',
       priority: 0.6,

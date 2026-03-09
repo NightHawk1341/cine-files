@@ -1,22 +1,39 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
+import { supabase, camelizeKeys } from '@/lib/db';
 
 export async function GET() {
-  const categories = await prisma.category.findMany({
-    orderBy: { sortOrder: 'asc' },
-    include: {
-      _count: { select: { articles: { where: { status: 'published' } } } },
-    },
-  });
+  const { data: categories } = await supabase
+    .from('categories')
+    .select('*')
+    .order('sort_order', { ascending: true });
 
-  return NextResponse.json({
-    categories: categories.map((c) => ({
-      id: c.id,
-      slug: c.slug,
-      nameRu: c.nameRu,
-      nameEn: c.nameEn,
-      description: c.description,
-      articleCount: c._count.articles,
-    })),
-  });
+  // Get published article counts per category
+  const result = await Promise.all(
+    (categories || []).map(async (c) => {
+      const { count } = await supabase
+        .from('articles')
+        .select('*', { count: 'exact', head: true })
+        .eq('category_id', c.id)
+        .eq('status', 'published');
+
+      const cat = camelizeKeys<{
+        id: number;
+        slug: string;
+        nameRu: string;
+        nameEn: string | null;
+        description: string | null;
+      }>(c);
+
+      return {
+        id: cat.id,
+        slug: cat.slug,
+        nameRu: cat.nameRu,
+        nameEn: cat.nameEn,
+        description: cat.description,
+        articleCount: count || 0,
+      };
+    })
+  );
+
+  return NextResponse.json({ categories: result });
 }

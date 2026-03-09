@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
+import { supabase, camelizeKeys } from '@/lib/db';
 import { config } from '@/lib/config';
 import { jsonError } from '@/lib/api-utils';
 
@@ -25,52 +25,45 @@ export async function GET(request: Request) {
     return jsonError('Provide tribute_product_id or tag_slug', 400);
   }
 
-  let articles;
+  interface ArticleRow {
+    slug: string;
+    title: string;
+    lead: string | null;
+    coverImageUrl: string | null;
+    publishedAt: string | null;
+    category: { slug: string; nameRu: string };
+  }
+
+  let articles: ArticleRow[];
 
   if (tributeProductId) {
-    // Find articles that reference this TR-BUTE product
-    articles = await prisma.article.findMany({
-      where: {
-        status: 'published',
-        tributeProductIds: { has: parseInt(tributeProductId) },
-      },
-      select: {
-        slug: true,
-        title: true,
-        lead: true,
-        coverImageUrl: true,
-        publishedAt: true,
-        category: { select: { slug: true, nameRu: true } },
-      },
-      orderBy: { publishedAt: 'desc' },
-      take: limit,
-    });
+    const { data } = await supabase
+      .from('articles')
+      .select('slug, title, lead, cover_image_url, published_at, category:categories(slug, name_ru)')
+      .eq('status', 'published')
+      .contains('tribute_product_ids', [parseInt(tributeProductId)])
+      .order('published_at', { ascending: false })
+      .limit(limit);
+
+    articles = camelizeKeys<ArticleRow[]>(data || []);
   } else {
-    // Find articles by tag slug
-    const tag = await prisma.tag.findUnique({ where: { slug: tagSlug! } });
+    const { data: tag } = await supabase
+      .from('tags')
+      .select('id')
+      .eq('slug', tagSlug!)
+      .single();
+
     if (!tag) {
       return NextResponse.json({ articles: [] });
     }
 
-    const articleTags = await prisma.articleTag.findMany({
-      where: { tagId: tag.id, article: { status: 'published' } },
-      include: {
-        article: {
-          select: {
-            slug: true,
-            title: true,
-            lead: true,
-            coverImageUrl: true,
-            publishedAt: true,
-            category: { select: { slug: true, nameRu: true } },
-          },
-        },
-      },
-      orderBy: { article: { publishedAt: 'desc' } },
-      take: limit,
-    });
+    const { data: articleTags } = await supabase
+      .from('article_tags')
+      .select('article:articles(slug, title, lead, cover_image_url, published_at, category:categories(slug, name_ru))')
+      .eq('tag_id', tag.id)
+      .limit(limit);
 
-    articles = articleTags.map((at) => at.article);
+    articles = camelizeKeys<Array<{ article: ArticleRow }>>((articleTags || [])).map((at) => at.article);
   }
 
   // Build full URLs

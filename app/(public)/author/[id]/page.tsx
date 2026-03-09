@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { prisma } from '@/lib/db';
+import { supabase, camelizeKeys } from '@/lib/db';
 import { notFound } from 'next/navigation';
 import { ArticleCard } from '@/components/article/ArticleCard';
 import Link from 'next/link';
@@ -10,17 +10,21 @@ interface AuthorPageProps {
   searchParams: Promise<{ page?: string }>;
 }
 
-async function getAuthor(id: number) {
-  return prisma.user.findUnique({
-    where: { id },
-    select: {
-      id: true,
-      displayName: true,
-      avatarUrl: true,
-      role: true,
-      createdAt: true,
-    },
-  });
+interface AuthorData {
+  id: number;
+  displayName: string | null;
+  avatarUrl: string | null;
+  role: string;
+  createdAt: string;
+}
+
+async function getAuthor(id: number): Promise<AuthorData | null> {
+  const { data } = await supabase
+    .from('users')
+    .select('id, display_name, avatar_url, role, created_at')
+    .eq('id', id)
+    .single();
+  return data ? camelizeKeys<AuthorData>(data) : null;
 }
 
 export async function generateMetadata({ params }: AuthorPageProps): Promise<Metadata> {
@@ -34,6 +38,13 @@ export async function generateMetadata({ params }: AuthorPageProps): Promise<Met
   };
 }
 
+const ARTICLE_SELECT = `
+  *,
+  category:categories(*),
+  author:users!author_id(id, display_name, avatar_url),
+  tags:article_tags(*, tag:tags(*))
+`;
+
 export default async function AuthorPage({ params, searchParams }: AuthorPageProps) {
   const { id } = await params;
   const { page: pageStr } = await searchParams;
@@ -44,26 +55,38 @@ export default async function AuthorPage({ params, searchParams }: AuthorPagePro
   const author = await getAuthor(authorId);
   if (!author) notFound();
 
-  const [articles, total] = await Promise.all([
-    prisma.article.findMany({
-      where: { authorId, status: 'published' },
-      include: {
-        category: true,
-        author: { select: { id: true, displayName: true, avatarUrl: true } },
-        tags: { include: { tag: true } },
-      },
-      orderBy: { publishedAt: 'desc' },
-      skip: (page - 1) * limit,
-      take: limit,
-    }),
-    prisma.article.count({ where: { authorId, status: 'published' } }),
+  const from = (page - 1) * limit;
+  const to = from + limit - 1;
+
+  const [articlesResult, countResult] = await Promise.all([
+    supabase
+      .from('articles')
+      .select(ARTICLE_SELECT)
+      .eq('author_id', authorId)
+      .eq('status', 'published')
+      .order('published_at', { ascending: false })
+      .range(from, to),
+    supabase
+      .from('articles')
+      .select('*', { count: 'exact', head: true })
+      .eq('author_id', authorId)
+      .eq('status', 'published'),
   ]);
 
+  const articles = camelizeKeys<Array<{
+    id: number; slug: string; title: string; lead: string | null;
+    coverImageUrl: string | null; coverImageAlt: string | null;
+    publishedAt: string | null; viewCount: number; commentCount: number;
+    category: { slug: string };
+    author: { displayName: string | null };
+    tags: Array<{ tag: { slug: string; nameRu: string } }>;
+  }>>(articlesResult.data || []);
+  const total = countResult.count || 0;
   const totalPages = Math.ceil(total / limit);
   const memberSince = new Intl.DateTimeFormat('ru-RU', {
     month: 'long',
     year: 'numeric',
-  }).format(author.createdAt);
+  }).format(new Date(author.createdAt));
 
   return (
     <div className="container" style={{ paddingTop: 32, paddingBottom: 60 }}>
@@ -99,7 +122,7 @@ export default async function AuthorPage({ params, searchParams }: AuthorPagePro
                 lead={article.lead}
                 coverImageUrl={article.coverImageUrl}
                 coverImageAlt={article.coverImageAlt}
-                publishedAt={article.publishedAt?.toISOString()}
+                publishedAt={article.publishedAt}
                 authorName={article.author.displayName}
                 viewCount={article.viewCount}
                 commentCount={article.commentCount}

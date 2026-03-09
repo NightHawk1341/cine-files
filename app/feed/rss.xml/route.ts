@@ -1,18 +1,26 @@
-import { prisma } from '@/lib/db';
+import { supabase, camelizeKeys } from '@/lib/db';
 import { config } from '@/lib/config';
 
 export async function GET() {
   const baseUrl = config.appUrl;
 
-  const articles = await prisma.article.findMany({
-    where: { status: 'published' },
-    include: {
-      category: { select: { slug: true, nameRu: true } },
-      author: { select: { displayName: true } },
-    },
-    orderBy: { publishedAt: 'desc' },
-    take: 50,
-  });
+  const { data } = await supabase
+    .from('articles')
+    .select(`
+      slug, title, lead, cover_image_url, published_at, created_at,
+      category:categories(slug, name_ru),
+      author:users!author_id(display_name)
+    `)
+    .eq('status', 'published')
+    .order('published_at', { ascending: false })
+    .limit(50);
+
+  const articles = camelizeKeys<Array<{
+    slug: string; title: string; lead: string | null;
+    coverImageUrl: string | null; publishedAt: string | null; createdAt: string;
+    category: { slug: string; nameRu: string };
+    author: { displayName: string | null };
+  }>>(data || []);
 
   const escapeXml = (str: string) =>
     str

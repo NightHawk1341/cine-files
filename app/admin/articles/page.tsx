@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { prisma } from '@/lib/db';
+import { supabase, camelizeKeys } from '@/lib/db';
 
 export const metadata: Metadata = { title: 'Управление статьями' };
 
@@ -13,21 +13,32 @@ export default async function AdminArticlesPage({
   const page = Math.max(1, parseInt(pageStr || '1'));
   const limit = 25;
 
-  const where = status !== 'all' ? { status } : {};
+  const from = (page - 1) * limit;
+  const to = from + limit - 1;
 
-  const [articles, total] = await Promise.all([
-    prisma.article.findMany({
-      where,
-      include: {
-        category: true,
-        author: { select: { displayName: true } },
-      },
-      orderBy: { createdAt: 'desc' },
-      skip: (page - 1) * limit,
-      take: limit,
-    }),
-    prisma.article.count({ where }),
-  ]);
+  let query = supabase
+    .from('articles')
+    .select(`
+      *,
+      category:categories(*),
+      author:users!author_id(display_name)
+    `, { count: 'exact' })
+    .order('created_at', { ascending: false })
+    .range(from, to);
+
+  if (status !== 'all') {
+    query = query.eq('status', status);
+  }
+
+  const { data: articlesData, count } = await query;
+  const total = count || 0;
+
+  const articles = camelizeKeys<Array<{
+    id: number; title: string; slug: string; status: string;
+    createdAt: string; viewCount: number;
+    category: { nameRu: string };
+    author: { displayName: string | null };
+  }>>(articlesData || []);
 
   const totalPages = Math.ceil(total / limit);
   const statusFilters = [
@@ -38,12 +49,12 @@ export default async function AdminArticlesPage({
     { value: 'archived', label: 'Архив' },
   ];
 
-  const formatDate = (date: Date) =>
+  const formatDate = (dateStr: string) =>
     new Intl.DateTimeFormat('ru-RU', {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',
-    }).format(date);
+    }).format(new Date(dateStr));
 
   const statusBadge = (s: string) => {
     const colors: Record<string, string> = {

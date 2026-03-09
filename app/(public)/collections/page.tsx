@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { prisma } from '@/lib/db';
+import { supabase, camelizeKeys } from '@/lib/db';
 import Link from 'next/link';
 import styles from '@/styles/pages/collections.module.css';
 
@@ -9,13 +9,27 @@ export const metadata: Metadata = {
 };
 
 export default async function CollectionsPage() {
-  const collections = await prisma.collection.findMany({
-    where: { isVisible: true },
-    include: {
-      _count: { select: { articles: true } },
-    },
-    orderBy: { sortOrder: 'asc' },
-  });
+  const { data: collectionsData } = await supabase
+    .from('collections')
+    .select('*')
+    .eq('is_visible', true)
+    .order('sort_order', { ascending: true });
+
+  // Get article counts per collection
+  const collections = await Promise.all(
+    (collectionsData || []).map(async (c) => {
+      const { count } = await supabase
+        .from('collection_articles')
+        .select('*', { count: 'exact', head: true })
+        .eq('collection_id', c.id);
+
+      const col = camelizeKeys<{
+        slug: string; title: string; description: string | null; coverImageUrl: string | null;
+      }>(c);
+
+      return { ...col, articleCount: count || 0 };
+    })
+  );
 
   return (
     <div className="container" style={{ paddingTop: 32, paddingBottom: 60 }}>
@@ -36,7 +50,7 @@ export default async function CollectionsPage() {
                 <h2 className={styles.cardTitle}>{col.title}</h2>
                 {col.description && <p className={styles.cardDesc}>{col.description}</p>}
                 <span className={styles.articleCount}>
-                  {col._count.articles} {col._count.articles === 1 ? 'статья' : col._count.articles < 5 ? 'статьи' : 'статей'}
+                  {col.articleCount} {col.articleCount === 1 ? 'статья' : col.articleCount < 5 ? 'статьи' : 'статей'}
                 </span>
               </div>
             </Link>

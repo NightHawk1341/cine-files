@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { prisma } from '@/lib/db';
+import { supabase, camelizeKeys } from '@/lib/db';
 import Link from 'next/link';
 
 export const metadata: Metadata = { title: 'Модерация комментариев' };
@@ -13,21 +13,32 @@ export default async function AdminCommentsPage({
   const page = Math.max(1, parseInt(pageStr || '1'));
   const limit = 30;
 
-  const where = { status };
+  const from = (page - 1) * limit;
+  const to = from + limit - 1;
 
-  const [comments, total] = await Promise.all([
-    prisma.comment.findMany({
-      where,
-      include: {
-        user: { select: { id: true, displayName: true } },
-        article: { select: { id: true, title: true, slug: true, category: { select: { slug: true } } } },
-      },
-      orderBy: { createdAt: 'desc' },
-      skip: (page - 1) * limit,
-      take: limit,
-    }),
-    prisma.comment.count({ where }),
+  const [commentsResult, countResult] = await Promise.all([
+    supabase
+      .from('comments')
+      .select(`
+        *,
+        user:users!user_id(id, display_name),
+        article:articles!article_id(id, title, slug, category:categories(slug))
+      `)
+      .eq('status', status)
+      .order('created_at', { ascending: false })
+      .range(from, to),
+    supabase
+      .from('comments')
+      .select('*', { count: 'exact', head: true })
+      .eq('status', status),
   ]);
+
+  const comments = camelizeKeys<Array<{
+    id: number; body: string; createdAt: string;
+    user: { id: number; displayName: string | null };
+    article: { id: number; title: string; slug: string; category: { slug: string } };
+  }>>(commentsResult.data || []);
+  const total = countResult.count || 0;
 
   const totalPages = Math.ceil(total / limit);
   const statuses = [
@@ -36,8 +47,8 @@ export default async function AdminCommentsPage({
     { value: 'deleted', label: 'Удалённые' },
   ];
 
-  const formatDate = (date: Date) =>
-    new Intl.DateTimeFormat('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }).format(date);
+  const formatDate = (dateStr: string) =>
+    new Intl.DateTimeFormat('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(dateStr));
 
   return (
     <div>

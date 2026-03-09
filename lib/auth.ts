@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 import { config } from './config';
-import { prisma } from './db';
+import { supabase, camelizeKeys } from './db';
 import crypto from 'crypto';
 
 export interface JwtPayload {
@@ -32,12 +32,10 @@ export async function createSession(userId: number, role: string) {
   const refreshToken = generateRefreshToken();
   const expiresAt = new Date(Date.now() + config.auth.refreshTokenExpiry * 24 * 60 * 60 * 1000);
 
-  await prisma.authToken.create({
-    data: {
-      userId,
-      refreshToken,
-      expiresAt,
-    },
+  await supabase.from('auth_tokens').insert({
+    user_id: userId,
+    refresh_token: refreshToken,
+    expires_at: expiresAt.toISOString(),
   });
 
   return { accessToken, refreshToken, expiresAt };
@@ -52,18 +50,21 @@ export async function getCurrentUser() {
   const payload = verifyAccessToken(token);
   if (!payload) return null;
 
-  const user = await prisma.user.findUnique({
-    where: { id: payload.userId },
-    select: {
-      id: true,
-      displayName: true,
-      avatarUrl: true,
-      role: true,
-      email: true,
-    },
-  });
+  const { data: user } = await supabase
+    .from('users')
+    .select('id, display_name, avatar_url, role, email')
+    .eq('id', payload.userId)
+    .single();
 
-  return user;
+  if (!user) return null;
+
+  return camelizeKeys<{
+    id: number;
+    displayName: string | null;
+    avatarUrl: string | null;
+    role: string;
+    email: string | null;
+  }>(user);
 }
 
 export function isAdmin(role: string): boolean {

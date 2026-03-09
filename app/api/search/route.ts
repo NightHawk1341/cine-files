@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
+import { supabase, camelizeKeys } from '@/lib/db';
 import { jsonError } from '@/lib/api-utils';
 
 export async function GET(request: Request) {
@@ -12,42 +12,38 @@ export async function GET(request: Request) {
     return jsonError('Query must be at least 2 characters', 400);
   }
 
-  const where = {
-    status: 'published' as const,
-    OR: [
-      { title: { contains: query, mode: 'insensitive' as const } },
-      { lead: { contains: query, mode: 'insensitive' as const } },
-      { subtitle: { contains: query, mode: 'insensitive' as const } },
-    ],
-  };
+  const from = (page - 1) * limit;
+  const to = from + limit - 1;
 
-  const [articles, total] = await Promise.all([
-    prisma.article.findMany({
-      where,
-      include: {
-        category: true,
-        author: { select: { id: true, displayName: true, avatarUrl: true } },
-        tags: { include: { tag: true } },
-      },
-      orderBy: { publishedAt: 'desc' },
-      skip: (page - 1) * limit,
-      take: limit,
-    }),
-    prisma.article.count({ where }),
+  const ARTICLE_SELECT = `
+    *,
+    category:categories(*),
+    author:users!author_id(id, display_name, avatar_url),
+    tags:article_tags(*, tag:tags(*))
+  `;
+
+  const [articlesResult, tagsResult] = await Promise.all([
+    supabase
+      .from('articles')
+      .select(ARTICLE_SELECT, { count: 'exact' })
+      .eq('status', 'published')
+      .or(`title.ilike.%${query}%,lead.ilike.%${query}%,subtitle.ilike.%${query}%`)
+      .order('published_at', { ascending: false })
+      .range(from, to),
+    supabase
+      .from('tags')
+      .select('*')
+      .ilike('name_ru', `%${query}%`)
+      .gt('article_count', 0)
+      .order('article_count', { ascending: false })
+      .limit(10),
   ]);
 
-  const tags = await prisma.tag.findMany({
-    where: {
-      nameRu: { contains: query, mode: 'insensitive' },
-      articleCount: { gt: 0 },
-    },
-    orderBy: { articleCount: 'desc' },
-    take: 10,
-  });
+  const total = articlesResult.count || 0;
 
   return NextResponse.json({
-    articles,
-    tags,
+    articles: camelizeKeys(articlesResult.data || []),
+    tags: camelizeKeys(tagsResult.data || []),
     pagination: { page, limit, total, pages: Math.ceil(total / limit) },
   });
 }
