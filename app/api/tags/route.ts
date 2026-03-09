@@ -4,6 +4,8 @@ import { requireEditor, handleApiError, jsonError } from '@/lib/api-utils';
 import { generateSlug } from '@/lib/transliterate';
 import { syncTmdbEntity } from '@/lib/tmdb';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const type = searchParams.get('type');

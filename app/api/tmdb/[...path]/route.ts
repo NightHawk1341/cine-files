@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { config } from '@/lib/config';
 
+export const dynamic = 'force-dynamic';
+
 /**
  * TMDB Proxy — forwards requests to TMDB API.
  * Deployed on Vercel to bypass geo-restrictions.

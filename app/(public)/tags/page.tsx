@@ -3,6 +3,8 @@ import { prisma } from '@/lib/db';
 import Link from 'next/link';
 import styles from '@/styles/pages/tags.module.css';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'Все теги — CineFiles',
   description: 'Обзор по фильмам, сериалам, персонам, жанрам и другим тегам',

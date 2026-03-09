@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { ArticleCard } from '@/components/article/ArticleCard';
 import Link from 'next/link';
@@ -28,7 +28,7 @@ interface SearchTag {
   articleCount: number;
 }
 
-export default function SearchPage() {
+function SearchContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const initialQuery = searchParams.get('q') || '';
@@ -138,5 +138,18 @@ export default function SearchPage() {
         </>
       )}
     </div>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={
+      <div className="container" style={{ paddingTop: 32, paddingBottom: 60 }}>
+        <h1 className={styles.title}>Поиск</h1>
+        <p className={styles.placeholder}>Загрузка...</p>
+      </div>
+    }>
+      <SearchContent />
+    </Suspense>
   );
 }

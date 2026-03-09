@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { requireEditor, requireAdmin, handleApiError, jsonError, getAuthUser } from '@/lib/api-utils';
 
+export const dynamic = 'force-dynamic';
+
 const ARTICLE_INCLUDE = {
   category: true,
   author: {

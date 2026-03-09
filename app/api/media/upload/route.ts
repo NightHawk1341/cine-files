@@ -3,6 +3,8 @@ import { requireEditor, handleApiError, jsonError } from '@/lib/api-utils';
 import { uploadToS3 } from '@/lib/storage';
 import { prisma } from '@/lib/db';
 
+export const dynamic = 'force-dynamic';
+
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/avif', 'image/gif'];
 

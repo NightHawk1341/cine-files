@@ -3,6 +3,8 @@ import { prisma } from '@/lib/db';
 import { config } from '@/lib/config';
 import { jsonError } from '@/lib/api-utils';
 
+export const dynamic = 'force-dynamic';
+
 /**
  * Related Articles API — called by TR-BUTE to show related CineFiles articles
  * on product pages. Protected by API key.

@@ -4,6 +4,8 @@ import { config } from '@/lib/config';
 import { verifyTelegramIdToken, createSession } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 
+export const dynamic = 'force-dynamic';
+
 /**
  * GET /api/auth/telegram/callback
  *
