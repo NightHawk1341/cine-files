@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { syncTmdbEntity } from '@/lib/tmdb';
 
+export const dynamic = 'force-dynamic';
+
 /**
  * TMDB Batch Sync Cron
  * Re-syncs TMDB entities that haven't been updated in 7+ days.

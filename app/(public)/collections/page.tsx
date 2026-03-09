@@ -3,6 +3,8 @@ import { prisma } from '@/lib/db';
 import Link from 'next/link';
 import styles from '@/styles/pages/collections.module.css';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'Подборки — CineFiles',
   description: 'Тематические подборки статей о кино и сериалах',

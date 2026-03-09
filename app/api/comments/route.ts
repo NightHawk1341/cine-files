@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { requireAuth, handleApiError, jsonError } from '@/lib/api-utils';
 
+export const dynamic = 'force-dynamic';
+
 const COMMENT_INCLUDE = {
   user: {
     select: { id: true, displayName: true, avatarUrl: true },

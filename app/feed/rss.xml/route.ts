@@ -1,6 +1,8 @@
 import { prisma } from '@/lib/db';
 import { config } from '@/lib/config';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   const baseUrl = config.appUrl;
 

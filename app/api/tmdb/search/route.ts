@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { searchTmdb } from '@/lib/tmdb';
 import { requireEditor, handleApiError, jsonError } from '@/lib/api-utils';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: Request) {
   try {
     await requireEditor();

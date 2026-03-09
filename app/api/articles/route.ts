@@ -3,6 +3,8 @@ import { prisma } from '@/lib/db';
 import { requireEditor, handleApiError, jsonError } from '@/lib/api-utils';
 import { generateSlug } from '@/lib/transliterate';
 
+export const dynamic = 'force-dynamic';
+
 const ARTICLE_INCLUDE = {
   category: true,
   author: {

@@ -4,6 +4,8 @@ import crypto from 'crypto';
 import { config } from '@/lib/config';
 import { generatePkce } from '@/lib/auth';
 
+export const dynamic = 'force-dynamic';
+
 /**
  * GET /api/auth/telegram
  *
