@@ -53,9 +53,9 @@ Set this env var during build to enable `output: 'standalone'` in `next.config.j
 ## Database
 
 - **Provider**: PostgreSQL on Supabase
-- **Client**: `@supabase/supabase-js` (same as TR-BUTE)
-- **Schema**: `SQL_SCHEMA.sql` — apply via Supabase Dashboard SQL editor
-- **Env vars**: `DATABASE_URL`, `SUPABASE_URL`, `SUPABASE_ANON_KEY` managed in platform dashboards
+- **Client**: Prisma ORM (`@prisma/client`) — schema changes applied manually via Supabase Dashboard SQL editor
+- **Schema**: `SQL_SCHEMA.sql` — reference file, apply via Supabase Dashboard
+- **Env vars**: `DATABASE_URL` managed in platform dashboards (Vercel + GitHub secrets)
 
 ## Image Storage
 

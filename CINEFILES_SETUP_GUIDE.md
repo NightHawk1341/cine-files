@@ -6,25 +6,31 @@ This document is your personal checklist for setting up CineFiles infrastructure
 
 ## Phase 0: Accounts & Services Setup
 
-### 0.1 — Supabase (New Project)
+### 0.1 — Supabase (New Project) — DONE
 
-- [ ] Go to [app.supabase.com](https://app.supabase.com)
-- [ ] Create a new project named `cinefiles` (keep it in the same organization as TR-BUTE if you want)
-- [ ] Choose a region close to your audience (EU or Singapore — Supabase doesn't have Russian regions)
-- [ ] Save from Project Settings → Database:
+- [x] Go to [app.supabase.com](https://app.supabase.com)
+- [x] Create a new project named `cinefiles` (keep it in the same organization as TR-BUTE if you want)
+- [x] Choose a region close to your audience (EU or Singapore — Supabase doesn't have Russian regions)
+- [x] Save from Project Settings → Database:
   - `DATABASE_URL` (Connection string → URI, use **"Transaction" mode pooler** for Next.js/Prisma)
-- [ ] Note: CineFiles uses **Prisma ORM** (not `@supabase/supabase-js`). Only the PostgreSQL connection string is needed — no Supabase URL or service role key.
+- [x] Note: CineFiles uses **Prisma ORM** (not `@supabase/supabase-js`). Only the PostgreSQL connection string is needed — no Supabase URL or service role key.
 
-### 0.2 — Yandex Cloud (New Resources)
+### 0.2 — Yandex Cloud (New Resources) — LATER
 
-You likely already have a Yandex Cloud account for TR-BUTE. Create new resources under the same account or a separate folder:
+You already have a Yandex Cloud account with TR-BUTE's S3 bucket and CDN.
 
-- [ ] Create a new **S3 bucket**: `cinefiles-media`
-  - Region: `ru-central1`
-  - Access: private (public read via signed URLs or CDN)
-  - Create a service account with `storage.editor` role
-  - Generate static access keys (S3-compatible)
-  - Save: `YANDEX_S3_ACCESS_KEY`, `YANDEX_S3_SECRET_KEY`
+**Decision needed: S3 storage strategy**
+
+Two options for CineFiles image storage:
+
+- **Option A: Reuse TRIBUTE's existing S3 bucket** — add a `cinefiles/` prefix (folder) inside the existing bucket. Reuse the same service account keys. Pros: no extra bucket, shared CDN, simpler. Cons: shared access keys, shared quota.
+- **Option B: Separate S3 bucket** — `cinefiles-media` in the same Yandex Cloud account. Separate service account + keys. Pros: isolated access, clean separation. Cons: another bucket to manage, may need separate CDN config.
+
+For now, skip this step. We'll revisit when tackling Yandex Cloud deployment.
+
+- [ ] Decide S3 strategy (see options above)
+- [ ] Create bucket / configure prefix (depending on choice)
+- [ ] Save: `YANDEX_S3_ACCESS_KEY`, `YANDEX_S3_SECRET_KEY`, `YANDEX_S3_BUCKET`
 
 - [ ] (Optional) Create a **Managed Redis** instance for session/cache
   - Or skip and use Next.js built-in ISR cache for now
@@ -33,21 +39,21 @@ You likely already have a Yandex Cloud account for TR-BUTE. Create new resources
   - **Option A: Serverless Containers** — auto-scaling, pay-per-use (recommended for start)
   - **Option B: Compute VM** — fixed cost, more control (better if traffic is predictable)
 
-### 0.3 — Vercel (New Project)
+### 0.3 — Vercel (New Project) — DONE
 
-- [ ] Go to [vercel.com](https://vercel.com)
-- [ ] Create a new project (will connect to the CineFiles GitHub repo later)
-- [ ] Note: This serves dual purpose:
+- [x] Go to [vercel.com](https://vercel.com)
+- [x] Create a new project and connect to the CineFiles GitHub repo
+- [x] Note: This serves dual purpose:
   1. Fallback deployment of the full site
   2. Always-on host for the TMDB proxy (since Yandex Cloud can't reach TMDB)
 
-### 0.4 — TMDB API Key
+### 0.4 — TMDB API Key — DONE
 
-- [ ] Go to [themoviedb.org](https://www.themoviedb.org/settings/api) (use VPN if in Russia)
-- [ ] Create an account or log in
-- [ ] Request an API key (v3 auth)
-- [ ] Save: `TMDB_API_KEY`
-- [ ] Note: You only need to access TMDB once for this step. After that, the Vercel proxy handles all calls.
+- [x] Go to [themoviedb.org](https://www.themoviedb.org/settings/api) (use VPN if in Russia)
+- [x] Create an account or log in
+- [x] Request an API key (v3 auth)
+- [x] Save: `TMDB_API_KEY`
+- [x] Note: You only need to access TMDB once for this step. After that, the Vercel proxy handles all calls.
 
 ### 0.5 — Domain
 
@@ -85,94 +91,95 @@ You likely already have a Yandex Cloud account for TR-BUTE. Create new resources
 - [ ] Enable: Webvisor, heatmaps, form analytics
 - [ ] Save the counter ID for embedding
 
-### 0.10 — Email (For Notifications)
+### 0.10 — Email (For Notifications) — FUTURE
 
-- [ ] If using Yandex Postbox: create an email identity for CineFiles domain
-- [ ] Or reuse existing Postbox keys if the domain is verified
-- [ ] Save: `POSTBOX_API_KEY_ID`, `POSTBOX_API_KEY_SECRET`, `NOTIFICATION_FROM_EMAIL`
+Not yet wired into `lib/config.ts`. Will be added when the notification system is built. Skip for now.
 
 ---
 
-## Phase 1: GitHub Repository
+## Phase 1: GitHub Repository — DONE
 
-### 1.1 — Create Repo
+### 1.1 — Create Repo — DONE
 
-- [ ] Create a new **private** GitHub repository: `CineFiles` (or your preferred name)
-- [ ] Initialize with:
-  ```bash
-  git init
-  git remote add origin git@github.com:YOUR_USERNAME/CineFiles.git
-  ```
+- [x] GitHub repository created and initialized
 
-### 1.2 — Connect to Vercel
+### 1.2 — Connect to Vercel — DONE
 
-- [ ] In Vercel dashboard, import the GitHub repo
-- [ ] Framework: Next.js (auto-detected)
-- [ ] Set environment variables (see Section below)
-- [ ] Deploy (will fail initially — that's fine, just confirms the connection)
+- [x] In Vercel dashboard, import the GitHub repo
+- [x] Framework: Next.js (auto-detected)
 
 ---
 
 ## Phase 2: Environment Variables
 
-### 2.1 — Create `.env.local` for Development
+### Storage Policy (Mirrors TR-BUTE)
 
-All variables below are parsed in `lib/config.ts`. Missing required vars throw at startup.
+**No `.env` files are stored in the repository.** All secrets are managed in two places:
 
-```bash
-# Core
-NODE_ENV=development
-APP_URL=http://localhost:3000
-DATABASE_URL=postgresql://...your-supabase-connection-string...
-JWT_SECRET=generate-a-random-64-char-string
-SESSION_SECRET=generate-another-random-64-char-string
-CRON_SECRET=generate-another-random-64-char-string
+1. **Vercel** — Project Settings → Environment Variables (for Vercel deployments)
+2. **GitHub repo secrets** — Settings → Secrets and variables → Actions (for Yandex Cloud deployment via CI/CD)
 
-# Auth — Yandex
-YANDEX_CLIENT_ID=from-step-0.6
-YANDEX_CLIENT_SECRET=from-step-0.6
+The GitHub Actions workflow (`deploy-yandex.yml`) injects all secrets into the Docker container at runtime via `-e` flags. This is the same pattern as TR-BUTE.
 
-# Auth — VK
-VK_CLIENT_ID=from-step-0.7
-VK_CLIENT_SECRET=from-step-0.7
+For **local development**, create a `.env.local` file (already gitignored) — but never commit it. Copy from the variable reference below.
 
-# Auth — Telegram
-TELEGRAM_BOT_TOKEN=from-step-0.8
+### 2.1 — Variable Reference
 
-# Storage — Yandex S3
-YANDEX_S3_ENDPOINT=https://storage.yandexcloud.net
-YANDEX_S3_REGION=ru-central1
-YANDEX_S3_BUCKET=cinefiles-media
-YANDEX_S3_ACCESS_KEY=from-step-0.2
-YANDEX_S3_SECRET_KEY=from-step-0.2
+All variables are parsed in `lib/config.ts`. Missing required vars throw at startup.
 
-# TMDB
-TMDB_API_KEY=from-step-0.4
-TMDB_PROXY_URL=http://localhost:3000/api/tmdb
-TMDB_PROXY_SECRET=generate-a-shared-secret
+| Variable | Source | Notes |
+|----------|--------|-------|
+| `NODE_ENV` | Automatic | `production` on Vercel/Yandex, `development` locally |
+| `APP_URL` | Set per environment | `http://localhost:3000` / `https://cinefiles.vercel.app` / `https://cinefiles.ru` |
+| `DATABASE_URL` | Supabase dashboard | Connection string → URI, "Transaction" mode pooler |
+| `JWT_SECRET` | Generate | `openssl rand -hex 32` |
+| `SESSION_SECRET` | Generate | `openssl rand -hex 32` |
+| `CRON_SECRET` | Generate | `openssl rand -hex 32` |
+| `YANDEX_CLIENT_ID` | Step 0.6 | |
+| `YANDEX_CLIENT_SECRET` | Step 0.6 | |
+| `VK_CLIENT_ID` | Step 0.7 | |
+| `VK_CLIENT_SECRET` | Step 0.7 | |
+| `TELEGRAM_BOT_TOKEN` | Step 0.8 | |
+| `YANDEX_S3_ENDPOINT` | Default | `https://storage.yandexcloud.net` |
+| `YANDEX_S3_REGION` | Default | `ru-central1` |
+| `YANDEX_S3_BUCKET` | Step 0.2 | `cinefiles-media` or shared bucket name |
+| `YANDEX_S3_ACCESS_KEY` | Step 0.2 | |
+| `YANDEX_S3_SECRET_KEY` | Step 0.2 | |
+| `TMDB_API_KEY` | Step 0.4 | Already obtained |
+| `TMDB_PROXY_URL` | Vercel URL | `https://your-vercel-domain.vercel.app/api/tmdb` |
+| `TMDB_PROXY_SECRET` | Generate | Shared between CineFiles (Yandex) and proxy (Vercel) |
+| `TRIBUTE_API_URL` | TR-BUTE | `https://buy-tribute.com/api` |
+| `TRIBUTE_API_KEY` | Generate | Same value goes into TR-BUTE as `CINEFILES_API_KEY` |
 
-# TR-BUTE Integration
-TRIBUTE_API_URL=https://buy-tribute.com/api
-TRIBUTE_API_KEY=generate-and-add-to-tribute-env-too
+Optional:
 
-# Cache (optional — skip for initial setup)
-# REDIS_URL=redis://localhost:6379
-```
-
-Note: Email notification vars (`POSTBOX_API_KEY_ID`, etc.) are not yet wired into `lib/config.ts`. They will be added when the notification system is built. For now, skip step 0.10 — it's a future task.
+| Variable | Description |
+|----------|-------------|
+| `REDIS_URL` | Redis connection (skip for initial setup) |
+| `DOCKER_BUILD` | Set to `true` **only** during Docker builds |
 
 ### 2.2 — Set Vercel Environment Variables
 
 - [ ] Go to Vercel project → Settings → Environment Variables
-- [ ] Add all variables from above (use production values)
+- [ ] Add all variables from the reference above (use production values)
 - [ ] For `TMDB_PROXY_URL`: set to `https://your-vercel-domain.vercel.app/api/tmdb`
+- [ ] Note: You can set variables for Preview/Production/Development scopes separately
 
-### 2.3 — Set Yandex Cloud Environment Variables
+### 2.3 — Set GitHub Repository Secrets
 
-- [ ] Depends on deployment method:
-  - **Serverless Containers**: set in container revision config
-  - **Compute VM**: set in systemd service file or `.env` on the server
-- [ ] Use the same variable list, but `TMDB_PROXY_URL` points to the Vercel proxy
+- [ ] Go to GitHub repo → Settings → Secrets and variables → Actions
+- [ ] Add all application env vars as repository secrets
+- [ ] Add deployment-specific secrets:
+
+| Secret | Description |
+|--------|-------------|
+| `YC_REGISTRY_ID` | Yandex Container Registry ID |
+| `YC_SA_JSON_KEY` | Yandex Cloud service account JSON key |
+| `DEPLOY_HOST` | Server hostname/IP for SSH deployment |
+| `DEPLOY_USER` | SSH username on deployment server |
+| `DEPLOY_SSH_KEY` | SSH private key for deployment |
+
+These are used by `.github/workflows/deploy-yandex.yml` to build, push, and deploy the Docker image.
 
 ---
 
@@ -226,7 +233,7 @@ All details, code patterns, and gotchas are in the TR-BUTE-side guide.
 
 ---
 
-## Phase 5: Yandex Cloud Deployment
+## Phase 5: Yandex Cloud Deployment — LATER
 
 ### 5.1 — Docker Setup
 
@@ -285,18 +292,18 @@ All details, code patterns, and gotchas are in the TR-BUTE-side guide.
 
 ## Quick Reference: All Services & Their Purpose
 
-| Service | Used For | Account |
-|---------|----------|---------|
-| Supabase | PostgreSQL database | New project in existing org |
-| Yandex Cloud | Primary hosting, S3 storage | Existing account |
-| Vercel | Fallback hosting, TMDB proxy | New project in existing account |
-| TMDB | Movie/show metadata | New account (needs VPN) |
-| Yandex OAuth | User login | New app in existing account |
-| VK ID | User login | New app |
-| Telegram BotFather | Login widget bot | New bot |
-| Yandex Metrica | Analytics | New counter |
-| Yandex Postbox | Email notifications | Existing or new identity |
-| GitHub | Source code | New private repo |
+| Service | Used For | Account | Status |
+|---------|----------|---------|--------|
+| Supabase | PostgreSQL database | New project in existing org | DONE |
+| Yandex Cloud | Primary hosting, S3 storage | Existing account | LATER |
+| Vercel | Fallback hosting, TMDB proxy | New project, connected to repo | DONE |
+| TMDB | Movie/show metadata | New account | DONE |
+| GitHub | Source code | Repository created | DONE |
+| Yandex OAuth | User login | New app in existing account | TODO |
+| VK ID | User login | New app | TODO |
+| Telegram BotFather | Login widget bot | New bot | TODO |
+| Yandex Metrica | Analytics | New counter | TODO |
+| Yandex Postbox | Email notifications | Existing or new identity | FUTURE |
 
 ---
 
@@ -304,10 +311,10 @@ All details, code patterns, and gotchas are in the TR-BUTE-side guide.
 
 These are random strings you generate yourself (use `openssl rand -hex 32`):
 
-| Secret | Where Used |
-|--------|-----------|
-| `JWT_SECRET` | CineFiles auth tokens |
-| `SESSION_SECRET` | CineFiles sessions |
-| `CRON_SECRET` | Bearer token for `/api/cron/*` endpoints |
-| `TMDB_PROXY_SECRET` | Shared between CineFiles (Yandex) and TMDB proxy (Vercel) |
-| `TRIBUTE_API_KEY` / `CINEFILES_API_KEY` | Same value, used by both sites for cross-API auth |
+| Secret | Where Used | Where Stored |
+|--------|-----------|--------------|
+| `JWT_SECRET` | CineFiles auth tokens | Vercel + GitHub secrets |
+| `SESSION_SECRET` | CineFiles sessions | Vercel + GitHub secrets |
+| `CRON_SECRET` | Bearer token for `/api/cron/*` endpoints | Vercel + GitHub secrets |
+| `TMDB_PROXY_SECRET` | Shared between CineFiles (Yandex) and TMDB proxy (Vercel) | Vercel + GitHub secrets |
+| `TRIBUTE_API_KEY` / `CINEFILES_API_KEY` | Same value, used by both sites for cross-API auth | Both projects' Vercel + GitHub secrets |
