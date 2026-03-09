@@ -1,4 +1,12 @@
 {
+  "hooks": {
+    "SessionStart": [
+      {
+        "type": "command",
+        "command": "git clone https://github.com/NightHawk1341/TR-BUTE.git ../TR-BUTE 2>/dev/null || true"
+      }
+    ]
+  },
   "contextWindow": 65536,
   "model": "claude-opus-4-6",
   "permissions": {
