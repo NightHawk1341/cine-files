@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/db';
+import { prisma } from '@/lib/db';
 import { syncTmdbEntity } from '@/lib/tmdb';
 
 /**
@@ -13,21 +13,26 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
-  const { data: staleEntities } = await supabase
-    .from('tmdb_entities')
-    .select('tmdb_id, entity_type')
-    .lt('last_synced_at', sevenDaysAgo)
-    .limit(50);
+  const staleEntities = await prisma.tmdbEntity.findMany({
+    where: {
+      lastSyncedAt: { lt: sevenDaysAgo },
+    },
+    select: {
+      tmdbId: true,
+      entityType: true,
+    },
+    take: 50,
+  });
 
   let synced = 0;
   let failed = 0;
 
-  for (const entity of staleEntities || []) {
+  for (const entity of staleEntities) {
     try {
-      const type = entity.entity_type as 'movie' | 'tv' | 'person';
-      await syncTmdbEntity(type, entity.tmdb_id);
+      const type = entity.entityType as 'movie' | 'tv' | 'person';
+      await syncTmdbEntity(type, entity.tmdbId);
       synced++;
     } catch {
       failed++;
@@ -35,17 +40,15 @@ export async function GET(request: Request) {
   }
 
   // Clean expired cache entries
-  const { count } = await supabase
-    .from('tmdb_cache')
-    .delete()
-    .lt('expires_at', new Date().toISOString())
-    .select('*', { count: 'exact', head: true });
+  const deleted = await prisma.tmdbCache.deleteMany({
+    where: { expiresAt: { lt: new Date() } },
+  });
 
   return NextResponse.json({
     message: 'TMDB sync complete',
-    stale: (staleEntities || []).length,
+    stale: staleEntities.length,
     synced,
     failed,
-    cacheCleared: count || 0,
+    cacheCleared: deleted.count,
   });
 }

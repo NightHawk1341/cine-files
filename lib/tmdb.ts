@@ -1,5 +1,5 @@
 import { config } from './config';
-import { supabase, camelizeKeys } from './db';
+import { prisma } from './db';
 
 interface TmdbSearchResult {
   id: number;
@@ -40,13 +40,11 @@ async function fetchFromProxy<T>(path: string): Promise<T | null> {
 
 async function getCachedOrFetch<T>(cacheKey: string, path: string, ttlHours = 24): Promise<T | null> {
   // Check cache first
-  const { data: cached } = await supabase
-    .from('tmdb_cache')
-    .select('response, expires_at')
-    .eq('cache_key', cacheKey)
-    .single();
+  const cached = await prisma.tmdbCache.findUnique({
+    where: { cacheKey },
+  });
 
-  if (cached && new Date(cached.expires_at) > new Date()) {
+  if (cached && new Date(cached.expiresAt) > new Date()) {
     return cached.response as T;
   }
 
@@ -55,11 +53,12 @@ async function getCachedOrFetch<T>(cacheKey: string, path: string, ttlHours = 24
   if (!data) return null;
 
   // Store in cache
-  const expiresAt = new Date(Date.now() + ttlHours * 60 * 60 * 1000).toISOString();
-  await supabase.from('tmdb_cache').upsert(
-    { cache_key: cacheKey, response: data as object, expires_at: expiresAt },
-    { onConflict: 'cache_key' }
-  );
+  const expiresAt = new Date(Date.now() + ttlHours * 60 * 60 * 1000);
+  await prisma.tmdbCache.upsert({
+    where: { cacheKey },
+    update: { response: data as object, expiresAt },
+    create: { cacheKey, response: data as object, expiresAt },
+  });
 
   return data;
 }
@@ -88,22 +87,24 @@ export async function syncTmdbEntity(type: 'movie' | 'tv' | 'person', tmdbId: nu
   const titleRu = (entity.title as string) || (entity.name as string) || null;
   const titleEn = (entity.original_title as string) || (entity.original_name as string) || null;
 
-  const { data: result } = await supabase
-    .from('tmdb_entities')
-    .upsert(
-      {
-        tmdb_id: tmdbId,
-        entity_type: type,
-        title_ru: titleRu,
-        title_en: titleEn,
-        metadata: entity as object,
-        credits: (entity.credits as object) ?? null,
-        last_synced_at: new Date().toISOString(),
-      },
-      { onConflict: 'tmdb_id,entity_type' }
-    )
-    .select()
-    .single();
-
-  return result ? camelizeKeys<{ id: number; tmdbId: number; entityType: string; titleRu: string | null; titleEn: string | null }>(result) : null;
+  return prisma.tmdbEntity.upsert({
+    where: {
+      tmdbId_entityType: { tmdbId, entityType: type },
+    },
+    update: {
+      titleRu,
+      titleEn,
+      metadata: entity as object,
+      credits: (entity.credits as object) ?? null,
+      lastSyncedAt: new Date(),
+    },
+    create: {
+      tmdbId,
+      entityType: type,
+      titleRu,
+      titleEn,
+      metadata: entity as object,
+      credits: (entity.credits as object) ?? null,
+    },
+  });
 }

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { config } from '@/lib/config';
 import { verifyTelegramIdToken, createSession } from '@/lib/auth';
-import { supabase, camelizeKeys } from '@/lib/db';
+import { prisma } from '@/lib/db';
 
 /**
  * GET /api/auth/telegram/callback
@@ -88,40 +88,30 @@ export async function GET(request: NextRequest) {
     const telegramId = tgUser.sub;
 
     // Find or create user
-    const { data: existingUser } = await supabase
-      .from('users')
-      .select('*')
-      .eq('telegram_id', telegramId)
-      .single();
+    let user = await prisma.user.findUnique({
+      where: { telegramId },
+    });
 
-    let user;
-
-    if (!existingUser) {
-      const { data: newUser } = await supabase
-        .from('users')
-        .insert({
-          telegram_id: telegramId,
-          display_name: [tgUser.first_name, tgUser.last_name].filter(Boolean).join(' ') || `tg_${telegramId}`,
-          avatar_url: tgUser.photo_url || null,
-          login_method: 'telegram',
+    if (!user) {
+      user = await prisma.user.create({
+        data: {
+          telegramId,
+          displayName: [tgUser.first_name, tgUser.last_name].filter(Boolean).join(' ') || `tg_${telegramId}`,
+          avatarUrl: tgUser.photo_url || null,
+          loginMethod: 'telegram',
           role: 'reader',
-        })
-        .select()
-        .single();
-      user = camelizeKeys<{ id: number; role: string }>(newUser);
+        },
+      });
     } else {
       // Update last login and profile info
-      const { data: updatedUser } = await supabase
-        .from('users')
-        .update({
-          last_login_at: new Date().toISOString(),
-          avatar_url: tgUser.photo_url || existingUser.avatar_url,
-          display_name: existingUser.display_name || [tgUser.first_name, tgUser.last_name].filter(Boolean).join(' '),
-        })
-        .eq('id', existingUser.id)
-        .select()
-        .single();
-      user = camelizeKeys<{ id: number; role: string }>(updatedUser);
+      user = await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          lastLoginAt: new Date(),
+          avatarUrl: tgUser.photo_url || user.avatarUrl,
+          displayName: user.displayName || [tgUser.first_name, tgUser.last_name].filter(Boolean).join(' '),
+        },
+      });
     }
 
     // Create session (JWT access token + refresh token)

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/db';
+import { prisma } from '@/lib/db';
 import { requireAdmin, handleApiError, jsonError } from '@/lib/api-utils';
 
 interface RouteParams {
@@ -15,11 +15,10 @@ export async function POST(request: Request, { params }: RouteParams) {
     const formData = await request.formData();
     const action = formData.get('action') as string;
 
-    const { data: comment } = await supabase
-      .from('comments')
-      .select('article_id, status')
-      .eq('id', commentId)
-      .single();
+    const comment = await prisma.comment.findUnique({
+      where: { id: commentId },
+      select: { articleId: true, status: true },
+    });
 
     if (!comment) return jsonError('Comment not found', 404);
 
@@ -34,27 +33,22 @@ export async function POST(request: Request, { params }: RouteParams) {
     const wasVisible = comment.status === 'visible';
     const willBeVisible = newStatus === 'visible';
 
-    await supabase
-      .from('comments')
-      .update({ status: newStatus })
-      .eq('id', commentId);
+    await prisma.comment.update({
+      where: { id: commentId },
+      data: { status: newStatus },
+    });
 
     // Update article comment count
-    if (wasVisible !== willBeVisible) {
-      const { data: art } = await supabase
-        .from('articles')
-        .select('comment_count')
-        .eq('id', comment.article_id)
-        .single();
-      if (art) {
-        const newCount = willBeVisible
-          ? art.comment_count + 1
-          : Math.max(0, art.comment_count - 1);
-        await supabase
-          .from('articles')
-          .update({ comment_count: newCount })
-          .eq('id', comment.article_id);
-      }
+    if (wasVisible && !willBeVisible) {
+      await prisma.article.update({
+        where: { id: comment.articleId },
+        data: { commentCount: { decrement: 1 } },
+      });
+    } else if (!wasVisible && willBeVisible) {
+      await prisma.article.update({
+        where: { id: comment.articleId },
+        data: { commentCount: { increment: 1 } },
+      });
     }
 
     // Redirect back to moderation page

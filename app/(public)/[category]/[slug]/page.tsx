@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
-import { supabase, camelizeKeys } from '@/lib/db';
+import { prisma } from '@/lib/db';
 import { notFound } from 'next/navigation';
 import { ArticleMeta } from '@/components/article/ArticleMeta';
 import { ArticleBody } from '@/components/article/ArticleBody';
@@ -13,46 +13,15 @@ interface ArticlePageProps {
   params: Promise<{ category: string; slug: string }>;
 }
 
-const ARTICLE_SELECT = `
-  *,
-  category:categories(*),
-  author:users!author_id(id, display_name, avatar_url),
-  tags:article_tags(*, tag:tags(*))
-`;
-
-interface ArticleData {
-  id: number;
-  slug: string;
-  title: string;
-  subtitle: string | null;
-  lead: string | null;
-  body: Block[];
-  coverImageUrl: string | null;
-  coverImageAlt: string | null;
-  coverImageCredit: string | null;
-  metaTitle: string | null;
-  metaDescription: string | null;
-  canonicalUrl: string | null;
-  status: string;
-  publishedAt: string | null;
-  updatedAt: string | null;
-  viewCount: number;
-  commentCount: number;
-  allowComments: boolean;
-  category: { slug: string; nameRu: string };
-  author: { id: number; displayName: string | null; avatarUrl: string | null };
-  tags: Array<{ tag: { slug: string; nameRu: string } }>;
-}
-
-async function getArticle(slug: string): Promise<ArticleData | null> {
-  const { data } = await supabase
-    .from('articles')
-    .select(ARTICLE_SELECT)
-    .eq('slug', slug)
-    .eq('status', 'published')
-    .single();
-
-  return data ? camelizeKeys<ArticleData>(data) : null;
+async function getArticle(slug: string) {
+  return prisma.article.findFirst({
+    where: { slug, status: 'published' },
+    include: {
+      category: true,
+      author: { select: { id: true, displayName: true, avatarUrl: true } },
+      tags: { include: { tag: true } },
+    },
+  });
 }
 
 export async function generateMetadata({ params }: ArticlePageProps): Promise<Metadata> {
@@ -70,8 +39,8 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
       title,
       description,
       type: 'article',
-      publishedTime: article.publishedAt || undefined,
-      modifiedTime: article.updatedAt || undefined,
+      publishedTime: article.publishedAt?.toISOString(),
+      modifiedTime: article.updatedAt?.toISOString() || undefined,
       authors: article.author.displayName ? [article.author.displayName] : undefined,
       images: article.coverImageUrl ? [article.coverImageUrl] : undefined,
     },
@@ -91,21 +60,10 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
   if (!article) notFound();
 
   // Increment view count (fire-and-forget)
-  supabase
-    .from('articles')
-    .select('view_count')
-    .eq('id', article.id)
-    .single()
-    .then(({ data }) => {
-      if (data) {
-        supabase
-          .from('articles')
-          .update({ view_count: data.view_count + 1 })
-          .eq('id', article.id)
-          .then();
-      }
-    })
-    .catch(() => {});
+  prisma.article.update({
+    where: { id: article.id },
+    data: { viewCount: { increment: 1 } },
+  }).catch(() => {});
 
   const blocks = article.body as Block[];
 
@@ -115,8 +73,8 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
     headline: article.title,
     ...(article.lead && { description: article.lead }),
     ...(article.coverImageUrl && { image: article.coverImageUrl }),
-    datePublished: article.publishedAt,
-    ...(article.updatedAt && { dateModified: article.updatedAt }),
+    datePublished: article.publishedAt?.toISOString(),
+    ...(article.updatedAt && { dateModified: article.updatedAt.toISOString() }),
     author: {
       '@type': 'Person',
       name: article.author.displayName || 'CineFiles',
@@ -158,8 +116,8 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
           subtitle={article.subtitle}
           authorName={article.author.displayName}
           authorId={article.author.id}
-          publishedAt={article.publishedAt}
-          updatedAt={article.updatedAt}
+          publishedAt={article.publishedAt?.toISOString()}
+          updatedAt={article.updatedAt?.toISOString()}
           viewCount={article.viewCount}
           commentCount={article.commentCount}
         />

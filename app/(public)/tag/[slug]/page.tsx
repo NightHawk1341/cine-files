@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { supabase, camelizeKeys } from '@/lib/db';
+import { prisma } from '@/lib/db';
 import { notFound } from 'next/navigation';
 import { ArticleCard } from '@/components/article/ArticleCard';
 import Link from 'next/link';
@@ -10,32 +10,15 @@ interface TagPageProps {
   searchParams: Promise<{ page?: string }>;
 }
 
-interface TagData {
-  id: number;
-  slug: string;
-  nameRu: string;
-  nameEn: string | null;
-  tagType: string;
-  tmdbEntity: {
-    tmdbId: number;
-    entityType: string;
-    titleRu: string | null;
-    titleEn: string | null;
-    metadata: Record<string, unknown> | null;
-  } | null;
-}
-
-async function getTag(slug: string): Promise<TagData | null> {
-  const { data } = await supabase
-    .from('tags')
-    .select(`
-      *,
-      tmdb_entity:tmdb_entities(tmdb_id, entity_type, title_ru, title_en, metadata)
-    `)
-    .eq('slug', slug)
-    .single();
-
-  return data ? camelizeKeys<TagData>(data) : null;
+async function getTag(slug: string) {
+  return prisma.tag.findUnique({
+    where: { slug },
+    include: {
+      tmdbEntity: {
+        select: { tmdbId: true, entityType: true, titleRu: true, titleEn: true, metadata: true },
+      },
+    },
+  });
 }
 
 export async function generateMetadata({ params }: TagPageProps): Promise<Metadata> {
@@ -65,15 +48,6 @@ const TAG_TYPE_LABELS: Record<string, string> = {
   anime: 'Аниме',
 };
 
-const ARTICLE_SELECT = `
-  article:articles(
-    *,
-    category:categories(*),
-    author:users!author_id(id, display_name, avatar_url),
-    tags:article_tags(*, tag:tags(*))
-  )
-`;
-
 export default async function TagPage({ params, searchParams }: TagPageProps) {
   const { slug } = await params;
   const { page: pageStr } = await searchParams;
@@ -83,37 +57,30 @@ export default async function TagPage({ params, searchParams }: TagPageProps) {
   const tag = await getTag(slug);
   if (!tag) notFound();
 
-  const from = (page - 1) * limit;
-  const to = from + limit - 1;
-
-  const [articleTagsResult, countResult] = await Promise.all([
-    supabase
-      .from('article_tags')
-      .select(ARTICLE_SELECT)
-      .eq('tag_id', tag.id)
-      .range(from, to),
-    supabase
-      .from('article_tags')
-      .select('*', { count: 'exact', head: true })
-      .eq('tag_id', tag.id),
+  const [articleTags, total] = await Promise.all([
+    prisma.articleTag.findMany({
+      where: { tagId: tag.id, article: { status: 'published' } },
+      include: {
+        article: {
+          include: {
+            category: true,
+            author: { select: { id: true, displayName: true, avatarUrl: true } },
+            tags: { include: { tag: true } },
+          },
+        },
+      },
+      orderBy: { article: { publishedAt: 'desc' } },
+      skip: (page - 1) * limit,
+      take: limit,
+    }),
+    prisma.articleTag.count({
+      where: { tagId: tag.id, article: { status: 'published' } },
+    }),
   ]);
 
-  // Filter to published articles and camelize
-  const allArticleTags = camelizeKeys<Array<{
-    article: {
-      id: number; slug: string; title: string; lead: string | null; status: string;
-      coverImageUrl: string | null; coverImageAlt: string | null;
-      publishedAt: string | null; viewCount: number; commentCount: number;
-      category: { slug: string };
-      author: { displayName: string | null };
-      tags: Array<{ tag: { slug: string; nameRu: string } }>;
-    };
-  }>>(articleTagsResult.data || []);
-
-  const articleTags = allArticleTags.filter((at) => at.article.status === 'published');
-  const total = countResult.count || 0;
   const totalPages = Math.ceil(total / limit);
-  const meta = tag.tmdbEntity?.metadata;
+  const tmdb = tag.tmdbEntity;
+  const meta = tmdb?.metadata as Record<string, unknown> | null;
 
   return (
     <div className="container" style={{ paddingTop: 32 }}>
@@ -150,7 +117,7 @@ export default async function TagPage({ params, searchParams }: TagPageProps) {
                 lead={article.lead}
                 coverImageUrl={article.coverImageUrl}
                 coverImageAlt={article.coverImageAlt}
-                publishedAt={article.publishedAt}
+                publishedAt={article.publishedAt?.toISOString()}
                 authorName={article.author.displayName}
                 viewCount={article.viewCount}
                 commentCount={article.commentCount}

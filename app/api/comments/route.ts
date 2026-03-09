@@ -1,6 +1,19 @@
 import { NextResponse } from 'next/server';
-import { supabase, camelizeKeys } from '@/lib/db';
+import { prisma } from '@/lib/db';
 import { requireAuth, handleApiError, jsonError } from '@/lib/api-utils';
+
+const COMMENT_INCLUDE = {
+  user: {
+    select: { id: true, displayName: true, avatarUrl: true },
+  },
+  replies: {
+    include: {
+      user: { select: { id: true, displayName: true, avatarUrl: true } },
+    },
+    where: { status: 'visible' },
+    orderBy: { createdAt: 'asc' as const },
+  },
+};
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -12,35 +25,22 @@ export async function GET(request: Request) {
     return jsonError('article_id is required', 400);
   }
 
-  const from = (page - 1) * limit;
-  const to = from + limit - 1;
+  const where = {
+    articleId: parseInt(articleId),
+    parentId: null, // Only top-level comments
+    status: 'visible',
+  };
 
-  const [commentsResult, countResult] = await Promise.all([
-    supabase
-      .from('comments')
-      .select(`
-        *,
-        user:users!user_id(id, display_name, avatar_url),
-        replies:comments!parent_id(
-          *,
-          user:users!user_id(id, display_name, avatar_url)
-        )
-      `)
-      .eq('article_id', parseInt(articleId))
-      .is('parent_id', null)
-      .eq('status', 'visible')
-      .order('created_at', { ascending: false })
-      .range(from, to),
-    supabase
-      .from('comments')
-      .select('*', { count: 'exact', head: true })
-      .eq('article_id', parseInt(articleId))
-      .is('parent_id', null)
-      .eq('status', 'visible'),
+  const [comments, total] = await Promise.all([
+    prisma.comment.findMany({
+      where,
+      include: COMMENT_INCLUDE,
+      orderBy: { createdAt: 'desc' },
+      skip: (page - 1) * limit,
+      take: limit,
+    }),
+    prisma.comment.count({ where }),
   ]);
-
-  const comments = camelizeKeys(commentsResult.data || []);
-  const total = countResult.count || 0;
 
   return NextResponse.json({
     comments,
@@ -58,60 +58,49 @@ export async function POST(request: Request) {
     }
 
     // Verify article exists and allows comments
-    const { data: article } = await supabase
-      .from('articles')
-      .select('allow_comments, status')
-      .eq('id', articleId)
-      .single();
+    const article = await prisma.article.findUnique({
+      where: { id: articleId },
+      select: { allowComments: true, status: true },
+    });
 
     if (!article || article.status !== 'published') {
       return jsonError('Article not found', 404);
     }
 
-    if (!article.allow_comments) {
+    if (!article.allowComments) {
       return jsonError('Comments are disabled for this article', 403);
     }
 
     // Verify parent comment exists if replying
     if (parentId) {
-      const { data: parent } = await supabase
-        .from('comments')
-        .select('article_id, status')
-        .eq('id', parentId)
-        .single();
-      if (!parent || parent.article_id !== articleId || parent.status !== 'visible') {
+      const parent = await prisma.comment.findUnique({
+        where: { id: parentId },
+        select: { articleId: true, status: true },
+      });
+      if (!parent || parent.articleId !== articleId || parent.status !== 'visible') {
         return jsonError('Parent comment not found', 404);
       }
     }
 
-    const { data: comment } = await supabase
-      .from('comments')
-      .insert({
-        article_id: articleId,
-        user_id: user.userId,
-        parent_id: parentId || null,
+    const comment = await prisma.comment.create({
+      data: {
+        articleId,
+        userId: user.userId,
+        parentId: parentId || null,
         body: body.trim(),
-      })
-      .select(`
-        *,
-        user:users!user_id(id, display_name, avatar_url)
-      `)
-      .single();
+      },
+      include: {
+        user: { select: { id: true, displayName: true, avatarUrl: true } },
+      },
+    });
 
     // Increment comment count
-    const { data: art } = await supabase
-      .from('articles')
-      .select('comment_count')
-      .eq('id', articleId)
-      .single();
-    if (art) {
-      await supabase
-        .from('articles')
-        .update({ comment_count: art.comment_count + 1 })
-        .eq('id', articleId);
-    }
+    await prisma.article.update({
+      where: { id: articleId },
+      data: { commentCount: { increment: 1 } },
+    });
 
-    return NextResponse.json({ comment: camelizeKeys(comment) }, { status: 201 });
+    return NextResponse.json({ comment }, { status: 201 });
   } catch (error) {
     return handleApiError(error);
   }
