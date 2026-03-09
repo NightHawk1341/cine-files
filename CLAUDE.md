@@ -8,7 +8,7 @@ Sister project to [TR-BUTE](https://buy-tribute.com) (e-commerce). They share CS
 - **Framework**: Next.js 14+ (App Router), TypeScript strict mode
 - **Database**: PostgreSQL via Supabase (`@supabase/supabase-js`)
 - **Styling**: CSS Modules + CSS Variables (dark/light themes)
-- **Auth**: Yandex OAuth (primary), VK ID, Telegram Login Widget
+- **Auth**: Yandex OAuth (primary), VK ID, Telegram OIDC — all shared with TR-BUTE
 - **Storage**: Yandex S3 for images
 - **Deployment**: Yandex Cloud (Docker) primary, Vercel fallback
 

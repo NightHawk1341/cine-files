@@ -30,10 +30,11 @@ GitHub Actions secrets mirror these for the CI/CD deploy workflow.
 | `VK_CLIENT_ID` | VK ID application ID |
 | `VK_CLIENT_SECRET` | VK ID application secret |
 
-### OAuth — Telegram
+### OAuth — Telegram (OIDC)
 | Variable | Description |
 |----------|-------------|
-| `TELEGRAM_BOT_TOKEN` | Telegram bot token for Login Widget |
+| `TELEGRAM_BOT_TOKEN` | Telegram bot token (shared with TR-BUTE) |
+| `TELEGRAM_BOT_ID` | Numeric bot ID — the number before `:` in the bot token (used as OIDC `client_id`) |
 
 ### Yandex S3 (Image Storage)
 | Variable | Description | Default |

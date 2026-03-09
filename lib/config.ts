@@ -35,6 +35,7 @@ export const config = {
 
   telegram: {
     botToken: getEnvVar('TELEGRAM_BOT_TOKEN', ''),
+    botId: getEnvVar('TELEGRAM_BOT_ID', ''),
   },
 
   s3: {

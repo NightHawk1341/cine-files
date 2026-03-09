@@ -469,15 +469,18 @@ These will be implemented when we build the integration features.
 | Provider | Flow | Primary/Secondary |
 |----------|------|-------------------|
 | **Yandex OAuth** | Standard OAuth 2.0 redirect flow | Primary |
-| **VK ID** | VK ID SDK + OAuth callback | Secondary |
-| **Telegram Login Widget** | Data-check-string verification (NOT mini-app) | Tertiary |
+| **VK ID** | VK ID SDK + OAuth callback (PKCE) | Secondary |
+| **Telegram OIDC** | OAuth 2.0 redirect + PKCE via `oauth.telegram.org` | Tertiary |
+
+All three OAuth apps are **shared with TR-BUTE** — users have a single account across both sites.
 
 ### Implementation
 
 ```
-/api/auth/yandex    → OAuth redirect → callback → JWT
-/api/auth/vk        → VK ID redirect → callback → JWT
-/api/auth/telegram   → Login widget data → verify hash → JWT
+/api/auth/yandex             → OAuth redirect → callback → JWT
+/api/auth/vk                 → VK ID redirect (PKCE) → callback → JWT
+/api/auth/telegram            → OIDC redirect (PKCE) → oauth.telegram.org
+/api/auth/telegram/callback   → exchange code → verify id_token via JWKS → JWT
 ```
 
 - JWT access tokens: 7-day expiry (matches TR-BUTE)
