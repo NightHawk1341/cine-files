@@ -31,7 +31,7 @@ function BlockRenderer({ block }: { block: Block }) {
       );
 
     case 'heading': {
-      const Tag = `h${block.level}` as keyof JSX.IntrinsicElements;
+      const Tag = `h${block.level}` as 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
       return <Tag className={styles.heading}>{block.text}</Tag>;
     }
 

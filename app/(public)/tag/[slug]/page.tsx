@@ -92,10 +92,10 @@ export default async function TagPage({ params, searchParams }: TagPageProps) {
         {tag.nameEn && tag.nameEn !== tag.nameRu && (
           <p style={{ fontSize: 14, color: 'var(--text-tertiary)', marginTop: 4 }}>{tag.nameEn}</p>
         )}
-        {meta?.overview && (
+        {typeof meta?.overview === 'string' && meta.overview && (
           <p style={{ fontSize: 15, color: 'var(--text-secondary)', marginTop: 12, maxWidth: 700, lineHeight: 1.6 }}>
-            {String(meta.overview).slice(0, 300)}
-            {String(meta.overview).length > 300 && '...'}
+            {meta.overview.slice(0, 300)}
+            {meta.overview.length > 300 && '...'}
           </p>
         )}
         <p style={{ fontSize: 13, color: 'var(--text-tertiary)', marginTop: 8 }}>
