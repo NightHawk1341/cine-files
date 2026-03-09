@@ -2,18 +2,26 @@
 
 ## OAuth Providers
 
+All three OAuth apps are **shared with TR-BUTE** (sister project). Users have a single account across both sites. A login gateway screen shows both logos and explains this.
+
 ### Yandex (Primary)
 - Main auth method for Russian audience
 - Entry: `GET /api/auth/yandex` → redirects to Yandex OAuth
 - Callback processes authorization code → creates/updates user → issues JWT
+- Uses TR-BUTE's Yandex OAuth app (CineFiles redirect URI added)
 
 ### VK ID
 - Secondary OAuth provider
 - Popular among Russian social media users
+- Uses TR-BUTE's VK ID app (CineFiles redirect URI added)
 
-### Telegram Login Widget
+### Telegram OIDC (New Flow)
 - Tertiary auth method
-- Validates via `TELEGRAM_BOT_TOKEN` HMAC signature
+- Uses the new [Telegram Login](https://core.telegram.org/bots/telegram-login) OIDC flow
+- Standard OAuth2 redirect with PKCE to `oauth.telegram.org/auth`
+- Server exchanges auth code for `id_token` JWT, verified against Telegram's JWKS
+- Uses TR-BUTE's existing bot (CineFiles domain added via BotFather)
+- NOT the legacy Login Widget (old HMAC data-check-string approach)
 
 ## Token Architecture
 
@@ -73,8 +81,10 @@ This two-step approach keeps middleware lightweight (no DB queries) while ensuri
 ```
 
 ## Key Files
-- `lib/auth.ts` — JWT sign/verify, session helpers
+- `lib/auth.ts` — JWT sign/verify, session helpers, Telegram OIDC JWKS verification
 - `lib/api-utils.ts` — requireAuth, requireEditor, requireAdmin guards
 - `middleware.ts` — Admin route protection
-- `app/api/auth/yandex/route.ts` — OAuth entry point
+- `app/api/auth/yandex/route.ts` — Yandex OAuth entry point
+- `app/api/auth/telegram/route.ts` — Telegram OIDC entry point (PKCE redirect)
+- `app/api/auth/telegram/callback/route.ts` — Telegram OIDC callback (code exchange + JWT verify)
 - `app/admin/layout.tsx` — Server-side JWT verification for admin pages

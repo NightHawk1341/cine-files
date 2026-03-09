@@ -62,27 +62,29 @@ For now, skip this step. We'll revisit when tackling Yandex Cloud deployment.
   - Main domain → Yandex Cloud deployment
   - `vercel.` subdomain (or just the `.vercel.app` default) → Vercel
 
-### 0.6 — Yandex OAuth App (Separate from TR-BUTE)
+### 0.6 — Yandex OAuth App (Shared with TR-BUTE)
 
-- [ ] Go to [oauth.yandex.ru](https://oauth.yandex.ru/)
-- [ ] Create a new app for CineFiles
-- [ ] Scopes: `login:email`, `login:info`, `login:avatar`
-- [ ] Redirect URI: `https://your-cinefiles-domain.com/api/auth/yandex/callback`
-- [ ] Save: `YANDEX_CLIENT_ID`, `YANDEX_CLIENT_SECRET`
+CineFiles reuses TR-BUTE's existing OAuth apps. Users log in with the same accounts across both sites. A branded login gateway screen shows both logos and explains the shared account.
 
-### 0.7 — VK ID App (Separate from TR-BUTE)
+- [ ] Go to [oauth.yandex.ru](https://oauth.yandex.ru/) → open **TR-BUTE's existing Yandex app**
+- [ ] Add CineFiles redirect URI: `https://your-cinefiles-domain.com/api/auth/yandex/callback`
+- [ ] Use the **same** `YANDEX_CLIENT_ID` and `YANDEX_CLIENT_SECRET` as TR-BUTE
 
-- [ ] Go to [id.vk.com/about/business](https://id.vk.com/about/business)
-- [ ] Create a new VK ID app for CineFiles
-- [ ] Set redirect URI: `https://your-cinefiles-domain.com/api/auth/vk/callback`
-- [ ] Save: `VK_CLIENT_ID`, `VK_CLIENT_SECRET`
+### 0.7 — VK ID App (Shared with TR-BUTE)
 
-### 0.8 — Telegram Bot (For Login Widget)
+- [ ] Go to [id.vk.com/about/business](https://id.vk.com/about/business) → open **TR-BUTE's existing VK ID app**
+- [ ] Add CineFiles redirect URI: `https://your-cinefiles-domain.com/api/auth/vk/callback`
+- [ ] Use the **same** `VK_CLIENT_ID` and `VK_CLIENT_SECRET` as TR-BUTE
 
-- [ ] Create a bot via [@BotFather](https://t.me/BotFather) (e.g., `@CineFilesLoginBot`)
-- [ ] Set domain via BotFather: `/setdomain` → your CineFiles domain
-- [ ] Save: `TELEGRAM_BOT_TOKEN`
-- [ ] Note: This bot is ONLY for the login widget — CineFiles doesn't have a Telegram mini-app
+### 0.8 — Telegram Bot (Shared with TR-BUTE, OIDC Login)
+
+CineFiles uses the new [Telegram Login](https://core.telegram.org/bots/telegram-login) OIDC flow — a standard OAuth2 redirect with PKCE (not the legacy widget). The same bot is reused from TR-BUTE.
+
+- [ ] Open **TR-BUTE's existing bot** in [@BotFather](https://t.me/BotFather)
+- [ ] Add CineFiles domain via `/setdomain` (the bot can have multiple domains)
+- [ ] Use the **same** `TELEGRAM_BOT_TOKEN` as TR-BUTE
+- [ ] Set `TELEGRAM_BOT_ID` — the numeric bot ID (the number before `:` in the bot token)
+- [ ] Note: CineFiles uses OIDC redirect flow (`oauth.telegram.org/auth`), NOT the legacy Login Widget
 
 ### 0.9 — Yandex Metrica
 
@@ -135,11 +137,12 @@ All variables are parsed in `lib/config.ts`. Missing required vars throw at star
 | `JWT_SECRET` | Generate | `openssl rand -hex 32` |
 | `SESSION_SECRET` | Generate | `openssl rand -hex 32` |
 | `CRON_SECRET` | Generate | `openssl rand -hex 32` |
-| `YANDEX_CLIENT_ID` | Step 0.6 | |
-| `YANDEX_CLIENT_SECRET` | Step 0.6 | |
-| `VK_CLIENT_ID` | Step 0.7 | |
-| `VK_CLIENT_SECRET` | Step 0.7 | |
-| `TELEGRAM_BOT_TOKEN` | Step 0.8 | |
+| `YANDEX_CLIENT_ID` | Step 0.6 | Shared with TR-BUTE |
+| `YANDEX_CLIENT_SECRET` | Step 0.6 | Shared with TR-BUTE |
+| `VK_CLIENT_ID` | Step 0.7 | Shared with TR-BUTE |
+| `VK_CLIENT_SECRET` | Step 0.7 | Shared with TR-BUTE |
+| `TELEGRAM_BOT_TOKEN` | Step 0.8 | Shared with TR-BUTE |
+| `TELEGRAM_BOT_ID` | Step 0.8 | Numeric ID (number before `:` in bot token) |
 | `YANDEX_S3_ENDPOINT` | Default | `https://storage.yandexcloud.net` |
 | `YANDEX_S3_REGION` | Default | `ru-central1` |
 | `YANDEX_S3_BUCKET` | Step 0.2 | `cinefiles-media` or shared bucket name |
@@ -299,9 +302,9 @@ All details, code patterns, and gotchas are in the TR-BUTE-side guide.
 | Vercel | Fallback hosting, TMDB proxy | New project, connected to repo | DONE |
 | TMDB | Movie/show metadata | New account | DONE |
 | GitHub | Source code | Repository created | DONE |
-| Yandex OAuth | User login | New app in existing account | TODO |
-| VK ID | User login | New app | TODO |
-| Telegram BotFather | Login widget bot | New bot | TODO |
+| Yandex OAuth | User login | Shared with TR-BUTE (add redirect URI) | TODO |
+| VK ID | User login | Shared with TR-BUTE (add redirect URI) | TODO |
+| Telegram BotFather | OIDC login (new flow) | Shared with TR-BUTE (add domain) | TODO |
 | Yandex Metrica | Analytics | New counter | TODO |
 | Yandex Postbox | Email notifications | Existing or new identity | FUTURE |
 
