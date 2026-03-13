@@ -36,7 +36,7 @@ export default function RootLayout({
               (function() {
                 document.documentElement.classList.add('page-loading');
                 try {
-                  var theme = localStorage.getItem('theme');
+                  var theme = localStorage.getItem('cinefiles-theme');
                   if (theme === 'light' || theme === 'dark') {
                     document.documentElement.setAttribute('data-theme', theme);
                   } else if (window.matchMedia('(prefers-color-scheme: light)').matches) {

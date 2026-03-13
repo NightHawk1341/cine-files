@@ -1,3 +1,4 @@
+/* ===== FOOTER — matches TR-BUTE footer.css patterns ===== */
 .footer {
   position: relative;
   flex-shrink: 0;
@@ -34,6 +35,7 @@
   max-width: 280px;
 }
 
+/* ===== Links — pill-shaped container (matches TR-BUTE left group) ===== */
 .links {
   display: flex;
   align-items: center;
@@ -49,7 +51,7 @@
   font-size: 13px;
   padding: 4px 10px;
   border-radius: 16px;
-  transition: color 200ms, background-color 200ms;
+  transition: color 200ms, background-color 200ms, border-color 200ms;
   text-decoration: none;
 }
 
@@ -57,9 +59,11 @@
   .links a:hover {
     color: var(--text-primary);
     background-color: var(--bg-tertiary);
+    border-color: var(--border-hover);
   }
 }
 
+/* ===== Social icons — collapsible (matches TR-BUTE right group) ===== */
 .social {
   display: flex;
   align-items: center;
@@ -70,6 +74,8 @@
   color: var(--text-tertiary);
   opacity: 0.5;
   transition: opacity 200ms;
+  display: flex;
+  align-items: center;
 }
 
 @media (hover: hover) {
@@ -78,24 +84,68 @@
   }
 }
 
+/* Social icon responsive variants (matches TR-BUTE) */
+.socialIconFull { display: inline; }
+.socialIconCompact { display: none; }
+.socialIconMini { display: none; }
+
+@media (max-width: 550px) {
+  .socialIconFull { display: none; }
+  .socialIconCompact { display: inline; }
+}
+
+@media (max-width: 350px) {
+  .socialIconCompact { display: none; }
+  .socialIconMini { display: inline; }
+}
+
+/* ===== Copyright / Meta note ===== */
 .copyright {
   max-width: 1100px;
   margin: 16px auto 0;
   font-size: 12px;
   color: var(--text-tertiary);
   text-align: center;
+  opacity: 0.7;
 }
 
-/* Mobile: account for fixed bottom-nav */
+/* ===== Spinner (matches TR-BUTE) ===== */
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--border-color);
+  border-top-color: var(--text-primary);
+  border-radius: 50%;
+  animation: spinnerRotate 0.6s linear infinite;
+}
+
+html[data-theme="light"] .spinner {
+  border-top-color: var(--text-secondary);
+}
+
+@keyframes spinnerRotate {
+  to { transform: rotate(360deg); }
+}
+
+/* ===== Mobile: account for fixed bottom-nav (matches TR-BUTE) ===== */
 @media (hover: none) and (pointer: coarse), (max-width: 768px) {
   .footer {
     padding-bottom: calc(20px + var(--bottom-nav-height)) !important;
   }
 }
 
+/* ===== Responsive breakpoints (matches TR-BUTE) ===== */
+@media (max-width: 550px) {
+  .links {
+    flex-wrap: wrap;
+    height: auto;
+    justify-content: center;
+  }
+}
+
 @media (max-width: 413px) {
   .inner {
-    flex-direction: column;
+    flex-direction: column-reverse;
     align-items: center;
     text-align: center;
   }
@@ -108,5 +158,15 @@
     flex-wrap: wrap;
     justify-content: center;
     height: auto;
+  }
+}
+
+@media (max-width: 350px) {
+  .inner {
+    gap: 10px;
+  }
+
+  .social {
+    gap: 8px;
   }
 }
