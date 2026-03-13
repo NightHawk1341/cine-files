@@ -4,12 +4,20 @@
   left: 0;
   right: 0;
   z-index: 999;
+  will-change: transform;
   height: var(--header-height);
   background-color: var(--bg-primary);
   border-bottom: 1px solid var(--border-color);
   display: flex;
   align-items: center;
   padding: 0 8px;
+}
+
+/* Desktop: smooth slide for header hide/show */
+@media (min-width: 769px) {
+  .header {
+    transition: transform 0.3s ease;
+  }
 }
 
 .inner {
@@ -63,11 +71,10 @@
   bottom: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: 30%;
+  width: 0;
   height: 2px;
-  background-color: var(--active-page-color);
-  opacity: 0;
-  transition: width 200ms, opacity 200ms;
+  background-color: var(--text-tertiary);
+  transition: width 300ms ease;
 }
 
 @media (hover: hover) {
@@ -77,8 +84,7 @@
   }
 
   .navLink:hover::after {
-    width: 60%;
-    opacity: 0.5;
+    width: 100%;
   }
 }
 
@@ -86,9 +92,25 @@
   color: var(--active-page-color);
 }
 
+/* Active page: short line when not hovered */
 .navLinkActive::after {
-  width: 100%;
-  opacity: 1;
+  width: 30%;
+  background-color: var(--active-page-color);
+}
+
+/* Active page on hover: expand to full width */
+@media (hover: hover) {
+  .navLinkActive:hover::after {
+    width: 100%;
+    background-color: var(--active-page-color);
+  }
+}
+
+/* Pressed-to-active state */
+.pressedToActive {
+  color: var(--active-page-color);
+  filter: brightness(0.7);
+  transition: filter 100ms ease;
 }
 
 .actions {
@@ -112,8 +134,17 @@
 @media (hover: hover) {
   .iconButton:hover {
     color: var(--text-primary);
-    background-color: var(--bg-tertiary);
+    opacity: 0.7;
   }
+}
+
+.iconButtonActive {
+  color: var(--active-page-color);
+}
+
+.iconButtonActive svg {
+  color: var(--active-page-color);
+  fill: var(--active-page-color);
 }
 
 /* Mobile */
