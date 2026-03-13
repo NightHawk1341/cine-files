@@ -2,6 +2,32 @@
 
 This document catalogs every difference between CineFiles and TR-BUTE that must be resolved to achieve code parity. Organized by priority and effort.
 
+## Implementation Progress
+
+| Phase | Description | Status |
+|---|---|---|
+| 1 | CSS Variables + Globals | COMPLETE |
+| 2 | Header Overhaul | IN PROGRESS |
+| 3 | Bottom Nav Alignment | PENDING |
+| 4 | Footer Alignment | PENDING |
+| 5 | Shared UI Components | PENDING |
+| 6 | Dev Process & Docs | PENDING |
+
+### Phase 1 Changes Applied
+- Dark theme backgrounds aligned: `#121212`, `#1e1e1e`, `#2b2b2b`, `#3a3a3a`
+- `--text-inverse` and `--removing-overlay-bg` updated to match new bg-primary
+- `--bg-overlay` opacity adjusted from 0.85 to 0.8
+- `--bottom-nav-height` changed from clamp to fixed `76px`
+- Added 30+ missing CSS variables: icon-scale, page-padding-*, brand aliases, product-card-*, filter-btn-*, type-btn-*, reset-btn-*, gift-btn-*, filter-group-*, filter-pill-*, dropdown-accent-*, format-dropdown-bg, telegram-color, yandex-color
+- `--active-page-color` changed from `var(--brand-primary)` to independent value `#4a90d9`
+- Added `html { touch-action: manipulation }` and `svg { fill: currentColor }`
+- Added `body.sheet-open` state for bottom sheets
+- Added `.btn-icon`, `.btn-filter`, `.btn-favorite` global utility classes
+- Added complete toast notification CSS (container, variants, animations)
+- Added z-index organization comment block
+- Added mobile page spacing via `--page-padding-top-mobile`
+- All light theme overrides completed for new variables
+
 ---
 
 ## 1. CLAUDE.md & Development Rules
