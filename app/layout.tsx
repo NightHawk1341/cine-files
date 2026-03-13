@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { BottomNav } from '@/components/layout/BottomNav';
+import { Providers } from '@/components/layout/Providers';
+import { ScrollToTop } from '@/components/ui/ScrollToTop';
 import '@/styles/globals.css';
 
 export const metadata: Metadata = {
@@ -51,11 +53,14 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <div className="grain-overlay" aria-hidden="true" />
-        <Header />
-        <main>{children}</main>
-        <Footer />
-        <BottomNav />
+        <Providers>
+          <div className="grain-overlay" aria-hidden="true" />
+          <Header />
+          <main>{children}</main>
+          <Footer />
+          <BottomNav />
+          <ScrollToTop />
+        </Providers>
       </body>
     </html>
   );
