@@ -1,54 +1,51 @@
+/* ===== BOTTOM NAVIGATION — matches TR-BUTE bottom-nav.css ===== */
 .bottomNav {
-  display: none;
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  z-index: 1001;
   will-change: transform;
-  height: var(--bottom-nav-height);
   background-color: var(--bg-primary);
   border-top: 1px solid var(--border-color);
-  box-shadow: 0 -4px 12px var(--shadow-color);
+  display: none;
   justify-content: space-around;
   align-items: stretch;
   padding: 0 8px;
+  box-shadow: 0 -4px 12px var(--shadow-color);
+  height: var(--bottom-nav-height);
+  z-index: 1001;
 }
 
 body.popup-open .bottomNav {
   box-shadow: none;
 }
 
-@media (max-width: 768px) {
-  .bottomNav {
-    display: flex;
-  }
-}
-
 @media (hover: none) and (pointer: coarse) {
-  .bottomNav {
-    display: flex !important;
-  }
+  .bottomNav { display: flex !important; }
 }
 
+@media (max-width: 768px) {
+  .bottomNav { display: flex !important; }
+}
+
+/* ===== Nav Button ===== */
 .item {
-  flex: 1;
+  background: transparent;
+  border: none;
+  cursor: pointer;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 3px;
-  text-decoration: none;
-  color: var(--text-tertiary);
-  transition: none;
+  padding: 8px 4px;
   position: relative;
-  background: transparent;
-  border: none;
-  cursor: pointer;
+  flex: 1;
   min-width: 0;
   overflow: hidden;
   height: 100%;
-  padding: 8px 4px;
+  transition: none;
+  text-decoration: none;
+  color: inherit;
 }
 
 @media (hover: hover) {
@@ -64,10 +61,38 @@ body.popup-open .bottomNav {
   }
 }
 
-.itemActive {
-  color: var(--active-page-color);
+/* ===== Icon Wrap: positions counters relative to the icon ===== */
+.iconWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon svg {
+  width: 20px;
+  height: 20px;
+  color: var(--text-tertiary);
+  fill: var(--text-tertiary);
+  transform: scale(var(--icon-scale));
+}
+
+.label {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  line-height: 1;
+  margin-top: 3px;
+  white-space: nowrap;
+}
+
+/* ===== Active page state ===== */
 .itemActive svg {
   color: var(--active-page-color) !important;
   fill: var(--active-page-color) !important;
@@ -77,7 +102,7 @@ body.popup-open .bottomNav {
   color: var(--active-page-color) !important;
 }
 
-/* Pressed state: icon + label */
+/* ===== Pressed state ===== */
 .pressedToActive svg {
   color: var(--active-page-color) !important;
   fill: var(--active-page-color) !important;
@@ -97,34 +122,9 @@ body.popup-open .bottomNav {
   filter: brightness(0.7);
 }
 
-/* Icon wrap: positions counters relative to the icon */
-.iconWrap {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-}
-
-.icon svg {
-  width: 20px;
-  height: 20px;
-  color: var(--text-tertiary);
-  fill: var(--text-tertiary);
-}
-
-.label {
-  font-size: 10px;
-  font-weight: 500;
-  color: var(--text-tertiary);
-  white-space: nowrap;
-  line-height: 1;
-  margin-top: 3px;
+/* ===== Footer padding for bottom-nav (matches TR-BUTE) ===== */
+@media (hover: none) and (pointer: coarse), (max-width: 768px) {
+  :global(.footer) {
+    padding-bottom: calc(var(--bottom-nav-height) + 20px) !important;
+  }
 }
