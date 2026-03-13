@@ -3,6 +3,7 @@
 import { Suspense, useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { ArticleCard } from '@/components/article/ArticleCard';
+import { SkeletonGrid } from '@/components/ui/Skeleton';
 import Link from 'next/link';
 import styles from '@/styles/pages/search.module.css';
 
@@ -87,7 +88,7 @@ function SearchContent() {
       </form>
 
       {loading ? (
-        <p className={styles.placeholder}>Поиск...</p>
+        <SkeletonGrid count={4} />
       ) : searched && articles.length === 0 && tags.length === 0 ? (
         <p className={styles.placeholder}>Ничего не найдено по запросу &laquo;{initialQuery}&raquo;</p>
       ) : (
@@ -146,7 +147,7 @@ export default function SearchPage() {
     <Suspense fallback={
       <div className="container" style={{ paddingTop: 32, paddingBottom: 60 }}>
         <h1 className={styles.title}>Поиск</h1>
-        <p className={styles.placeholder}>Загрузка...</p>
+        <SkeletonGrid count={4} />
       </div>
     }>
       <SearchContent />

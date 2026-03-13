@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useState, type PointerEvent } from 'react';
 import styles from '@/styles/components/bottom-nav.module.css';
 
 const NAV_ITEMS = [
@@ -52,17 +53,25 @@ const NAV_ITEMS = [
 
 export function BottomNav() {
   const pathname = usePathname();
+  const [pressedHref, setPressedHref] = useState<string | null>(null);
+
+  const handlePointerDown = (href: string) => (_e: PointerEvent) => setPressedHref(href);
+  const handlePointerUp = () => setPressedHref(null);
 
   return (
     <nav className={styles.bottomNav}>
       {NAV_ITEMS.map((item) => {
         const isActive = item.href === '/' ? pathname === '/' : pathname.startsWith(item.href);
+        const isPressed = pressedHref === item.href;
         return (
           <Link
             key={item.href}
             href={item.href}
-            className={`${styles.item} ${isActive ? styles.itemActive : ''}`}
+            className={`${styles.item} ${isActive ? styles.itemActive : ''}${isPressed ? ` ${styles.pressedToActive}` : ''}`}
             style={{ order: item.order }}
+            onPointerDown={handlePointerDown(item.href)}
+            onPointerUp={handlePointerUp}
+            onPointerLeave={handlePointerUp}
           >
             <span className={styles.iconWrap}>
               <span className={styles.icon}>{item.icon}</span>

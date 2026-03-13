@@ -1,10 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { ThemeToggle } from './ThemeToggle';
+import { BottomSheet } from '@/components/ui/BottomSheet';
 import styles from '@/styles/components/header.module.css';
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, type PointerEvent } from 'react';
 
 const NAV_ITEMS = [
   { href: '/', label: 'Главная', labelEn: 'Home' },
@@ -16,10 +17,26 @@ const NAV_ITEMS = [
 
 export function Header() {
   const pathname = usePathname();
+  const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
   const [hidden, setHidden] = useState(false);
+  const [pressedId, setPressedId] = useState<string | null>(null);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const lastScrollY = useRef(0);
   const ticking = useRef(false);
+
+  const handlePointerDown = (id: string) => (_e: PointerEvent) => setPressedId(id);
+  const handlePointerUp = () => setPressedId(null);
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim().length >= 2) {
+      setSearchOpen(false);
+      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      setSearchQuery('');
+    }
+  };
 
   const handleScroll = useCallback(() => {
     if (ticking.current) return;
@@ -53,8 +70,11 @@ export function Header() {
         {/* Left section: burger + search (mobile) */}
         <div className={styles.leftButtons}>
           <button
-            className={styles.headerButton}
+            className={`${styles.headerButton}${pressedId === 'burger' ? ` ${styles.pressedToActive}` : ''}`}
             onClick={() => setMenuOpen(!menuOpen)}
+            onPointerDown={handlePointerDown('burger')}
+            onPointerUp={handlePointerUp}
+            onPointerLeave={handlePointerUp}
             aria-label="Меню"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -65,12 +85,19 @@ export function Header() {
               )}
             </svg>
           </button>
-          <Link href="/search" className={`${styles.headerButton} ${styles.searchButton}`} aria-label="Поиск">
+          <button
+            className={`${styles.headerButton} ${styles.searchButton}${pressedId === 'search-mobile' ? ` ${styles.pressedToActive}` : ''}`}
+            onPointerDown={handlePointerDown('search-mobile')}
+            onPointerUp={handlePointerUp}
+            onPointerLeave={handlePointerUp}
+            onClick={() => setSearchOpen(true)}
+            aria-label="Поиск"
+          >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <circle cx="11" cy="11" r="8" />
               <path d="m21 21-4.35-4.35" />
             </svg>
-          </Link>
+          </button>
         </div>
 
         {/* Center: logo */}
@@ -89,8 +116,11 @@ export function Header() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`${styles.navLink} ${isActive ? styles.navLinkActive : ''}`}
+                className={`${styles.navLink} ${isActive ? styles.navLinkActive : ''}${pressedId === item.href ? ` ${styles.pressedToActive}` : ''}`}
                 onClick={() => setMenuOpen(false)}
+                onPointerDown={handlePointerDown(item.href)}
+                onPointerUp={handlePointerUp}
+                onPointerLeave={handlePointerUp}
               >
                 {item.label}
               </Link>
@@ -102,7 +132,10 @@ export function Header() {
         <div className={styles.rightButtons}>
           <Link
             href="/search"
-            className={`${styles.headerButton} ${styles.desktopSearch} ${pathname === '/search' ? styles.headerButtonActive : ''}`}
+            className={`${styles.headerButton} ${styles.desktopSearch} ${pathname === '/search' ? styles.headerButtonActive : ''}${pressedId === 'search-desktop' ? ` ${styles.pressedToActive}` : ''}`}
+            onPointerDown={handlePointerDown('search-desktop')}
+            onPointerUp={handlePointerUp}
+            onPointerLeave={handlePointerUp}
             aria-label="Поиск"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -113,6 +146,44 @@ export function Header() {
           <ThemeToggle />
         </div>
       </div>
+
+      <BottomSheet open={searchOpen} onClose={() => setSearchOpen(false)} title="Поиск">
+        <form onSubmit={handleSearchSubmit} style={{ display: 'flex', gap: 8 }}>
+          <input
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Статьи, фильмы, персоны..."
+            autoFocus
+            style={{
+              flex: 1,
+              padding: '10px 14px',
+              borderRadius: 10,
+              border: '1px solid var(--border-color)',
+              background: 'var(--bg-primary)',
+              color: 'var(--text-primary)',
+              fontSize: 15,
+              outline: 'none',
+            }}
+          />
+          <button
+            type="submit"
+            disabled={searchQuery.trim().length < 2}
+            style={{
+              padding: '10px 18px',
+              borderRadius: 10,
+              border: 'none',
+              background: 'var(--brand-primary)',
+              color: '#fff',
+              fontSize: 14,
+              fontWeight: 600,
+              cursor: 'pointer',
+              opacity: searchQuery.trim().length < 2 ? 0.5 : 1,
+            }}
+          >
+            Найти
+          </button>
+        </form>
+      </BottomSheet>
     </header>
   );
 }

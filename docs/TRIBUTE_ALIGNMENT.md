@@ -12,7 +12,7 @@ This document catalogs every difference between CineFiles and TR-BUTE that must 
 | 4 | Footer Alignment | COMPLETE |
 | 5 | Shared UI Components | COMPLETE |
 | 6 | Dev Process & Docs | COMPLETE |
-| 7 | Wiring Gap Audit & Fixes | IN PROGRESS |
+| 7 | Wiring Gap Audit & Fixes | COMPLETE |
 
 ### Phase 7: Wiring Gap Audit
 
@@ -31,7 +31,20 @@ several patterns were not wired into the actual rendered JSX. This phase fixes a
 - **Skeleton**: Replace plain "Loading..." text in CommentList.tsx, search/page.tsx, admin/tags/page.tsx
 - **Tooltip**: Wire onto icon-only buttons in BlockEditor.tsx
 - **BottomSheet**: Wire into mobile nav menu as alternative to overlay
-- **MobileModal**: Wire into comment moderation actions
+- **MobileModal**: Deferred — admin comments page is a server component; needs client conversion first
+
+### Phase 7 Changes Applied
+- **Header**: pressedToActive wired via onPointerDown/Up/Leave on burger, search, and nav links
+- **Header**: Mobile search now opens a BottomSheet instead of navigating to /search
+- **BottomNav**: pressedToActive wired via onPointerDown/Up/Leave on all nav items
+- **Footer**: Social icons wrapped in responsive variants (socialIconFull/Compact/Mini)
+- **CommentItem**: Native `confirm()` replaced with ConfirmationModal (danger variant)
+- **AdminTags**: Native `confirm()` replaced with ConfirmationModal + loading state now uses SkeletonList
+- **CommentList**: Loading text replaced with SkeletonList
+- **Search page**: Loading text replaced with SkeletonGrid, Suspense fallback uses SkeletonGrid
+- **ArticleBody**: Image blocks now use ZoomableImage (client component wrapping ImageZoom)
+- **BlockEditor**: Icon-only control buttons (up/down/delete) wrapped with Tooltip
+- **Admin comments**: MobileModal deferred (server component constraint); added color-coded action buttons
 
 ### Build Fix Applied
 - Removed duplicate `:global(.footer)` rule from `bottom-nav.module.css` — CSS Modules require at least one local class in selectors. The footer padding rule already exists correctly in `footer.module.css` (line 131-135) using the local `.footer` class.

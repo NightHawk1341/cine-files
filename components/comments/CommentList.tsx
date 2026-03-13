@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { CommentItem } from './CommentItem';
 import { CommentForm } from './CommentForm';
+import { SkeletonList } from '@/components/ui/Skeleton';
 import styles from '@/styles/components/comments.module.css';
 
 interface Comment {
@@ -57,7 +58,7 @@ export function CommentList({ articleId, allowComments }: CommentListProps) {
       )}
 
       {loading ? (
-        <p className={styles.placeholder}>Загрузка комментариев...</p>
+        <SkeletonList count={3} />
       ) : comments.length === 0 ? (
         <p className={styles.placeholder}>
           {allowComments ? 'Пока нет комментариев. Будьте первым!' : 'Комментарии отключены.'}

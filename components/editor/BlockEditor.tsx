@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import type { Block } from '@/lib/types';
+import { Tooltip } from '@/components/ui/Tooltip';
 import styles from '@/styles/components/editor/blocks.module.css';
 
 interface BlockEditorProps {
@@ -78,30 +79,33 @@ export function BlockEditor({ initialBlocks = [], onChange }: BlockEditorProps) 
       {blocks.map((block, index) => (
         <div key={index} className={styles.blockWrapper}>
           <div className={styles.blockControls}>
-            <button
-              className={styles.controlBtn}
-              onClick={() => moveBlock(index, 'up')}
-              disabled={index === 0}
-              title="Вверх"
-            >
-              ↑
-            </button>
-            <button
-              className={styles.controlBtn}
-              onClick={() => moveBlock(index, 'down')}
-              disabled={index === blocks.length - 1}
-              title="Вниз"
-            >
-              ↓
-            </button>
-            <button
-              className={styles.controlBtn}
-              onClick={() => removeBlock(index)}
-              disabled={blocks.length <= 1}
-              title="Удалить"
-            >
-              ×
-            </button>
+            <Tooltip text="Вверх">
+              <button
+                className={styles.controlBtn}
+                onClick={() => moveBlock(index, 'up')}
+                disabled={index === 0}
+              >
+                ↑
+              </button>
+            </Tooltip>
+            <Tooltip text="Вниз">
+              <button
+                className={styles.controlBtn}
+                onClick={() => moveBlock(index, 'down')}
+                disabled={index === blocks.length - 1}
+              >
+                ↓
+              </button>
+            </Tooltip>
+            <Tooltip text="Удалить">
+              <button
+                className={styles.controlBtn}
+                onClick={() => removeBlock(index)}
+                disabled={blocks.length <= 1}
+              >
+                ×
+              </button>
+            </Tooltip>
           </div>
 
           <div className={styles.blockContent}>
