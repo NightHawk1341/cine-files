@@ -7,11 +7,14 @@ This document catalogs every difference between CineFiles and TR-BUTE that must 
 | Phase | Description | Status |
 |---|---|---|
 | 1 | CSS Variables + Globals | COMPLETE |
-| 2 | Header Overhaul | IN PROGRESS |
-| 3 | Bottom Nav Alignment | PENDING |
-| 4 | Footer Alignment | PENDING |
+| 2 | Header Overhaul | COMPLETE |
+| 3 | Bottom Nav Alignment | COMPLETE |
+| 4 | Footer Alignment | COMPLETE |
 | 5 | Shared UI Components | PENDING |
 | 6 | Dev Process & Docs | PENDING |
+
+### Build Fix Applied
+- Removed duplicate `:global(.footer)` rule from `bottom-nav.module.css` — CSS Modules require at least one local class in selectors. The footer padding rule already exists correctly in `footer.module.css` (line 131-135) using the local `.footer` class.
 
 ### Phase 1 Changes Applied
 - Dark theme backgrounds aligned: `#121212`, `#1e1e1e`, `#2b2b2b`, `#3a3a3a`
