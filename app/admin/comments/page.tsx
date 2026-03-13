@@ -139,6 +139,3 @@ function ModerationAction({ commentId, action, label }: { commentId: number; act
     </form>
   );
 }
-
-// Note: MobileModal integration for bulk moderation actions will be added
-// when the admin panel is converted to client components (planned improvement).

@@ -31,7 +31,7 @@ several patterns were not wired into the actual rendered JSX. This phase fixes a
 - **Skeleton**: Replace plain "Loading..." text in CommentList.tsx, search/page.tsx, admin/tags/page.tsx
 - **Tooltip**: Wire onto icon-only buttons in BlockEditor.tsx
 - **BottomSheet**: Wire into mobile nav menu as alternative to overlay
-- **MobileModal**: Deferred — admin comments page is a server component; needs client conversion first
+- **MobileModal**: Wired into public CommentItem as mobile action sheet (reply/delete)
 
 ### Phase 7 Changes Applied
 - **Header**: pressedToActive wired via onPointerDown/Up/Leave on burger, search, and nav links
@@ -44,7 +44,8 @@ several patterns were not wired into the actual rendered JSX. This phase fixes a
 - **Search page**: Loading text replaced with SkeletonGrid, Suspense fallback uses SkeletonGrid
 - **ArticleBody**: Image blocks now use ZoomableImage (client component wrapping ImageZoom)
 - **BlockEditor**: Icon-only control buttons (up/down/delete) wrapped with Tooltip
-- **Admin comments**: MobileModal deferred (server component constraint); added color-coded action buttons
+- **CommentItem**: Added "..." mobile-only button that opens MobileModal action sheet (reply/delete)
+- **Admin comments**: Added color-coded moderation action buttons
 
 ### Build Fix Applied
 - Removed duplicate `:global(.footer)` rule from `bottom-nav.module.css` — CSS Modules require at least one local class in selectors. The footer padding rule already exists correctly in `footer.module.css` (line 131-135) using the local `.footer` class.

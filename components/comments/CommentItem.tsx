@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { CommentForm } from './CommentForm';
 import { ConfirmationModal } from '@/components/ui/ConfirmationModal';
+import { MobileModal, MobileModalAction } from '@/components/ui/MobileModal';
 import styles from '@/styles/components/comments.module.css';
 
 interface Comment {
@@ -25,6 +26,7 @@ interface CommentItemProps {
 export function CommentItem({ comment, articleId, allowComments, onUpdate, depth = 0 }: CommentItemProps) {
   const [showReply, setShowReply] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showActions, setShowActions] = useState(false);
   const maxDepth = 3;
 
   const formattedDate = new Intl.DateTimeFormat('ru-RU', {
@@ -69,7 +71,25 @@ export function CommentItem({ comment, articleId, allowComments, onUpdate, depth
         <button className={styles.actionBtn} onClick={() => setShowDeleteConfirm(true)}>
           Удалить
         </button>
+        <button className={`${styles.actionBtn} mobile-only`} onClick={() => setShowActions(true)}>
+          ...
+        </button>
       </div>
+
+      <MobileModal open={showActions} onClose={() => setShowActions(false)} title="Действия">
+        {allowComments && depth < maxDepth && (
+          <MobileModalAction
+            label="Ответить"
+            variant="primary"
+            onClick={() => { setShowActions(false); setShowReply(true); }}
+          />
+        )}
+        <MobileModalAction
+          label="Удалить"
+          variant="danger"
+          onClick={() => { setShowActions(false); setShowDeleteConfirm(true); }}
+        />
+      </MobileModal>
 
       <ConfirmationModal
         open={showDeleteConfirm}
