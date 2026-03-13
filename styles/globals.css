@@ -69,12 +69,20 @@ ol {
 }
 
 /* ===== FOUC Prevention ===== */
-html.page-loading body {
+body {
+  opacity: 0;
   visibility: hidden;
 }
 
+html.page-loading body {
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
 html.page-ready body {
-  visibility: visible;
+  opacity: 1 !important;
+  visibility: visible !important;
+  transition: opacity 0.15s ease-in;
 }
 
 /* ===== Theme Transition Disable ===== */
@@ -115,6 +123,8 @@ html.theme-transition-disable *::after {
   --bg-tertiary: #272727;
   --bg-quaternary: #363636;
   --bg-overlay: rgba(0, 0, 0, 0.85);
+  --removing-overlay-bg: rgba(13, 13, 13, 0.72);
+  --black: #000000;
 
   /* Text Colors */
   --text-primary: #E0E0E0;
@@ -169,14 +179,31 @@ html.theme-transition-disable *::after {
 
   /* Tabs */
   --tab-inactive-bg: var(--bg-secondary);
+  --tab-inactive-border: var(--border-color);
   --tab-active-bg: var(--bg-primary);
   --tab-counter-bg: rgba(74, 144, 217, 0.2);
   --tab-counter-border: rgba(74, 144, 217, 0.4);
   --tab-counter-color: #66b3db;
+  --tab-counter-active-bg: rgba(74, 144, 217, 0.3);
+  --tab-counter-active-color: #9cddfd;
 
   /* Indicators */
   --indicator-default: #616161;
   --indicator-active: #a3a3a3;
+
+  /* Neutral button states */
+  --neutral-btn-hover-bg: var(--bg-tertiary);
+  --neutral-btn-hover-border: var(--border-hover);
+  --neutral-btn-hover-color: var(--border-hover);
+  --neutral-btn-active-bg: #313131;
+  --neutral-btn-active-border: #848484;
+  --neutral-btn-active-color: #c8c8c8;
+  --neutral-btn-glow: #666;
+
+  /* Filter button colors (blue theme) */
+  --filter-active-bg: rgba(74, 144, 217, 0.15);
+  --filter-active-border: var(--brand-primary);
+  --filter-active-color: var(--brand-primary);
 
   /* Grain overlay */
   --grain-opacity: 0.12;
@@ -202,14 +229,69 @@ html[data-theme="light"] {
   --divider: rgba(80, 60, 30, 0.1);
 
   --shadow-color: rgba(30, 20, 10, 0.14);
+  --shadow-sm: 0 1px 3px var(--shadow-color);
+  --shadow-md: 0 2px 8px var(--shadow-color);
+  --shadow-lg: 0 8px 24px var(--shadow-color);
+  --modal-popup-shadow: 0 0 0 9px rgba(30, 30, 30, 1), 0 0 0 10px var(--border-hover);
+
+  --removing-overlay-bg: rgba(242, 237, 228, 0.75);
+  --black: #1c160e;
 
   --brand-primary: #2d6ab5;
   --brand-secondary: #245a9e;
   --brand-hover: #1d4d8a;
   --brand-muted: rgba(45, 106, 181, 0.12);
 
+  --link-color: #2596be;
+  --link-hover: #1a6f8f;
+  --active-page-color: #2596be;
+
+  /* Status Colors — adjusted for warm background */
+  --status-pending: #b45309;
+  --status-pending-bg: rgba(180, 83, 9, 0.12);
+  --status-warning: #b45309;
+  --status-warning-bg: rgba(180, 83, 9, 0.12);
+  --status-info: #1a6fa3;
+  --status-info-bg: rgba(26, 111, 163, 0.12);
+  --status-success: #2e7d32;
+  --status-success-bg: rgba(46, 125, 50, 0.12);
+  --status-error: #c62828;
+  --status-error-bg: rgba(198, 40, 40, 0.12);
+
   --skeleton-bg-base: rgba(80, 60, 30, 0.08);
   --skeleton-bg-highlight: rgba(80, 60, 30, 0.14);
+
+  /* Cards */
+  --card-bg: var(--bg-secondary);
+  --card-bg-hover: var(--bg-tertiary);
+  --card-border: var(--border-color);
+  --card-border-hover: var(--border-hover);
+
+  /* Tabs */
+  --tab-active-bg: var(--bg-primary);
+  --tab-counter-bg: rgba(26, 111, 163, 0.12);
+  --tab-counter-border: rgba(26, 111, 163, 0.3);
+  --tab-counter-color: #1a6fa3;
+  --tab-counter-active-bg: rgba(26, 111, 163, 0.2);
+  --tab-counter-active-color: #0d4f78;
+
+  /* Indicators */
+  --indicator-default: #b8aa98;
+  --indicator-active: #5a5248;
+
+  /* Neutral button states */
+  --neutral-btn-hover-bg: var(--bg-tertiary);
+  --neutral-btn-hover-border: var(--border-hover);
+  --neutral-btn-hover-color: var(--text-secondary);
+  --neutral-btn-active-bg: rgba(80, 60, 30, 0.1);
+  --neutral-btn-active-border: rgba(80, 60, 30, 0.35);
+  --neutral-btn-active-color: var(--text-primary);
+  --neutral-btn-glow: rgba(80, 60, 30, 0.18);
+
+  /* Filter button colors */
+  --filter-active-bg: rgba(37, 150, 190, 0.12);
+  --filter-active-border: #2596be;
+  --filter-active-color: #2596be;
 
   --grain-opacity: 0.06;
 }
@@ -330,6 +412,80 @@ html {
     font-size: var(--font-size-mobile);
   }
 }
+
+/* ===== Focus & Tap Resets (matches TR-BUTE) ===== */
+button:focus,
+input:focus,
+select:focus,
+textarea:focus,
+a:focus,
+*:focus {
+  outline: none !important;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+button,
+a:not([contenteditable]),
+[role="button"],
+[onclick] {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="search"],
+input[type="tel"],
+input[type="url"],
+textarea,
+[contenteditable="true"] {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+a, button, [role="button"], label {
+  touch-action: manipulation;
+}
+
+/* ===== Popup / Modal Body Lock (matches TR-BUTE) ===== */
+body.popup-open {
+  overflow: hidden;
+  touch-action: none;
+  overscroll-behavior: none;
+}
+
+body.modal-open {
+  overflow: hidden;
+  touch-action: none;
+  overscroll-behavior: none;
+}
+
+/* ===== Desktop / Mobile Utility Classes (matches TR-BUTE) ===== */
+.desktop-only { display: flex; }
+.mobile-only { display: none; }
+
+@media (hover: none) and (pointer: coarse) {
+  .desktop-only { display: none !important; }
+  .mobile-only { display: flex !important; }
+}
+
+@media (hover: hover) and (max-width: 768px) {
+  .desktop-only { display: none !important; }
+  .mobile-only { display: flex !important; }
+}
+
+/* ===== Z-Index Organization (matches TR-BUTE) ===== */
+.toast-container { z-index: 10003; }
 
 /* ===== Reduced Motion ===== */
 @media (prefers-reduced-motion: reduce) {

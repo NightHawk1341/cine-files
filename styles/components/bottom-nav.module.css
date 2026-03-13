@@ -5,10 +5,18 @@
   left: 0;
   right: 0;
   z-index: 1001;
+  will-change: transform;
   height: var(--bottom-nav-height);
   background-color: var(--bg-primary);
   border-top: 1px solid var(--border-color);
   box-shadow: 0 -4px 12px var(--shadow-color);
+  justify-content: space-around;
+  align-items: stretch;
+  padding: 0 8px;
+}
+
+body.popup-open .bottomNav {
+  box-shadow: none;
 }
 
 @media (max-width: 768px) {
@@ -17,9 +25,9 @@
   }
 }
 
-@media (hover: none) {
+@media (hover: none) and (pointer: coarse) {
   .bottomNav {
-    display: flex;
+    display: flex !important;
   }
 }
 
@@ -32,13 +40,28 @@
   gap: 3px;
   text-decoration: none;
   color: var(--text-tertiary);
-  transition: color 100ms;
+  transition: none;
   position: relative;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  min-width: 0;
+  overflow: hidden;
+  height: 100%;
+  padding: 8px 4px;
 }
 
-.item:active {
-  filter: brightness(0.7);
-  transition: filter 100ms;
+@media (hover: hover) {
+  .item {
+    transition: background 0.15s;
+  }
+  .item:not(.itemActive):hover svg {
+    color: var(--text-primary);
+    fill: var(--text-primary);
+  }
+  .item:not(.itemActive):hover .label {
+    color: var(--text-primary);
+  }
 }
 
 .itemActive {
@@ -46,7 +69,40 @@
 }
 
 .itemActive svg {
-  color: var(--active-page-color);
+  color: var(--active-page-color) !important;
+  fill: var(--active-page-color) !important;
+}
+
+.itemActive .label {
+  color: var(--active-page-color) !important;
+}
+
+/* Pressed state: icon + label */
+.pressedToActive svg {
+  color: var(--active-page-color) !important;
+  fill: var(--active-page-color) !important;
+  filter: brightness(0.7);
+  transition: filter 0.1s ease;
+}
+
+.pressedToActive .label {
+  color: var(--active-page-color) !important;
+  filter: brightness(0.7);
+  transition: filter 0.1s ease;
+}
+
+/* If already on active page, just darken */
+.itemActive.pressedToActive svg,
+.itemActive.pressedToActive .label {
+  filter: brightness(0.7);
+}
+
+/* Icon wrap: positions counters relative to the icon */
+.iconWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .icon {
@@ -57,8 +113,18 @@
   height: 20px;
 }
 
+.icon svg {
+  width: 20px;
+  height: 20px;
+  color: var(--text-tertiary);
+  fill: var(--text-tertiary);
+}
+
 .label {
   font-size: 10px;
+  font-weight: 500;
+  color: var(--text-tertiary);
   white-space: nowrap;
+  line-height: 1;
   margin-top: 3px;
 }
