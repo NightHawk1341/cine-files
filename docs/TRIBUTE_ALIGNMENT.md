@@ -12,6 +12,26 @@ This document catalogs every difference between CineFiles and TR-BUTE that must 
 | 4 | Footer Alignment | COMPLETE |
 | 5 | Shared UI Components | COMPLETE |
 | 6 | Dev Process & Docs | COMPLETE |
+| 7 | Wiring Gap Audit & Fixes | IN PROGRESS |
+
+### Phase 7: Wiring Gap Audit
+
+Post-alignment audit revealed that while CSS classes and components were created,
+several patterns were not wired into the actual rendered JSX. This phase fixes all gaps.
+
+#### Layout wiring gaps
+- **Header pressedToActive**: `.pressedToActive` class defined in CSS but never applied via touch handlers
+- **BottomNav pressedToActive**: Same — `.pressedToActive` class unused in JSX
+- **Footer social responsive icons**: `.socialIconFull`/`.socialIconCompact`/`.socialIconMini` classes defined but SVGs not wrapped
+- **Footer spinner**: `.spinner` class defined but never rendered
+
+#### UI component wiring gaps (components existed as files, nothing consumed them)
+- **ConfirmationModal**: Replace native `confirm()` in CommentItem.tsx and admin/tags/page.tsx
+- **ImageZoom**: Wire into article body image blocks (ArticleBody.tsx)
+- **Skeleton**: Replace plain "Loading..." text in CommentList.tsx, search/page.tsx, admin/tags/page.tsx
+- **Tooltip**: Wire onto icon-only buttons in BlockEditor.tsx
+- **BottomSheet**: Wire into mobile nav menu as alternative to overlay
+- **MobileModal**: Wire into comment moderation actions
 
 ### Build Fix Applied
 - Removed duplicate `:global(.footer)` rule from `bottom-nav.module.css` — CSS Modules require at least one local class in selectors. The footer padding rule already exists correctly in `footer.module.css` (line 131-135) using the local `.footer` class.
