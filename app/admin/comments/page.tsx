@@ -127,7 +127,7 @@ function ModerationAction({ commentId, action, label }: { commentId: number; act
         type="submit"
         style={{
           fontSize: 12,
-          color: action === 'delete' ? 'var(--status-error)' : 'var(--text-tertiary)',
+          color: action === 'delete' ? 'var(--status-error)' : action === 'show' ? 'var(--status-success)' : 'var(--text-tertiary)',
           background: 'none',
           border: 'none',
           cursor: 'pointer',
@@ -139,3 +139,6 @@ function ModerationAction({ commentId, action, label }: { commentId: number; act
     </form>
   );
 }
+
+// Note: MobileModal integration for bulk moderation actions will be added
+// when the admin panel is converted to client components (planned improvement).

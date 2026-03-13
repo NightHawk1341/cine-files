@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { ConfirmationModal } from '@/components/ui/ConfirmationModal';
+import { SkeletonList } from '@/components/ui/Skeleton';
 import styles from '@/styles/pages/admin-tags.module.css';
 
 interface Tag {
@@ -113,9 +115,12 @@ export default function AdminTagsPage() {
     }
   };
 
-  const deleteTag = async (id: number) => {
-    if (!confirm('Удалить тег?')) return;
-    await fetch(`/api/tags/${id}`, { method: 'DELETE' });
+  const [deleteTarget, setDeleteTarget] = useState<number | null>(null);
+
+  const deleteTag = async () => {
+    if (deleteTarget === null) return;
+    await fetch(`/api/tags/${deleteTarget}`, { method: 'DELETE' });
+    setDeleteTarget(null);
     fetchTags();
   };
 
@@ -203,8 +208,19 @@ export default function AdminTagsPage() {
         </select>
       </div>
 
+      <ConfirmationModal
+        open={deleteTarget !== null}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={deleteTag}
+        title="Удалить тег?"
+        message="Тег будет удален. Это действие нельзя отменить."
+        variant="danger"
+        confirmLabel="Удалить"
+        cancelLabel="Отмена"
+      />
+
       {loading ? (
-        <p className={styles.placeholder}>Загрузка...</p>
+        <SkeletonList count={5} />
       ) : tags.length === 0 ? (
         <p className={styles.placeholder}>Нет тегов</p>
       ) : (
@@ -219,7 +235,7 @@ export default function AdminTagsPage() {
               </div>
               <div className={styles.tagActions}>
                 <span className={styles.articleCount}>{tag.articleCount} статей</span>
-                <button className={styles.deleteBtn} onClick={() => deleteTag(tag.id)}>Удалить</button>
+                <button className={styles.deleteBtn} onClick={() => setDeleteTarget(tag.id)}>Удалить</button>
               </div>
             </div>
           ))}

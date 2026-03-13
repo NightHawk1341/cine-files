@@ -1,5 +1,6 @@
 import type { Block } from '@/lib/types';
 import type { ReactNode } from 'react';
+import { ZoomableImage } from './ZoomableImage';
 import styles from '@/styles/components/article-body.module.css';
 
 interface ArticleBodyProps {
@@ -38,7 +39,7 @@ function BlockRenderer({ block }: { block: Block }) {
     case 'image':
       return (
         <figure className={styles.figure}>
-          <img src={block.url} alt={block.alt} className={styles.image} loading="lazy" />
+          <ZoomableImage src={block.url} alt={block.alt} className={styles.image} />
           {(block.caption || block.credit) && (
             <figcaption className={styles.figcaption}>
               {block.caption}

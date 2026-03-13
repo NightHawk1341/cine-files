@@ -1,5 +1,14 @@
 # CineFiles — Claude Instructions
 
+## Required Reading Before Any Implementation
+
+Before making changes, read these docs in order:
+1. This file (CLAUDE.md) — project rules and conventions
+2. `docs/STRUCTURE.md` — full project structure
+3. `docs/THEMING.md` — CSS variable system (shared with TR-BUTE)
+4. `docs/CONTENT_SYSTEM.md` — block-based content model
+5. `docs/TRIBUTE_ALIGNMENT.md` — TR-BUTE alignment status and conventions
+
 ## Project Overview
 CineFiles is a cinema/entertainment news and review site. Russian-language primary, i18n-ready.
 Sister project to [TR-BUTE](https://buy-tribute.com) (e-commerce). They share CSS variable naming and cross-link via APIs.
@@ -16,6 +25,7 @@ Sister project to [TR-BUTE](https://buy-tribute.com) (e-commerce). They share CS
 - `npm run dev` — development server
 - `npm run build` — production build
 - `npm run lint` — ESLint
+- `npm run check` — run all validation checks (build + lint)
 - `npm run db:seed` — seed database
 
 ## Project Structure
@@ -23,23 +33,40 @@ Sister project to [TR-BUTE](https://buy-tribute.com) (e-commerce). They share CS
 - `app/(public)/` — public pages (route group, no URL segment)
 - `app/admin/` — admin panel (protected, direct segment)
 - `app/api/` — API routes (REST)
-- `components/` — React components (layout, article, editor, comments, tribute)
+- `components/` — React components
+  - `layout/` — Header, Footer, BottomNav, ThemeToggle, Providers
+  - `article/` — ArticleCard, ArticleBody, ArticleMeta
+  - `editor/` — BlockEditor
+  - `comments/` — CommentList, CommentForm, CommentItem
+  - `tribute/` — ProductCard, TributeProductsBlock
+  - `ui/` — Shared UI: Toast, MobileModal, BottomSheet, ConfirmationModal, ImageZoom, ScrollToTop, Skeleton, Tooltip
 - `lib/` — server-side utilities (auth, db, tmdb, storage, config, transliterate, tribute-api, types)
-- `styles/` — CSS globals and modules (`pages/` and `components/` subdirs)
+- `styles/` — CSS globals and modules (`pages/`, `components/`, `components/ui/` subdirs)
 - `locales/` — i18n string files (ru.json primary, en.json fallback)
 - `sql/` — database schema and seeds
 - `docs/` — project documentation
 
 ## Key Conventions
 
+### Code Quality Rules
+- Never use emojis in code or UI
+- Do not write AI-sounding comments (no "elegant", "robust", "seamlessly", etc.)
+- All interactive elements need `.active` + `.active:hover` states
+- Hardcoded colors break light theme — always use CSS variables
+- New external services need CSP entries in `next.config.js` with `// csp=YYYYMM` comment
+- Dropdowns and popovers must scroll into view when opened
+- Run `npm run check` before completing any task
+- Conditional visibility/styling must use CSS classes, not inline styles
+
 ### CSS & Theming
 - **NEVER hardcode colors** — always use CSS variables from `styles/globals.css`
 - **CSS variable names** match TR-BUTE (sister project) — only values differ
 - **Font loading**: Montserrat from `/fonts/` (WOFF2), NEVER Google Fonts
-- **Skeleton loading**: use `--skeleton-bg-base` and `--skeleton-bg-highlight`
+- **Skeleton loading**: use `components/ui/Skeleton.tsx` or `--skeleton-bg-base`/`--skeleton-bg-highlight`
 - **Shadows**: use `--shadow-sm`, `--shadow-md`, `--shadow-lg`
-- **All interactive elements** need `.active` + `.active:hover` states
 - **New styles**: page styles → `styles/pages/`, component styles → `styles/components/`
+- **UI components**: use shared components from `components/ui/` (Toast, Modal, BottomSheet, etc.)
+- **Page wrappers**: follow `{page}-page-overlay` + `{page}-page-content` pattern
 
 ### Localization
 - **Russian-first UI** — all user-facing strings go in `locales/ru.json`
@@ -65,6 +92,17 @@ Sister project to [TR-BUTE](https://buy-tribute.com) (e-commerce). They share CS
 - Soft-delete pattern for comments (status field, not actual deletion)
 - Use Supabase Dashboard or `SQL_SCHEMA.sql` for schema changes
 
+### Shared UI Components
+All reusable UI lives in `components/ui/`. Import from `@/components/ui`:
+- **Toast**: `useToast()` hook → `showToast(message, variant)`. Variants: default, success, error, warning, info
+- **MobileModal**: Centered dialog with handle bar. Supports action sheets via `MobileModalAction`
+- **BottomSheet**: Slide-up panel for mobile. Auto-sets `body.sheet-open`
+- **ConfirmationModal**: Alert dialog with icon. Variants: danger, warning, success, info
+- **ImageZoom**: Full-screen image viewer with carousel support
+- **ScrollToTop**: Auto-shows after scrolling 400px, repositions above bottom-nav on mobile
+- **Skeleton**: Loading placeholders — `Skeleton`, `SkeletonCard`, `SkeletonGrid`, `SkeletonList`
+- **Tooltip**: Desktop-only hover tooltip, hidden on touch devices
+
 ## Gotchas & Common Pitfalls
 
 ### 1. Admin route is a SEGMENT, not a route group
@@ -77,7 +115,7 @@ TMDB blocks some Russian IPs. The `/api/tmdb/[...path]` proxy runs on Vercel (US
 `lib/storage.ts` implements AWS4-HMAC-SHA256 signing manually (no AWS SDK). If modifying upload logic, preserve the canonical request signing flow.
 
 ### 4. Theme script prevents FOUC
-Root layout includes an inline `<script>` that reads `localStorage('theme')` and sets `data-theme` before paint. CSP allows inline scripts for this reason. Do not remove the inline script or tighten CSP `script-src` without an alternative FOUC solution.
+Root layout includes an inline `<script>` that reads `localStorage('cinefiles-theme')` and sets `data-theme` before paint. CSP allows inline scripts for this reason. Do not remove the inline script or tighten CSP `script-src` without an alternative FOUC solution.
 
 ### 5. Docker build needs `DOCKER_BUILD=true`
 Setting `DOCKER_BUILD=true` enables `output: 'standalone'` in `next.config.js`. Without it, the Docker build won't produce the standalone server. Vercel builds should NOT set this variable.
@@ -100,6 +138,15 @@ If `lib/transliterate.ts` generates a slug that already exists, a timestamp is a
 ### 11. TR-BUTE blocks are server components
 `TributeProductsBlock` is a React Server Component that fetches live data. It's injected into `ArticleBody` via the `customBlocks` prop pattern — not rendered client-side.
 
+### 12. CSS Modules require pure selectors
+In `.module.css` files, every selector must contain at least one local class. Never use `:global(.something)` as the only selector — wrap it inside a local class or move global selectors to `globals.css`.
+
+### 13. MutationObserver/ResizeObserver must not modify their own observed target
+If you observe an element, do not mutate it inside the callback — this creates infinite loops.
+
+### 14. Image changes require docs update
+When modifying image handling (upload, processing, display), update `docs/` accordingly.
+
 ## Documentation
 See `docs/` directory for detailed documentation:
 - `STRUCTURE.md` — Full project structure
@@ -111,6 +158,7 @@ See `docs/` directory for detailed documentation:
 - `DATABASE.md` — Database schema reference
 - `TMDB_INTEGRATION.md` — TMDB proxy and entity sync
 - `TRIBUTE_INTEGRATION.md` — TR-BUTE cross-linking
+- `TRIBUTE_ALIGNMENT.md` — TR-BUTE alignment plan and progress
 - `CRON_JOBS.md` — Scheduled tasks
 - `DEPLOYMENT.md` — Docker and Vercel deployment
 - `ENV_VARS.md` — Environment variables reference
@@ -124,3 +172,5 @@ See `docs/` directory for detailed documentation:
 - **Phase 4: TR-BUTE Integration** — COMPLETE
 - **Phase 5: Comments & Community** — COMPLETE
 - **Phase 6: Polish & Launch** — COMPLETE
+- **TR-BUTE Alignment: Phases 1-5** — COMPLETE
+- **TR-BUTE Alignment: Phase 6 (Dev Process)** — COMPLETE

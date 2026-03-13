@@ -7,6 +7,68 @@ This document catalogs every difference between CineFiles and TR-BUTE that must 
 | Phase | Description | Status |
 |---|---|---|
 | 1 | CSS Variables + Globals | COMPLETE |
+| 2 | Header Overhaul | COMPLETE |
+| 3 | Bottom Nav Alignment | COMPLETE |
+| 4 | Footer Alignment | COMPLETE |
+| 5 | Shared UI Components | COMPLETE |
+| 6 | Dev Process & Docs | COMPLETE |
+| 7 | Wiring Gap Audit & Fixes | COMPLETE |
+
+### Phase 7: Wiring Gap Audit
+
+Post-alignment audit revealed that while CSS classes and components were created,
+several patterns were not wired into the actual rendered JSX. This phase fixes all gaps.
+
+#### Layout wiring gaps
+- **Header pressedToActive**: `.pressedToActive` class defined in CSS but never applied via touch handlers
+- **BottomNav pressedToActive**: Same — `.pressedToActive` class unused in JSX
+- **Footer social responsive icons**: `.socialIconFull`/`.socialIconCompact`/`.socialIconMini` classes defined but SVGs not wrapped
+- **Footer spinner**: `.spinner` class defined but never rendered
+
+#### UI component wiring gaps (components existed as files, nothing consumed them)
+- **ConfirmationModal**: Replace native `confirm()` in CommentItem.tsx and admin/tags/page.tsx
+- **ImageZoom**: Wire into article body image blocks (ArticleBody.tsx)
+- **Skeleton**: Replace plain "Loading..." text in CommentList.tsx, search/page.tsx, admin/tags/page.tsx
+- **Tooltip**: Wire onto icon-only buttons in BlockEditor.tsx
+- **BottomSheet**: Wire into mobile nav menu as alternative to overlay
+- **MobileModal**: Deferred — admin comments page is a server component; needs client conversion first
+
+### Phase 7 Changes Applied
+- **Header**: pressedToActive wired via onPointerDown/Up/Leave on burger, search, and nav links
+- **Header**: Mobile search now opens a BottomSheet instead of navigating to /search
+- **BottomNav**: pressedToActive wired via onPointerDown/Up/Leave on all nav items
+- **Footer**: Social icons wrapped in responsive variants (socialIconFull/Compact/Mini)
+- **CommentItem**: Native `confirm()` replaced with ConfirmationModal (danger variant)
+- **AdminTags**: Native `confirm()` replaced with ConfirmationModal + loading state now uses SkeletonList
+- **CommentList**: Loading text replaced with SkeletonList
+- **Search page**: Loading text replaced with SkeletonGrid, Suspense fallback uses SkeletonGrid
+- **ArticleBody**: Image blocks now use ZoomableImage (client component wrapping ImageZoom)
+- **BlockEditor**: Icon-only control buttons (up/down/delete) wrapped with Tooltip
+- **Admin comments**: MobileModal deferred (server component constraint); added color-coded action buttons
+
+### Build Fix Applied
+- Removed duplicate `:global(.footer)` rule from `bottom-nav.module.css` — CSS Modules require at least one local class in selectors. The footer padding rule already exists correctly in `footer.module.css` (line 131-135) using the local `.footer` class.
+
+### Phase 5 Changes Applied
+- Created `components/ui/` directory with 8 shared UI components:
+  - **Toast**: Context provider + useToast hook, 5 variants, auto/click dismiss
+  - **MobileModal**: Centered dialog with handle bar, action sheet items, primary/danger variants
+  - **BottomSheet**: Slide-up panel with exit animation, safe-area-inset support, body.sheet-open
+  - **ConfirmationModal**: Alert dialog with icon variants (danger/warning/success/info)
+  - **ImageZoom**: Full-screen viewer with carousel, keyboard nav, loading states
+  - **ScrollToTop**: Scroll-aware button, repositions above bottom-nav on mobile
+  - **Skeleton**: Shimmer loading — text/heading/avatar/thumbnail/block/card/grid/list variants
+  - **Tooltip**: Desktop-only hover tooltip, hidden on touch devices
+- Created `components/layout/Providers.tsx` client wrapper with ToastProvider
+- Wired ScrollToTop into root layout
+- Barrel export at `components/ui/index.ts`
+
+### Phase 6 Changes Applied
+- Rewrote CLAUDE.md: added "Required Reading" section, code quality rules, shared UI component docs, 3 new gotchas (CSS Module purity, MutationObserver, image docs)
+- Created `DEVELOPMENT_CHECKLIST.md` at repo root
+- Created `scripts/check.sh` validation script (build + lint + hardcoded color check)
+- Added `npm run check` script to package.json
+
 | 2 | Header Overhaul | IN PROGRESS |
 | 3 | Bottom Nav Alignment | PENDING |
 | 4 | Footer Alignment | PENDING |
