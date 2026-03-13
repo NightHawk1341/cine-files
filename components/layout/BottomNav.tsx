@@ -8,6 +8,7 @@ const NAV_ITEMS = [
   {
     href: '/',
     label: 'Главная',
+    order: 1,
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
@@ -18,6 +19,7 @@ const NAV_ITEMS = [
   {
     href: '/news',
     label: 'Новости',
+    order: 2,
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <path d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v1m2 13a2 2 0 0 1-2-2V7m2 13a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2" />
@@ -27,6 +29,7 @@ const NAV_ITEMS = [
   {
     href: '/tags',
     label: 'Теги',
+    order: 3,
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
@@ -37,6 +40,7 @@ const NAV_ITEMS = [
   {
     href: '/search',
     label: 'Поиск',
+    order: 4,
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <circle cx="11" cy="11" r="8" />
@@ -58,8 +62,11 @@ export function BottomNav() {
             key={item.href}
             href={item.href}
             className={`${styles.item} ${isActive ? styles.itemActive : ''}`}
+            style={{ order: item.order }}
           >
-            <span className={styles.icon}>{item.icon}</span>
+            <span className={styles.iconWrap}>
+              <span className={styles.icon}>{item.icon}</span>
+            </span>
             <span className={styles.label}>{item.label}</span>
           </Link>
         );
