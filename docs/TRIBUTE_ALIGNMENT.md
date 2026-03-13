@@ -10,11 +10,31 @@ This document catalogs every difference between CineFiles and TR-BUTE that must 
 | 2 | Header Overhaul | COMPLETE |
 | 3 | Bottom Nav Alignment | COMPLETE |
 | 4 | Footer Alignment | COMPLETE |
-| 5 | Shared UI Components | PENDING |
-| 6 | Dev Process & Docs | PENDING |
+| 5 | Shared UI Components | COMPLETE |
+| 6 | Dev Process & Docs | COMPLETE |
 
 ### Build Fix Applied
 - Removed duplicate `:global(.footer)` rule from `bottom-nav.module.css` — CSS Modules require at least one local class in selectors. The footer padding rule already exists correctly in `footer.module.css` (line 131-135) using the local `.footer` class.
+
+### Phase 5 Changes Applied
+- Created `components/ui/` directory with 8 shared UI components:
+  - **Toast**: Context provider + useToast hook, 5 variants, auto/click dismiss
+  - **MobileModal**: Centered dialog with handle bar, action sheet items, primary/danger variants
+  - **BottomSheet**: Slide-up panel with exit animation, safe-area-inset support, body.sheet-open
+  - **ConfirmationModal**: Alert dialog with icon variants (danger/warning/success/info)
+  - **ImageZoom**: Full-screen viewer with carousel, keyboard nav, loading states
+  - **ScrollToTop**: Scroll-aware button, repositions above bottom-nav on mobile
+  - **Skeleton**: Shimmer loading — text/heading/avatar/thumbnail/block/card/grid/list variants
+  - **Tooltip**: Desktop-only hover tooltip, hidden on touch devices
+- Created `components/layout/Providers.tsx` client wrapper with ToastProvider
+- Wired ScrollToTop into root layout
+- Barrel export at `components/ui/index.ts`
+
+### Phase 6 Changes Applied
+- Rewrote CLAUDE.md: added "Required Reading" section, code quality rules, shared UI component docs, 3 new gotchas (CSS Module purity, MutationObserver, image docs)
+- Created `DEVELOPMENT_CHECKLIST.md` at repo root
+- Created `scripts/check.sh` validation script (build + lint + hardcoded color check)
+- Added `npm run check` script to package.json
 
 ### Phase 1 Changes Applied
 - Dark theme backgrounds aligned: `#121212`, `#1e1e1e`, `#2b2b2b`, `#3a3a3a`
