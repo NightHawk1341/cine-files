@@ -70,12 +70,6 @@ several patterns were not wired into the actual rendered JSX. This phase fixes a
 - Created `scripts/check.sh` validation script (build + lint + hardcoded color check)
 - Added `npm run check` script to package.json
 
-| 2 | Header Overhaul | IN PROGRESS |
-| 3 | Bottom Nav Alignment | PENDING |
-| 4 | Footer Alignment | PENDING |
-| 5 | Shared UI Components | PENDING |
-| 6 | Dev Process & Docs | PENDING |
-
 ### Phase 1 Changes Applied
 - Dark theme backgrounds aligned: `#121212`, `#1e1e1e`, `#2b2b2b`, `#3a3a3a`
 - `--text-inverse` and `--removing-overlay-bg` updated to match new bg-primary
