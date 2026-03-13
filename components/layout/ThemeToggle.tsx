@@ -1,12 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import styles from '@/styles/components/header.module.css';
 
 type Theme = 'dark' | 'light';
 
 function getInitialTheme(): Theme {
   if (typeof window === 'undefined') return 'dark';
-  const stored = localStorage.getItem('theme');
+  const stored = localStorage.getItem('cinefiles-theme');
   if (stored === 'light' || stored === 'dark') return stored;
   return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
 }
@@ -25,7 +26,7 @@ export function ThemeToggle() {
     const root = document.documentElement;
     root.classList.add('theme-transition-disable');
     root.setAttribute('data-theme', theme);
-    localStorage.setItem('theme', theme);
+    localStorage.setItem('cinefiles-theme', theme);
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         root.classList.remove('theme-transition-disable');
@@ -35,22 +36,13 @@ export function ThemeToggle() {
 
   const toggle = () => setTheme((t) => (t === 'dark' ? 'light' : 'dark'));
 
-  if (!mounted) return <div style={{ width: 36, height: 36 }} />;
+  if (!mounted) return <div className={styles.headerButton} />;
 
   return (
     <button
       onClick={toggle}
+      className={styles.headerButton}
       aria-label={theme === 'dark' ? 'Светлая тема' : 'Тёмная тема'}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: 36,
-        height: 36,
-        color: 'var(--text-tertiary)',
-        borderRadius: 8,
-        transition: 'color 200ms',
-      }}
     >
       {theme === 'dark' ? (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

@@ -1,15 +1,17 @@
+/* ===== HEADER — Layout matches TR-BUTE: left buttons | center logo | right buttons ===== */
 .header {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  z-index: 999;
+  z-index: 1000;
   will-change: transform;
   height: var(--header-height);
   background-color: var(--bg-primary);
   border-bottom: 1px solid var(--border-color);
   display: flex;
   align-items: center;
+  justify-content: center;
   padding: 0 8px;
 }
 
@@ -20,33 +22,100 @@
   }
 }
 
+.headerHidden {
+  transform: translateY(-100%);
+}
+
 .inner {
   width: 100%;
   max-width: var(--content-max-width);
   margin: 0 auto;
   display: flex;
   align-items: center;
-  gap: 12px;
+  flex: 1 1 auto;
 }
 
-.hamburger {
+/* ===== Left Buttons ===== */
+.leftButtons {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 0 0 auto;
+}
+
+/* ===== Shared header button (burger, search, etc.) ===== */
+.headerButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 100%;
+  min-height: 36px;
+  color: var(--text-tertiary);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: color 200ms;
+}
+
+.headerButton svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+}
+
+@media (hover: hover) {
+  .headerButton:hover {
+    opacity: 0.7;
+    color: var(--text-primary);
+  }
+}
+
+.headerButtonActive {
+  color: var(--active-page-color);
+}
+
+.headerButtonActive svg {
+  color: var(--active-page-color);
+}
+
+/* Mobile search in left group, hidden on desktop */
+.searchButton {
   display: none;
-  color: var(--text-primary);
-  padding: 4px;
 }
 
-.logo {
+/* Desktop search in right group, hidden on mobile */
+.desktopSearch {
+  display: flex;
+}
+
+/* ===== Logo (center) ===== */
+.logoWrapper {
   font-size: 1.25rem;
   font-weight: 700;
   color: var(--brand-primary);
   text-decoration: none;
   letter-spacing: -0.5px;
+  display: flex;
+  align-items: center;
+  margin-left: 12px;
 }
 
-.logo:hover {
+.logoWrapper:hover {
   color: var(--brand-hover);
 }
 
+.logoFull {
+  display: inline;
+}
+
+.logoShort {
+  display: none;
+}
+
+/* ===== Desktop Nav ===== */
 .nav {
   display: flex;
   align-items: center;
@@ -65,6 +134,7 @@
   transition: color 200ms, background-color 200ms;
 }
 
+/* Underline animation (matches TR-BUTE active-page pattern) */
 .navLink::after {
   content: '';
   position: absolute;
@@ -92,13 +162,12 @@
   color: var(--active-page-color);
 }
 
-/* Active page: short line when not hovered */
+/* Active page: short line when not hovered, expands on hover */
 .navLinkActive::after {
   width: 30%;
   background-color: var(--active-page-color);
 }
 
-/* Active page on hover: expand to full width */
 @media (hover: hover) {
   .navLinkActive:hover::after {
     width: 100%;
@@ -113,46 +182,47 @@
   transition: filter 100ms ease;
 }
 
-.actions {
+/* ===== Right Buttons ===== */
+.rightButtons {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
   margin-left: auto;
 }
 
-.iconButton {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  color: var(--text-tertiary);
-  border-radius: 8px;
-  transition: color 200ms, background-color 200ms;
-}
-
-@media (hover: hover) {
-  .iconButton:hover {
-    color: var(--text-primary);
-    opacity: 0.7;
-  }
-}
-
-.iconButtonActive {
-  color: var(--active-page-color);
-}
-
-.iconButtonActive svg {
-  color: var(--active-page-color);
-  fill: var(--active-page-color);
-}
-
-/* Mobile */
+/* ===== Mobile ===== */
 @media (max-width: 768px) {
-  .hamburger {
+  .header {
+    justify-content: space-between;
+  }
+
+  /* Show mobile search in left group */
+  .searchButton {
     display: flex;
   }
 
+  /* Hide desktop search in right group */
+  .desktopSearch {
+    display: none;
+  }
+
+  /* Center logo absolutely */
+  .logoWrapper {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-left: 0;
+  }
+
+  .leftButtons {
+    margin-right: auto;
+  }
+
+  .rightButtons {
+    margin-left: auto;
+  }
+
+  /* Desktop nav hidden by default on mobile, opens as overlay */
   .nav {
     display: none;
     position: fixed;
@@ -179,5 +249,29 @@
 
   .navLink::after {
     display: none;
+  }
+}
+
+/* ===== Logo responsive (matches TR-BUTE full/short/mini pattern) ===== */
+@media (max-width: 300px) {
+  .logoFull {
+    display: none;
+  }
+  .logoShort {
+    display: inline;
+  }
+}
+
+@media (max-width: 200px) {
+  .logoWrapper {
+    display: none;
+  }
+}
+
+/* ===== Button text hidden at 900px (matches TR-BUTE) ===== */
+@media (max-width: 900px) {
+  .navLink {
+    font-size: 13px;
+    padding: 6px 8px;
   }
 }
