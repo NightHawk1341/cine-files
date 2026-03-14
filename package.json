@@ -4,14 +4,14 @@
   "description": "CineFiles — cinema, anime, games news and reviews",
   "main": "server.js",
   "scripts": {
-    "dev": "node --watch server.js",
     "start": "node server.js",
-    "check": "bash scripts/check.sh",
+    "dev": "nodemon server.js",
+    "check:routes": "node scripts/validate-routes.js",
+    "check:selectors": "node scripts/validate-router-selectors.js",
+    "check:page-scripts": "node scripts/validate-page-scripts.js",
+    "check:spa-styles": "node scripts/validate-spa-styles.js",
+    "check:claude": "node scripts/pre-commit-check.js && node scripts/validate-routes.js && node scripts/validate-router-selectors.js && node scripts/validate-page-scripts.js && node scripts/validate-spa-styles.js",
     "db:seed": "node scripts/seed.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "http://local_proxy@127.0.0.1:58473/git/NightHawk1341/cine-files"
   },
   "keywords": [],
   "author": "",
@@ -28,6 +28,9 @@
     "pg": "^8.13.0"
   },
   "devDependencies": {
-    "eslint": "^9.39.3"
+    "nodemon": "^3.1.14"
+  },
+  "engines": {
+    "node": ">=16.0.0"
   }
 }

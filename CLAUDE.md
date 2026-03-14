@@ -23,10 +23,30 @@ Sister project to [TR-BUTE](https://buy-tribute.com) (e-commerce). They share CS
 - **Deployment**: Yandex Cloud (Docker) primary, Vercel fallback
 
 ## Commands
-- `npm run dev` — development server (node --watch)
 - `npm start` — production server
-- `npm run check` — run validation checks (syntax + CSS + required files)
+- `npm run dev` — development server (nodemon)
+- `npm run check:claude` — run all validation checks before committing
 - `npm run db:seed` — seed database
+
+### Validation Commands
+Run before completing any task:
+```bash
+npm run check:claude
+```
+This executes all linters:
+- `validate-routes.js` — Route registration order (specific before catch-all)
+- `validate-router-selectors.js` — Content selectors exist in index.html
+- `validate-page-scripts.js` — All page scripts included in index.html
+- `validate-spa-styles.js` — Page CSS files referenced in scripts exist on disk
+- `pre-commit-check.js` — API files registered in routes, JS syntax valid
+
+Individual commands:
+```bash
+npm run check:routes
+npm run check:selectors
+npm run check:page-scripts
+npm run check:spa-styles
+```
 
 ## Project Structure
 ```
@@ -73,8 +93,12 @@ cine-files/
     icons/                     # SVG icons
   scripts/
     seed.js                    # Database seed (raw SQL)
-    check.sh                   # Validation script
-  docker/Dockerfile            # Production Docker image
+    pre-commit-check.js        # API registration + syntax check
+    validate-routes.js         # Route order validation
+    validate-router-selectors.js  # Content selector validation
+    validate-page-scripts.js   # Script inclusion validation
+    validate-spa-styles.js     # CSS file existence validation
+  Dockerfile                   # Production Docker image (Yandex Cloud)
   locales/                     # i18n (ru.json primary, en.json fallback)
   SQL_SCHEMA.sql               # Schema reference (12 tables)
   docs/                        # Project documentation
@@ -89,7 +113,7 @@ cine-files/
 - Hardcoded colors break light theme — always use CSS variables
 - New external services need CSP entries in `server/app.js`
 - Dropdowns and popovers must scroll into view when opened
-- Run `npm run check` before completing any task
+- Run `npm run check:claude` before completing any task
 - Conditional visibility/styling must use CSS classes, not inline styles
 
 ### JavaScript Conventions (matching TR-BUTE)
