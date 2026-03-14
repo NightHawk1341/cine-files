@@ -1,0 +1,9 @@
+/* ===== About Page ===== */
+.about-page { padding-bottom: 60px; }
+.about-title { font-size: var(--heading-desktop); font-weight: 700; color: var(--text-primary); margin-bottom: 24px; }
+
+.about-body { font-size: 16px; line-height: 1.75; color: var(--text-primary); }
+.about-body p { margin-bottom: 16px; }
+.about-body h2 { font-size: 20px; font-weight: 600; margin-top: 32px; margin-bottom: 12px; }
+.about-body a { color: var(--link-color); text-decoration: underline; text-underline-offset: 2px; }
+.about-body a:hover { color: var(--link-hover); }

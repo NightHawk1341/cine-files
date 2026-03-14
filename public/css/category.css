@@ -1,0 +1,30 @@
+/* ===== Category Page ===== */
+.category-title { font-size: var(--page-title-size); font-weight: 700; color: var(--text-primary); margin-bottom: 8px; }
+.category-description { font-size: 15px; color: var(--text-secondary); margin-bottom: 24px; max-width: 600px; }
+.category-empty { color: var(--text-tertiary); font-size: 15px; padding: 40px 0; text-align: center; }
+
+.category-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 24px 0 40px;
+}
+
+.category-page-link {
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--brand-primary);
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background-color 200ms, border-color 200ms;
+}
+
+@media (hover: hover) {
+  .category-page-link:hover { background-color: var(--bg-tertiary); border-color: var(--border-active); }
+}
+
+.category-page-info { font-size: 14px; color: var(--text-tertiary); }

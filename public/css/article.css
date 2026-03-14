@@ -1,0 +1,62 @@
+/* ===== Article Page ===== */
+.article-page { padding-top: 32px; padding-bottom: 60px; }
+
+.article-cover { margin-bottom: 24px; border-radius: 12px; overflow: hidden; background-color: var(--bg-tertiary); }
+.article-cover-image { width: 100%; display: block; }
+.article-cover-credit { font-size: 12px; color: var(--text-tertiary); font-style: italic; padding: 6px 12px; text-align: right; }
+
+.article-header { margin-bottom: 24px; }
+
+.article-category-link {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--brand-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+  text-decoration: none;
+}
+.article-category-link:hover { color: var(--brand-hover); }
+
+.article-title { font-size: var(--heading-desktop); font-weight: 700; color: var(--text-primary); line-height: 1.2; margin-bottom: 8px; }
+.article-subtitle { font-size: 18px; color: var(--text-secondary); margin-bottom: 12px; }
+
+.article-meta { display: flex; flex-wrap: wrap; gap: 10px; font-size: 14px; color: var(--text-tertiary); align-items: center; }
+.article-meta-author { color: var(--text-secondary); font-weight: 500; text-decoration: none; }
+.article-meta-author:hover { color: var(--text-primary); }
+.article-meta-date { color: var(--text-tertiary); }
+.article-meta-updated { color: var(--text-tertiary); font-style: italic; }
+.article-meta-stat { color: var(--text-tertiary); }
+
+.article-lead { font-size: 18px; line-height: 1.6; color: var(--text-secondary); margin-bottom: 32px; }
+
+.article-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 40px;
+  padding-top: 24px;
+  border-top: 1px solid var(--divider);
+}
+
+.article-tag {
+  font-size: 13px;
+  color: var(--text-secondary);
+  background-color: var(--bg-tertiary);
+  padding: 5px 14px;
+  border-radius: 40px;
+  text-decoration: none;
+  transition: background-color 200ms, color 200ms;
+}
+
+@media (hover: hover) {
+  .article-tag:hover { color: var(--text-primary); background-color: var(--bg-quaternary); }
+}
+
+@media (max-width: 768px) {
+  .article-page { padding-top: 16px; }
+  .article-title { font-size: var(--heading-mobile); }
+  .article-lead { font-size: 16px; }
+  .article-cover { border-radius: 8px; }
+}

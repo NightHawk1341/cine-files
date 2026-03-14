@@ -1,0 +1,46 @@
+/* ===== Home Page ===== */
+.home-page { padding-bottom: 40px; }
+
+.home-hero { padding: 60px 0 40px; text-align: center; }
+.home-title { font-size: var(--heading-desktop); font-weight: 700; color: var(--brand-primary); margin-bottom: 8px; }
+.home-subtitle { font-size: 16px; color: var(--text-secondary); }
+
+.home-section { padding: 32px 0; }
+.home-section-title { font-size: var(--page-title-size); font-weight: 600; color: var(--text-primary); margin-bottom: 16px; }
+
+.placeholder-text {
+  color: var(--text-tertiary);
+  font-size: 14px;
+  padding: 24px;
+  text-align: center;
+  border: 1px dashed var(--border-color);
+  border-radius: 12px;
+}
+
+/* Tag cloud (shared) */
+.tag-cloud { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.tag-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  background-color: var(--bg-tertiary);
+  border-radius: 40px;
+  text-decoration: none;
+  transition: background-color 200ms, color 200ms;
+}
+
+@media (hover: hover) {
+  .tag-pill:hover { color: var(--text-primary); background-color: var(--bg-quaternary); }
+}
+
+.tag-pill-count { font-size: 12px; color: var(--text-tertiary); font-weight: 500; }
+
+@media (max-width: 768px) {
+  .home-hero { padding: 40px 0 24px; }
+  .home-title { font-size: var(--heading-mobile); }
+  .home-section-title { font-size: var(--page-title-size-mobile); }
+}

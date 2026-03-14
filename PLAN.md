@@ -384,3 +384,87 @@ Created 17 endpoint files in `api/` + updated route registration:
 - `api/feed-rss.js` — RSS 2.0 feed with dc:creator
 - `api/sitemap.js` — XML sitemap with categories, articles, tags, collections
 - `server/routes/index.js` — flat route registration with middleware (42 routes total)
+
+### Phase 3: Frontend — vanilla JS SPA — COMPLETE
+Created complete SPA frontend matching TR-BUTE architecture:
+
+**Core (`public/js/core/`):**
+- `router.js` — SPA router with `registerPage()` pattern, URL params, CSS injection/cleanup, history API, active state management
+- `media.js` — `resolveImageUrl()` helper for S3/relative URLs
+
+**Shared utilities (`public/js/`):**
+- `utils.js` — formatDate, escapeHtml, sanitizeInlineHtml, apiFetch, debounce, pluralize, createElement
+
+**Persistent components (`public/js/components/`):**
+- `header.js` — burger menu, nav, hide-on-scroll (desktop only), mobile search bottom sheet
+- `footer.js` — nav links, collapsible social groups (mobile), click-outside-close
+- `bottom-nav.js` — fixed mobile nav, pressed state feedback
+- `theme-toggle.js` — dark/light switcher, localStorage, system preference fallback, FOUC prevention
+
+**UI components (`public/js/components/`):**
+- `toast.js` — notification toasts (default/success/error/warning/info variants)
+- `bottom-sheet.js` — slide-up mobile panel
+- `modal.js` — confirmation dialog with variants (danger/warning/success/info)
+- `skeleton.js` — loading placeholders, article card skeleton, grid skeleton
+- `scroll-to-top.js` — shows after 400px scroll, repositions above bottom-nav on mobile
+- `image-zoom.js` — full-screen image viewer with overlay
+
+**Content components (`public/js/components/`):**
+- `article-card.js` — builds card DOM from article data (image, title, lead, meta, tags)
+- `article-body.js` — block renderer for all 11 block types (paragraph, heading, image, quote, list, embed, divider, spoiler, infobox, tribute_products, movie_card)
+- `comment-list.js` — threaded comments with reply rendering, comment form with API submit
+
+**Page scripts (`public/js/pages/`):**
+- `home.js` — hero, featured articles, latest articles, popular tags (3 API calls)
+- `article.js` — full article view with cover, header, meta, block body, tags, comments
+- `category.js` — article listing with pagination
+- `tag.js` — tag page with articles
+- `tags.js` — all tags grouped by type
+- `search.js` — search form with URL state, results for tags + articles
+- `author.js` — author profile + articles
+- `about.js` — static about page
+- `legal.js` — static legal page
+- `collections.js` — collections listing (placeholder)
+- `collection.js` — single collection (placeholder)
+
+**Admin page scripts (`public/js/pages/admin/`):**
+- `dashboard.js` — admin panel with nav cards
+- `articles.js` — article list table with status badges
+- `article-editor.js` — create/edit with category select, JSON block editor
+- `comments.js` — comment moderation list with hide/delete actions
+- `tags.js` — tags table
+- `users.js` — users management (placeholder)
+- `media.js` — media library (placeholder)
+- `collections.js` — collections management (placeholder)
+- `settings.js` — settings (placeholder)
+
+**CSS files (`public/css/`):**
+- `global.css` — CSS variables (dark/light), reset, FOUC prevention, skeleton, scrollbar, utilities, toasts, body locks, responsive typography (converted from styles/globals.css)
+- `page-layouts.css` — header, footer, bottom-nav, bottom-sheet, modal, scroll-to-top, image-zoom, spinner
+- `components/article-card.css` — article card + grid + skeleton card
+- `components/article-body.css` — all block type styles
+- `components/comment-list.css` — comment section, items, threading, form
+- `style.css` — home page (hero, sections, tag cloud)
+- `article.css` — article page (cover, header, meta, lead, tags)
+- `category.css` — category listing + pagination
+- `tag.css` — tag page
+- `tags.css` — all tags page
+- `search.css` — search page (form, results)
+- `author.css` — author profile page
+- `about.css` — about page
+- `legal.css` — legal page
+- `collections.css` — collections pages
+- `admin.css` — admin panel (nav, table, form, buttons, status badges, comments moderation)
+
+**SPA entry point:**
+- `public/index.html` — complete SPA shell with:
+  - Inline FOUC prevention script
+  - Font preload
+  - CSS imports (global + component)
+  - Full header HTML (burger, nav, logo, search, theme toggle)
+  - Mobile search bottom sheet
+  - Main content container
+  - Full footer HTML (nav links, TR-BUTE + CineFiles social groups)
+  - Bottom navigation (mobile)
+  - Scroll-to-top button
+  - Script loading order (utils → router → components → pages → catch-all routes → init)
