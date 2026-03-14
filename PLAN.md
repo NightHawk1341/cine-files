@@ -341,3 +341,22 @@ SPA router, and creating HTML templates.
 
 The business logic, styling, and database stay the same. What changes is
 how the code is structured and executed.
+
+---
+
+## Progress
+
+### Phase 1: Foundation — COMPLETE
+Created:
+- `server.js` — Express app with Helmet, CORS, compression, rate limiting, cookie parsing, static file serving, SPA fallback, graceful shutdown
+- `lib/db.js` — pg Pool singleton (`getPool()` / `closePool()`) matching TR-BUTE pattern
+- `lib/config.js` — centralized config with `requireEnv()` / `getEnv()` / `getEnvInt()` / `getEnvBool()` + `validateConfig()`
+- `lib/auth.js` — JWT sign/verify, session creation (raw SQL INSERT), getUserById (raw SQL SELECT), Telegram OIDC (JWKS fetch, JWK-to-PEM, PKCE)
+- `lib/storage.js` — Yandex S3 upload with AWS4-HMAC-SHA256 signing (converted from TS)
+- `lib/tribute-api.js` — TR-BUTE product fetch + user check (converted from TS)
+- `server/routes/index.js` — flat route registration skeleton with health check
+- `server/middleware/auth.js` — authenticateToken, requireAuth, requireEditor, requireAdmin, requireCronAuth
+- `server/utils/transliterate.js` — Russian-Latin transliteration + slug generation
+- `server/services/tmdb.js` — TMDB proxy fetch, cache (raw SQL upsert), entity sync (raw SQL upsert)
+- `scripts/seed.js` — full seed script with raw SQL (categories, settings, users, tags, articles, comments, collection)
+- `jsconfig.json` — path aliases for IDE support
