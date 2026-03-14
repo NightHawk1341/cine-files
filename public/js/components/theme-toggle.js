@@ -33,6 +33,12 @@ var ThemeToggle = (function () {
       });
     });
 
+    // Update meta theme-color
+    var metaTheme = document.querySelector('meta[name="theme-color"]');
+    if (metaTheme) {
+      metaTheme.setAttribute('content', theme === 'dark' ? '#121212' : '#f2ede4');
+    }
+
     // Update button icon
     var btn = document.getElementById('theme-toggle-btn');
     if (btn) {

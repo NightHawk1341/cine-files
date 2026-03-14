@@ -452,7 +452,7 @@ body.sheet-open { position: fixed; width: 100%; overflow: hidden; overscroll-beh
 }
 
 @media (min-width: 769px) {
-  .toast-container { bottom: 20px; right: 20px; min-width: 300px; max-width: 400px; }
+  .toast-container { top: 20px; right: 20px; min-width: 300px; max-width: 400px; }
 }
 
 @media (max-width: 768px) {
@@ -519,6 +519,22 @@ body.sheet-open { position: fixed; width: 100%; overflow: hidden; overscroll-beh
     from { opacity: 1; transform: translateX(0); }
     to { opacity: 0; transform: translateX(100%); }
   }
+}
+
+/* ===== 404 Not Found ===== */
+.not-found-page {
+  padding: 60px 0;
+  text-align: center;
+}
+
+.not-found-title {
+  font-size: var(--heading-desktop);
+  color: var(--text-primary);
+  margin-bottom: 16px;
+}
+
+.not-found-message {
+  color: var(--text-secondary);
 }
 
 /* ===== Reduced Motion ===== */
