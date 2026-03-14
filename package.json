@@ -1,45 +1,36 @@
 {
   "name": "cine-files",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "version": "2.0.0",
+  "description": "CineFiles — cinema, anime, games news and reviews",
+  "main": "server.js",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "check": "bash scripts/check.sh",
-    "db:generate": "prisma generate",
-    "db:push": "prisma db push",
-    "db:migrate": "prisma migrate dev",
-    "db:seed": "tsx prisma/seed.ts",
-    "postinstall": "prisma generate"
-  },
-  "repository": {
-    "type": "git",
-    "url": "http://local_proxy@127.0.0.1:58473/git/NightHawk1341/cine-files"
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "check:routes": "node scripts/validate-routes.js",
+    "check:selectors": "node scripts/validate-router-selectors.js",
+    "check:page-scripts": "node scripts/validate-page-scripts.js",
+    "check:spa-styles": "node scripts/validate-spa-styles.js",
+    "check:claude": "node scripts/pre-commit-check.js && node scripts/validate-routes.js && node scripts/validate-router-selectors.js && node scripts/validate-page-scripts.js && node scripts/validate-spa-styles.js",
+    "db:seed": "node scripts/seed.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@prisma/client": "^5.22.0",
     "bcryptjs": "^3.0.3",
+    "compression": "^1.7.4",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "express": "^4.21.0",
+    "express-rate-limit": "^7.4.0",
+    "helmet": "^7.1.0",
     "jsonwebtoken": "^9.0.3",
-    "next": "^14.2.35",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "pg": "^8.13.0"
   },
   "devDependencies": {
-    "@types/bcryptjs": "^2.4.6",
-    "@types/jsonwebtoken": "^9.0.10",
-    "@types/node": "^25.3.3",
-    "@types/react": "^19.2.14",
-    "@types/react-dom": "^19.2.3",
-    "eslint": "^9.39.3",
-    "eslint-config-next": "^16.1.6",
-    "prisma": "^5.22.0",
-    "tsx": "^4.21.0",
-    "typescript": "^5.9.3"
+    "nodemon": "^3.1.14"
+  },
+  "engines": {
+    "node": ">=16.0.0"
   }
 }
