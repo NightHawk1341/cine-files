@@ -487,6 +487,19 @@ body.popup-open .bottom-nav { box-shadow: none; }
   box-shadow: var(--shadow-lg);
 }
 
+.modal-handle {
+  width: 36px;
+  height: 4px;
+  background: var(--bg-quaternary);
+  border-radius: 2px;
+  margin: 0 auto 16px;
+  display: none;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .modal-handle { display: block; }
+}
+
 .modal-title { font-size: 18px; font-weight: 600; color: var(--text-primary); margin-bottom: 12px; }
 .modal-message { font-size: 14px; color: var(--text-secondary); margin-bottom: 20px; }
 

@@ -91,6 +91,20 @@ html.page-ready body {
   transition: opacity 0.15s ease-in;
 }
 
+/* ===== Firefox FOUC Prevention ===== */
+@-moz-document url-prefix() {
+  body {
+    opacity: 0 !important;
+    visibility: hidden !important;
+  }
+
+  html.page-ready body {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transition: opacity 0.15s ease-in;
+  }
+}
+
 /* ===== Theme Transition Disable ===== */
 html.theme-transition-disable,
 html.theme-transition-disable *,
@@ -198,12 +212,33 @@ html.theme-transition-disable *::after {
   --filter-group-border: #414141;
   --filter-group-shadow: #414141;
 
+  /* Filter active state */
+  --filter-active-bg: rgba(74, 144, 217, 0.15);
+  --filter-active-border: #4a90d9;
+  --filter-active-color: #4a90d9;
+
+  /* Tab colors */
+  --tab-inactive-bg: var(--bg-secondary);
+  --tab-inactive-border: var(--border-color);
+  --tab-active-bg: var(--bg-primary);
+  --tab-counter-bg: rgba(6, 111, 163, 0.2);
+  --tab-counter-border: rgba(6, 111, 163, 0.4);
+  --tab-counter-color: #66b3db;
+  --tab-counter-active-bg: rgba(6, 111, 163, 0.3);
+  --tab-counter-active-color: #9cddfd;
+
+  /* Skeleton animation */
+  --skeleton-border-radius: 8px;
+  --skeleton-animation-duration: 1.2s;
+  --skeleton-animation-timing: ease-in-out;
+
   /* Grain */
   --grain-opacity: 0.12;
 }
 
 /* ===== Light Theme Overrides ===== */
-html[data-theme="light"] {
+html[data-theme="light"],
+body[data-theme="light"] {
   --bg-primary: #f2ede4;
   --bg-primary-t: rgba(242, 237, 228, 0);
   --bg-secondary: #e8e2d8;
@@ -249,6 +284,15 @@ html[data-theme="light"] {
   --card-border-hover: var(--border-hover);
   --filter-group-bg: var(--bg-primary);
   --filter-group-border: var(--border-color);
+  --filter-active-bg: rgba(37, 150, 190, 0.12);
+  --filter-active-border: #2596be;
+  --filter-active-color: #2596be;
+  --tab-active-bg: var(--bg-primary);
+  --tab-counter-bg: rgba(26, 111, 163, 0.12);
+  --tab-counter-border: rgba(26, 111, 163, 0.3);
+  --tab-counter-color: #1a6fa3;
+  --tab-counter-active-bg: rgba(26, 111, 163, 0.2);
+  --tab-counter-active-color: #0d4f78;
   --grain-opacity: 0.06;
 }
 
@@ -292,8 +336,8 @@ html[data-theme="light"] .grain-overlay {
     var(--skeleton-bg-base) 75%
   );
   background-size: 200% 100%;
-  animation: skeleton-pulse 1.2s ease-in-out infinite;
-  border-radius: 8px;
+  animation: skeleton-pulse var(--skeleton-animation-duration) var(--skeleton-animation-timing) infinite;
+  border-radius: var(--skeleton-border-radius);
 }
 
 /* ===== Progress Bar ===== */
@@ -408,15 +452,19 @@ body.sheet-open { position: fixed; width: 100%; overflow: hidden; overscroll-beh
 }
 
 @media (min-width: 769px) {
-  .toast-container { bottom: 20px; right: 20px; }
+  .toast-container { bottom: 20px; right: 20px; min-width: 300px; max-width: 400px; }
 }
 
 @media (max-width: 768px) {
   .toast-container { top: calc(var(--header-height) + 8px); left: 8px; right: 8px; }
 }
 
-.toast {
+.toast-notification {
   pointer-events: auto;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -428,17 +476,30 @@ body.sheet-open { position: fixed; width: 100%; overflow: hidden; overscroll-beh
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
   box-shadow: var(--shadow-lg);
-  margin-bottom: 8px;
-  animation: toastSlideIn 0.3s ease forwards;
-  cursor: pointer;
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.28s ease;
 }
 
-.toast.toast-success { border-color: var(--status-success); background: var(--status-success-bg); }
-.toast.toast-error { border-color: var(--status-error); background: var(--status-error-bg); }
-.toast.toast-warning { border-color: var(--status-warning); background: var(--status-warning-bg); }
-.toast.toast-info { border-color: var(--status-info); background: var(--status-info-bg); }
+@media (min-width: 769px) {
+  .toast-notification { cursor: pointer; }
+}
+@media (max-width: 768px) {
+  .toast-notification { cursor: grab; }
+}
 
-.toast.toast-leaving { animation: toastSlideOut 0.3s ease forwards; }
+/* Collapsed stacking — peek from behind */
+.toast-notification[data-stack-index="1"] { transform: translateY(6px) scale(0.96); opacity: 0.7; }
+.toast-notification[data-stack-index="2"] { transform: translateY(12px) scale(0.92); opacity: 0.4; }
+
+/* Expanded state — overrides stacking */
+.toast-expanded .toast-notification { opacity: 1; }
+
+.toast-notification.success { border-color: var(--status-success); background: var(--status-success-bg); }
+.toast-notification.error { border-color: var(--status-error); background: var(--status-error-bg); }
+.toast-notification.warning { border-color: var(--status-warning); background: var(--status-warning-bg); }
+.toast-notification.info { border-color: var(--status-info); background: var(--status-info-bg); }
+
+.toast-notification.toast-entering { animation: toastSlideIn 0.28s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+.toast-notification.toast-leaving { animation: toastSlideOut 0.22s ease forwards; pointer-events: none; }
 
 @keyframes toastSlideIn {
   from { opacity: 0; transform: translateY(-10px); }
