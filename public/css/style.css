@@ -1,20 +1,25 @@
 /* ===== Home Page ===== */
 .home-page { padding-bottom: 40px; }
 
-.home-hero { padding: 60px 0 40px; text-align: center; }
-.home-title { font-size: var(--heading-desktop); font-weight: 700; color: var(--brand-primary); margin-bottom: 8px; }
-.home-subtitle { font-size: 16px; color: var(--text-secondary); }
+.home-section { padding: 24px 0; }
+.home-section:first-child { padding-top: 32px; }
 
-.home-section { padding: 32px 0; }
-.home-section-title { font-size: var(--page-title-size); font-weight: 600; color: var(--text-primary); margin-bottom: 16px; }
+.home-section-title {
+  font-size: var(--page-title-size);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+}
 
-.placeholder-text {
-  color: var(--text-tertiary);
-  font-size: 14px;
-  padding: 24px;
-  text-align: center;
-  border: 1px dashed var(--border-color);
-  border-radius: 12px;
+/* Featured grid — larger cards for first row */
+.article-grid-featured {
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+@media (min-width: 900px) {
+  .article-grid-featured {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }
 
 /* Tag cloud (shared) */
@@ -39,8 +44,66 @@
 
 .tag-pill-count { font-size: 12px; color: var(--text-tertiary); font-weight: 500; }
 
+/* Categories quick nav grid */
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.category-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px 20px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  text-decoration: none;
+  transition: background-color 200ms, border-color 200ms;
+}
+
+@media (hover: hover) {
+  .category-card:hover {
+    background: var(--card-bg-hover);
+    border-color: var(--card-border-hover);
+  }
+}
+
+.category-card-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.category-card-desc {
+  font-size: 13px;
+  color: var(--text-tertiary);
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.placeholder-text {
+  color: var(--text-tertiary);
+  font-size: 14px;
+  padding: 24px;
+  text-align: center;
+  border: 1px dashed var(--border-color);
+  border-radius: 12px;
+}
+
 @media (max-width: 768px) {
-  .home-hero { padding: 40px 0 24px; }
-  .home-title { font-size: var(--heading-mobile); }
+  .home-section:first-child { padding-top: 24px; }
   .home-section-title { font-size: var(--page-title-size-mobile); }
+  .categories-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .category-card { padding: 12px 14px; }
+  .category-card-name { font-size: 14px; }
+  .category-card-desc { font-size: 12px; }
+}
+
+@media (max-width: 400px) {
+  .categories-grid { grid-template-columns: 1fr; }
 }
