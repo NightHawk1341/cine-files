@@ -122,9 +122,3 @@ body.popup-open .bottomNav {
   filter: brightness(0.7);
 }
 
-/* ===== Footer padding for bottom-nav (matches TR-BUTE) ===== */
-@media (hover: none) and (pointer: coarse), (max-width: 768px) {
-  :global(.footer) {
-    padding-bottom: calc(var(--bottom-nav-height) + 20px) !important;
-  }
-}
