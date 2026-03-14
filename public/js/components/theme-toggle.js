@@ -60,8 +60,35 @@ var ThemeToggle = (function () {
     }
   }
 
+  function get() {
+    return currentTheme;
+  }
+
+  function set(theme) {
+    if (theme === 'light' || theme === 'dark') {
+      applyTheme(theme);
+    }
+  }
+
+  function getCssVar(name) {
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  }
+
+  function getCssVars(names) {
+    var style = getComputedStyle(document.documentElement);
+    var result = {};
+    names.forEach(function (name) {
+      result[name] = style.getPropertyValue(name).trim();
+    });
+    return result;
+  }
+
   return {
     init: init,
     toggle: toggle,
+    get: get,
+    set: set,
+    getCssVar: getCssVar,
+    getCssVars: getCssVars,
   };
 })();
