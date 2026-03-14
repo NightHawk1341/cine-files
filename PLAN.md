@@ -360,3 +360,27 @@ Created:
 - `server/services/tmdb.js` — TMDB proxy fetch, cache (raw SQL upsert), entity sync (raw SQL upsert)
 - `scripts/seed.js` — full seed script with raw SQL (categories, settings, users, tags, articles, comments, collection)
 - `jsconfig.json` — path aliases for IDE support
+
+### Phase 2: API endpoints — COMPLETE
+Created 17 endpoint files in `api/` + updated route registration:
+- `api/articles.js` — GET/POST articles with pagination, dynamic filters, tag fetching
+- `api/article-by-id.js` — GET/PUT/DELETE by ID or slug, ownership checks, dynamic UPDATE builder
+- `api/articles-related.js` — GET related articles by tribute_product_id or tag_slug
+- `api/categories.js` — GET with article counts (LEFT JOIN + FILTER)
+- `api/tags.js` — GET/POST with TMDB entity sync
+- `api/tag-by-id.js` — GET/PUT/DELETE by ID or slug
+- `api/comments.js` — GET with threaded replies, POST with article/parent validation
+- `api/comment-by-id.js` — PUT/DELETE (soft-delete) with ownership checks
+- `api/comment-moderate.js` — POST admin moderation (hide/show/delete) with counter updates
+- `api/search.js` — GET ILIKE search across articles + tags
+- `api/media-upload.js` — POST with S3 upload + DB record
+- `api/auth-yandex.js` — OAuth redirect + callback with user upsert + session creation
+- `api/auth-telegram.js` — OIDC redirect + callback with PKCE, user upsert, session creation
+- `api/cron-token-cleanup.js` — DELETE expired auth tokens
+- `api/cron-tmdb-sync.js` — batch re-sync stale entities + cache cleanup
+- `api/cron-tmdb-cleanup.js` — DELETE expired TMDB cache entries
+- `api/tmdb-proxy.js` — proxy to TMDB API (geo-bypass)
+- `api/tmdb-search.js` — TMDB search via proxy (cached)
+- `api/feed-rss.js` — RSS 2.0 feed with dc:creator
+- `api/sitemap.js` — XML sitemap with categories, articles, tags, collections
+- `server/routes/index.js` — flat route registration with middleware (42 routes total)
