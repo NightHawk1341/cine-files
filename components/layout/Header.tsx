@@ -67,7 +67,7 @@ export function Header() {
       className={`${styles.header} ${hidden && !menuOpen ? styles.headerHidden : ''}`}
     >
       <div className={styles.inner}>
-        {/* Left section: burger + search (mobile) */}
+        {/* Left section: burger + search (mobile) + nav (desktop) */}
         <div className={styles.leftButtons}>
           <button
             className={`${styles.headerButton}${pressedId === 'burger' ? ` ${styles.pressedToActive}` : ''}`}
@@ -98,35 +98,35 @@ export function Header() {
               <path d="m21 21-4.35-4.35" />
             </svg>
           </button>
+
+          {/* Desktop nav — inside left section, left of centered logo */}
+          <nav className={`${styles.nav} ${menuOpen ? styles.navOpen : ''}`}>
+            {NAV_ITEMS.map((item) => {
+              const isActive = item.href === '/'
+                ? pathname === '/'
+                : pathname.startsWith(item.href);
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`${styles.navLink} ${isActive ? styles.navLinkActive : ''}${pressedId === item.href ? ` ${styles.pressedToActive}` : ''}`}
+                  onClick={() => setMenuOpen(false)}
+                  onPointerDown={handlePointerDown(item.href)}
+                  onPointerUp={handlePointerUp}
+                  onPointerLeave={handlePointerUp}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
+          </nav>
         </div>
 
-        {/* Center: logo */}
+        {/* Center: logo — absolutely centered like TR-BUTE */}
         <Link href="/" className={styles.logoWrapper}>
           <span className={styles.logoFull}>CineFiles</span>
           <span className={styles.logoShort}>CF</span>
         </Link>
-
-        {/* Desktop nav */}
-        <nav className={`${styles.nav} ${menuOpen ? styles.navOpen : ''}`}>
-          {NAV_ITEMS.map((item) => {
-            const isActive = item.href === '/'
-              ? pathname === '/'
-              : pathname.startsWith(item.href);
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`${styles.navLink} ${isActive ? styles.navLinkActive : ''}${pressedId === item.href ? ` ${styles.pressedToActive}` : ''}`}
-                onClick={() => setMenuOpen(false)}
-                onPointerDown={handlePointerDown(item.href)}
-                onPointerUp={handlePointerUp}
-                onPointerLeave={handlePointerUp}
-              >
-                {item.label}
-              </Link>
-            );
-          })}
-        </nav>
 
         {/* Right section: icon buttons */}
         <div className={styles.rightButtons}>
