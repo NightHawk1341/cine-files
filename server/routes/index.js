@@ -29,6 +29,10 @@ function setupRoutes(app, deps) {
   const tmdbSearch = require('../../api/tmdb-search');
   const feedRss = require('../../api/feed-rss');
   const sitemap = require('../../api/sitemap');
+  const users = require('../../api/users');
+  const media = require('../../api/media');
+  const collections = require('../../api/collections');
+  const settings = require('../../api/settings');
 
   // ============================================================
   // Health check
@@ -90,8 +94,32 @@ function setupRoutes(app, deps) {
   // ============================================================
   // Media
   // ============================================================
+  app.get('/api/media', requireEditor, media.list(deps));
   // Note: multer or formidable middleware needed for file uploads
   app.post('/api/media/upload', requireEditor, mediaUpload.upload(deps));
+  app.delete('/api/media/:id', requireAdmin, media.remove(deps));
+
+  // ============================================================
+  // Admin — users
+  // ============================================================
+  app.get('/api/admin/users', requireAdmin, users.list(deps));
+  app.put('/api/admin/users/:id/role', requireAdmin, users.updateRole(deps));
+
+  // ============================================================
+  // Collections
+  // ============================================================
+  app.get('/api/collections', collections.list(deps));
+  app.post('/api/collections', requireAdmin, collections.create(deps));
+  app.get('/api/collections/:id', collections.get(deps));
+  app.put('/api/collections/:id', requireAdmin, collections.update(deps));
+  app.delete('/api/collections/:id', requireAdmin, collections.remove(deps));
+  app.put('/api/collections/:id/articles', requireAdmin, collections.updateArticles(deps));
+
+  // ============================================================
+  // Settings
+  // ============================================================
+  app.get('/api/settings', requireAdmin, settings.list(deps));
+  app.put('/api/settings', requireAdmin, settings.update(deps));
 
   // ============================================================
   // TMDB

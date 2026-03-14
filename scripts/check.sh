@@ -7,33 +7,47 @@ set -e
 echo "=== CineFiles Validation ==="
 echo ""
 
-# 1. TypeScript / Build check
-echo "[1/3] Building project..."
-npx next build
-echo "Build: OK"
+# 1. Syntax check — server entry point and all API/lib files
+echo "[1/3] Checking JavaScript syntax..."
+node -c server.js
+for f in api/*.js lib/*.js server/**/*.js; do
+  [ -f "$f" ] && node -c "$f"
+done
+echo "Syntax: OK"
 echo ""
 
-# 2. Lint check
-echo "[2/3] Running linter..."
-npx next lint --quiet 2>/dev/null || echo "Lint: skipped (ESLint not configured)"
-echo ""
-
-# 3. Check for hardcoded colors in CSS modules
-echo "[3/3] Checking for hardcoded colors in CSS modules..."
-HARDCODED=$(grep -rn '#[0-9a-fA-F]\{3,8\}' styles/components/ styles/pages/ 2>/dev/null \
-  | grep -v '\.module\.css:.*var(' \
+# 2. Check for hardcoded colors in CSS
+echo "[2/3] Checking for hardcoded colors in CSS..."
+HARDCODED=$(grep -rn '#[0-9a-fA-F]\{3,8\}' public/css/ 2>/dev/null \
+  | grep -v 'var(' \
   | grep -v 'currentColor' \
   | grep -v '/\*' \
-  | grep -v 'comment' \
+  | grep -v 'global.css' \
   || true)
 
 if [ -n "$HARDCODED" ]; then
-  echo "WARNING: Possible hardcoded colors found in CSS modules:"
+  echo "WARNING: Possible hardcoded colors found in CSS:"
   echo "$HARDCODED"
   echo ""
   echo "Consider using CSS variables instead."
 else
-  echo "No hardcoded colors found in CSS modules: OK"
+  echo "No hardcoded colors found: OK"
+fi
+echo ""
+
+# 3. Check that required files exist
+echo "[3/3] Checking required files..."
+MISSING=""
+for f in server.js lib/db.js lib/config.js lib/auth.js lib/storage.js public/index.html public/js/core/router.js; do
+  [ ! -f "$f" ] && MISSING="$MISSING  $f\n"
+done
+
+if [ -n "$MISSING" ]; then
+  echo "ERROR: Missing required files:"
+  printf "$MISSING"
+  exit 1
+else
+  echo "Required files: OK"
 fi
 
 echo ""

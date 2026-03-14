@@ -385,6 +385,43 @@ Created 17 endpoint files in `api/` + updated route registration:
 - `api/sitemap.js` — XML sitemap with categories, articles, tags, collections
 - `server/routes/index.js` — flat route registration with middleware (42 routes total)
 
+### Phase 4: Admin Panel — COMPLETE
+Implemented all admin page scripts (previously placeholders):
+- `users.js` — user list table with role management (select dropdown, PUT role API)
+- `media.js` — media library grid with image previews, URL copy, delete
+- `collections.js` — collections list table + create/edit form with CRUD
+- `settings.js` — key-value settings editor with JSON support, add new setting
+
+New API endpoints created:
+- `api/users.js` — GET /api/admin/users, PUT /api/admin/users/:id/role
+- `api/media.js` — GET /api/media, DELETE /api/media/:id
+- `api/collections.js` — full CRUD + article management (6 endpoints)
+- `api/settings.js` — GET /api/settings, PUT /api/settings
+
+Admin CSS extended with: role badges, role select, media grid, media cards, settings textarea.
+
+### Phase 5: Cleanup — COMPLETE
+Removed old stack:
+- Deleted `app/` directory (Next.js App Router pages, API routes, layouts)
+- Deleted `components/` directory (React components)
+- Deleted `middleware.ts` (Next.js middleware)
+- Deleted `prisma/` directory (schema + seed)
+- Deleted `tsconfig.json` (TypeScript config)
+- Deleted `next.config.js` (Next.js config)
+- Deleted `styles/` directory (all CSS Modules)
+- Deleted `lib/*.ts` files (TypeScript lib files — JS equivalents already exist)
+- Updated `package.json`: removed next, react, react-dom, typescript, @types/*, prisma, @prisma/client, tsx; added express, pg, helmet, cors, compression, express-rate-limit, cookie-parser; updated scripts
+- Updated `scripts/check.sh` for Express architecture
+- Updated `docker/Dockerfile` for Express architecture
+- Updated `CLAUDE.md` to match new architecture
+
+### Phase 6: Vercel Compatibility — COMPLETE
+- Refactored Express app into `server/app.js` (reusable module) + `server.js` (entry point with listen + shutdown)
+- Created `vercel.json` with `@vercel/node` build config, route rules for API/static/SPA fallback, cron config
+- Vercel deploys `server.js` as a single serverless function handling all routes
+- Static files in `public/` served via `@vercel/static`
+- Cron jobs configured for tmdb-sync, tmdb-cleanup, token-cleanup
+
 ### Phase 3: Frontend — vanilla JS SPA — COMPLETE
 Created complete SPA frontend matching TR-BUTE architecture:
 

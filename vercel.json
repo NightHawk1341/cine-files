@@ -1,6 +1,36 @@
 {
-  "framework": "nextjs",
+  "version": 2,
   "regions": ["iad1"],
+  "builds": [
+    {
+      "src": "server.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "public/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    { "src": "/api/(.*)", "dest": "/server.js" },
+    { "src": "/feed/rss.xml", "dest": "/server.js" },
+    { "src": "/sitemap.xml", "dest": "/server.js" },
+    {
+      "src": "/fonts/(.*)",
+      "dest": "/public/fonts/$1",
+      "headers": { "Cache-Control": "public, max-age=31536000, immutable" }
+    },
+    {
+      "src": "/icons/(.*)",
+      "dest": "/public/icons/$1",
+      "headers": { "Cache-Control": "public, max-age=31536000, immutable" }
+    },
+    { "src": "/css/(.*)", "dest": "/public/css/$1" },
+    { "src": "/js/(.*)", "dest": "/public/js/$1" },
+    { "src": "/pages/(.*)", "dest": "/public/pages/$1" },
+    { "src": "/(.*\\.(html|ico|txt|webmanifest))", "dest": "/public/$1" },
+    { "src": "/(.*)", "dest": "/server.js" }
+  ],
   "crons": [
     {
       "path": "/api/cron/tmdb-sync",
