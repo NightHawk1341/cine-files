@@ -220,10 +220,10 @@ const Router = (function () {
     });
 
     // Bottom nav items
-    document.querySelectorAll('.bottom-nav-item').forEach(function (link) {
+    document.querySelectorAll('.bottom-nav-button').forEach(function (link) {
       var href = link.getAttribute('href');
       var isActive = href === '/' ? path === '/' : path.startsWith(href);
-      link.classList.toggle('item-active', isActive);
+      link.classList.toggle('active-page', isActive);
     });
 
     // Desktop search

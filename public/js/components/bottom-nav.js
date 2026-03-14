@@ -6,15 +6,15 @@
 var BottomNav = (function () {
   function init() {
     // Pressed state feedback
-    document.querySelectorAll('.bottom-nav-item').forEach(function (item) {
+    document.querySelectorAll('.bottom-nav-button').forEach(function (item) {
       item.addEventListener('pointerdown', function () {
-        item.classList.add('pressed-to-active');
+        item.classList.add('mobile-pressed-to-active');
       });
       item.addEventListener('pointerup', function () {
-        item.classList.remove('pressed-to-active');
+        item.classList.remove('mobile-pressed-to-active');
       });
       item.addEventListener('pointerleave', function () {
-        item.classList.remove('pressed-to-active');
+        item.classList.remove('mobile-pressed-to-active');
       });
     });
   }

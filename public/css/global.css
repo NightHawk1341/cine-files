@@ -296,32 +296,6 @@ body[data-theme="light"] {
   --grain-opacity: 0.06;
 }
 
-/* ===== Grain Texture Overlay ===== */
-.grain-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-  pointer-events: none;
-  opacity: var(--grain-opacity);
-  background-image: url('/icons/grain.png');
-  background-repeat: repeat;
-  animation: grainFlip 0.5s steps(1) infinite;
-}
-
-html[data-theme="light"] .grain-overlay {
-  filter: invert(1);
-}
-
-@keyframes grainFlip {
-  0% { transform: scale(1, 1); }
-  25% { transform: scale(-1, 1); }
-  50% { transform: scale(-1, -1); }
-  75% { transform: scale(1, -1); }
-}
-
 /* ===== Skeleton Animation ===== */
 @keyframes skeleton-pulse {
   0% { background-position: 200% 0; }
@@ -358,6 +332,8 @@ html[data-theme="light"] .grain-overlay {
 ::-webkit-scrollbar-thumb:hover { background: var(--text-tertiary); }
 
 /* ===== Utility Classes ===== */
+.hidden { display: none; }
+
 .visually-hidden {
   position: absolute;
   width: 1px;
@@ -545,13 +521,11 @@ body.sheet-open { position: fixed; width: 100%; overflow: hidden; overscroll-beh
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-  .grain-overlay { animation: none; }
 }
 
 /* ===== Mobile clearance ===== */
 @media (max-width: 768px) {
   main { padding-bottom: var(--bottom-nav-height); }
-  .grain-overlay { opacity: calc(var(--grain-opacity) - 0.02); }
 }
 
 @media (hover: none) and (pointer: coarse), (max-width: 768px) {

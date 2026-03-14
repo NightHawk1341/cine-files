@@ -1,0 +1,84 @@
+/* ===== BOTTOM NAVIGATION ===== */
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  will-change: transform;
+  background-color: var(--bg-primary);
+  border-top: 1px solid var(--border-color);
+  display: none;
+  justify-content: space-around;
+  align-items: stretch;
+  padding: 0 8px;
+  box-shadow: 0 -4px 12px var(--shadow-color);
+  height: var(--bottom-nav-height);
+  z-index: 1001;
+}
+
+body.popup-open .bottom-nav { box-shadow: none; }
+
+@media (hover: none) and (pointer: coarse) {
+  .bottom-nav { display: flex !important; }
+}
+
+@media (max-width: 768px) {
+  .bottom-nav { display: flex !important; }
+}
+
+.bottom-nav-button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 4px;
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  text-decoration: none;
+  color: inherit;
+}
+
+@media (hover: hover) {
+  .bottom-nav-button { transition: background 0.15s; }
+  .bottom-nav-button:not(.active-page):hover svg { color: var(--text-primary); fill: var(--text-primary); }
+  .bottom-nav-button:not(.active-page):hover .bottom-nav-label { color: var(--text-primary); }
+}
+
+.bottom-nav-icon-wrap { position: relative; display: flex; align-items: center; justify-content: center; }
+.bottom-nav-icon { display: flex; align-items: center; justify-content: center; }
+.bottom-nav-icon svg { width: 20px; height: 20px; color: var(--text-tertiary); fill: var(--text-tertiary); transform: scale(var(--icon-scale)); }
+
+.bottom-nav-label {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  line-height: 1;
+  margin-top: 3px;
+  white-space: nowrap;
+}
+
+.bottom-nav-button.active-page svg { color: var(--active-page-color) !important; fill: var(--active-page-color) !important; }
+.bottom-nav-button.active-page .bottom-nav-label { color: var(--active-page-color) !important; }
+
+.bottom-nav-button.mobile-pressed-to-active svg {
+  color: var(--active-page-color) !important;
+  fill: var(--active-page-color) !important;
+  filter: brightness(0.7);
+  transition: filter 0.1s ease;
+}
+.bottom-nav-button.mobile-pressed-to-active .bottom-nav-label {
+  color: var(--active-page-color) !important;
+  filter: brightness(0.7);
+  transition: filter 0.1s ease;
+}
+
+@media (hover: none) and (pointer: coarse), (max-width: 768px) {
+  .footer {
+    padding-bottom: calc(var(--bottom-nav-height) + 0px) !important;
+  }
+}
