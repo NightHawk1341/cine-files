@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>CineFiles</title>
   <meta name="description" content="Кино, аниме, игры — новости, рецензии, разборы">
+  <meta name="theme-color" content="#121212">
 
   <!-- FOUC prevention: set theme before paint -->
   <script>
@@ -15,6 +16,8 @@
       }
       document.documentElement.setAttribute('data-theme', theme);
       document.documentElement.classList.add('page-loading');
+      var m = document.querySelector('meta[name="theme-color"]');
+      if (m) m.setAttribute('content', theme === 'dark' ? '#121212' : '#f2ede4');
     })();
   </script>
 

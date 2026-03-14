@@ -1,6 +1,7 @@
 /**
  * SPA Router — matches TR-BUTE's registerPage pattern.
  * URL-based page loading with dynamic CSS injection and cleanup.
+ * Scroll restoration, progress bar, modifier key handling, SPA events.
  */
 
 const Router = (function () {
@@ -17,6 +18,12 @@ const Router = (function () {
   /** @type {Record<string, string>} */
   let contentSelectors = {};
   let isNavigating = false;
+
+  /** @type {Map<string, number>} */
+  var scrollPositions = new Map();
+
+  var progressBar = null;
+  var progressTimer = null;
 
   /**
    * Register a page route.
@@ -42,6 +49,47 @@ const Router = (function () {
     });
   }
 
+  function showProgressBar() {
+    if (progressBar && progressBar.parentNode) {
+      progressBar.parentNode.removeChild(progressBar);
+    }
+    clearTimeout(progressTimer);
+    progressBar = document.createElement('div');
+    progressBar.className = 'progress-bar';
+    progressBar.style.width = '0%';
+    document.body.appendChild(progressBar);
+    requestAnimationFrame(function () {
+      if (progressBar) progressBar.style.width = '70%';
+    });
+    progressTimer = setTimeout(function () {
+      hideProgressBar();
+    }, 8000);
+  }
+
+  function hideProgressBar() {
+    clearTimeout(progressTimer);
+    if (!progressBar) return;
+    progressBar.style.width = '100%';
+    var bar = progressBar;
+    setTimeout(function () {
+      if (bar && bar.parentNode) {
+        bar.style.opacity = '0';
+        setTimeout(function () {
+          if (bar.parentNode) bar.parentNode.removeChild(bar);
+        }, 200);
+      }
+    }, 200);
+    progressBar = null;
+  }
+
+  function cleanupBodyLocks() {
+    document.body.classList.remove('modal-open', 'sheet-open', 'popup-open');
+    document.body.style.removeProperty('position');
+    document.body.style.removeProperty('top');
+    document.body.style.removeProperty('width');
+    document.body.style.removeProperty('overflow');
+  }
+
   /**
    * Navigate to a URL path.
    * @param {string} path
@@ -52,7 +100,21 @@ const Router = (function () {
     if (isNavigating) return;
     isNavigating = true;
 
+    showProgressBar();
+
     try {
+      // Dispatch page leave event
+      if (currentPath) {
+        document.dispatchEvent(new CustomEvent('spa:pageleave', {
+          detail: { path: currentPath }
+        }));
+      }
+
+      // Save scroll position for current route
+      if (currentPath) {
+        scrollPositions.set(currentPath, window.scrollY);
+      }
+
       // Cleanup current page
       if (currentPage && currentPage.cleanup) {
         try {
@@ -61,6 +123,9 @@ const Router = (function () {
           console.error('Page cleanup error:', err);
         }
       }
+
+      // Clean up stuck body locks from modals/sheets
+      cleanupBodyLocks();
 
       // Remove page-specific stylesheets
       currentStylesheets.forEach(function (link) {
@@ -89,14 +154,15 @@ const Router = (function () {
         var mainContent = document.getElementById('page-content');
         if (mainContent) {
           mainContent.innerHTML =
-            '<div class="container" style="padding:60px 0;text-align:center">' +
-            '<h1 style="font-size:var(--heading-desktop);color:var(--text-primary);margin-bottom:16px">404</h1>' +
-            '<p style="color:var(--text-secondary)">Страница не найдена</p>' +
+            '<div class="container not-found-page">' +
+            '<h1 class="not-found-title">404</h1>' +
+            '<p class="not-found-message">Страница не найдена</p>' +
             '</div>';
         }
         currentPage = null;
         currentPath = path;
         if (pushState) history.pushState(null, '', path);
+        hideProgressBar();
         return;
       }
 
@@ -115,8 +181,12 @@ const Router = (function () {
       if (pushState) history.pushState(null, '', path);
       currentPath = path;
 
-      // Scroll to top
-      window.scrollTo(0, 0);
+      // Scroll: restore saved position on back/forward, otherwise scroll to top
+      if (!pushState && scrollPositions.has(path)) {
+        window.scrollTo(0, scrollPositions.get(path));
+      } else {
+        window.scrollTo(0, 0);
+      }
 
       // Init new page
       currentPage = matched;
@@ -124,10 +194,16 @@ const Router = (function () {
 
       // Update active states
       updateActiveStates(path);
+
+      // Dispatch page enter event
+      document.dispatchEvent(new CustomEvent('spa:pageenter', {
+        detail: { path: path }
+      }));
     } catch (err) {
       console.error('Navigation error:', err);
     } finally {
       isNavigating = false;
+      hideProgressBar();
     }
   }
 
@@ -158,6 +234,15 @@ const Router = (function () {
   }
 
   /**
+   * Check if a click event has modifier keys (for opening in new tab).
+   * @param {MouseEvent} e
+   * @returns {boolean}
+   */
+  function hasModifierKey(e) {
+    return e.ctrlKey || e.metaKey || e.shiftKey || e.altKey || e.button === 1;
+  }
+
+  /**
    * Initialize the router — listen for link clicks, popstate.
    */
   function init() {
@@ -169,6 +254,8 @@ const Router = (function () {
       if (!href || href.startsWith('http') || href.startsWith('//') || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:')) return;
       if (target.hasAttribute('target')) return;
       if (target.hasAttribute('data-no-spa')) return;
+      // Allow modifier keys to open in new tab natively
+      if (hasModifierKey(e)) return;
       e.preventDefault();
       if (href !== currentPath) {
         navigate(href);
