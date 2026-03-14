@@ -1,0 +1,29 @@
+/* ===== Collections Pages ===== */
+.collections-page-title { font-size: var(--page-title-size); font-weight: 700; color: var(--text-primary); margin-bottom: 8px; }
+.collections-empty { color: var(--text-tertiary); font-size: 15px; text-align: center; padding: 40px 0; }
+
+.collections-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  margin-top: 24px;
+}
+
+.collection-card {
+  display: block;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  transition: background-color 200ms, border-color 200ms;
+}
+
+@media (hover: hover) {
+  .collection-card:hover { background: var(--card-bg-hover); border-color: var(--card-border-hover); }
+}
+
+@media (max-width: 768px) {
+  .collections-grid { grid-template-columns: 1fr; }
+}

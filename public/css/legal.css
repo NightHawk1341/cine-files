@@ -1,0 +1,7 @@
+/* ===== Legal Page ===== */
+.legal-page { padding-bottom: 60px; }
+.legal-title { font-size: var(--heading-desktop); font-weight: 700; color: var(--text-primary); margin-bottom: 24px; }
+
+.legal-body { font-size: 16px; line-height: 1.75; color: var(--text-primary); }
+.legal-body p { margin-bottom: 16px; }
+.legal-body h2 { font-size: 20px; font-weight: 600; margin-top: 32px; margin-bottom: 12px; }

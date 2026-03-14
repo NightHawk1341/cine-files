@@ -1,0 +1,4 @@
+/* ===== Tag Page ===== */
+.tag-page-title { font-size: var(--page-title-size); font-weight: 700; color: var(--text-primary); margin-bottom: 8px; }
+.tag-page-description { font-size: 15px; color: var(--text-secondary); margin-bottom: 24px; max-width: 600px; }
+.tag-page-empty { color: var(--text-tertiary); font-size: 15px; padding: 40px 0; text-align: center; }

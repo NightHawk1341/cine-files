@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./*"]
+    },
+    "checkJs": false,
+    "resolveJsonModule": true
+  },
+  "include": ["**/*.js"],
+  "exclude": ["node_modules", ".next"]
+}
