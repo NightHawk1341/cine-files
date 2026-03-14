@@ -232,8 +232,6 @@ html.theme-transition-disable *::after {
   --skeleton-animation-duration: 1.2s;
   --skeleton-animation-timing: ease-in-out;
 
-  /* Grain */
-  --grain-opacity: 0.12;
 }
 
 /* ===== Light Theme Overrides ===== */
@@ -293,7 +291,6 @@ body[data-theme="light"] {
   --tab-counter-color: #1a6fa3;
   --tab-counter-active-bg: rgba(26, 111, 163, 0.2);
   --tab-counter-active-color: #0d4f78;
-  --grain-opacity: 0.06;
 }
 
 /* ===== Skeleton Animation ===== */
