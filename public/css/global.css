@@ -360,6 +360,16 @@ body[data-theme="light"] {
 main {
   flex: 1 0 auto;
   padding-top: var(--header-height);
+  min-width: 0;
+}
+
+.site-layout {
+  flex: 1 0 auto;
+  padding-top: var(--header-height);
+}
+
+.site-layout main {
+  padding-top: 0;
 }
 
 /* ===== Responsive Typography ===== */
@@ -523,6 +533,8 @@ body.sheet-open { position: fixed; width: 100%; overflow: hidden; overscroll-beh
 /* ===== Mobile clearance ===== */
 @media (max-width: 768px) {
   main { padding-bottom: var(--bottom-nav-height); }
+  .site-layout { padding-bottom: var(--bottom-nav-height); }
+  .site-layout main { padding-bottom: 0; }
 }
 
 @media (hover: none) and (pointer: coarse), (max-width: 768px) {

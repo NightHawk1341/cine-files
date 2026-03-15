@@ -1,0 +1,227 @@
+/* ===== Site Layout — 3-column with persistent sidebars ===== */
+
+.site-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  min-height: calc(100vh - var(--header-height));
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* ===== Sidebars — hidden on mobile/tablet ===== */
+
+.sidebar {
+  display: none;
+}
+
+/* ===== Desktop 3-column layout ===== */
+
+@media (min-width: 1200px) {
+  .site-layout {
+    grid-template-columns: 220px 1fr 280px;
+    gap: 0;
+    padding: 0 24px;
+  }
+
+  .sidebar {
+    display: block;
+    position: sticky;
+    top: var(--header-height);
+    height: calc(100vh - var(--header-height));
+    overflow-y: auto;
+    padding: 20px 0;
+    scrollbar-width: none;
+  }
+
+  .sidebar::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Wider screens get more breathing room */
+@media (min-width: 1600px) {
+  .site-layout {
+    grid-template-columns: 240px 1fr 300px;
+    max-width: 1540px;
+  }
+}
+
+/* ===== Left Sidebar ===== */
+
+.sidebar-left {
+  padding-right: 16px;
+  border-right: 1px solid var(--divider);
+}
+
+.sidebar-nav-group {
+  margin-bottom: 24px;
+}
+
+.sidebar-nav-title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-tertiary);
+  padding: 0 12px;
+  margin-bottom: 8px;
+}
+
+.sidebar-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.sidebar-nav-link:hover {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.sidebar-nav-link.active {
+  background: var(--brand-muted);
+  color: var(--brand-primary);
+}
+
+.sidebar-nav-link.active:hover {
+  background: var(--brand-muted);
+  color: var(--brand-primary);
+}
+
+.sidebar-nav-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.sidebar-nav-icon svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+}
+
+.sidebar-divider {
+  height: 1px;
+  background: var(--divider);
+  margin: 12px 0;
+}
+
+/* ===== Right Sidebar ===== */
+
+.sidebar-right {
+  padding-left: 16px;
+  border-left: 1px solid var(--divider);
+}
+
+.sidebar-widget {
+  margin-bottom: 24px;
+}
+
+.sidebar-widget-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  padding: 0 0 12px;
+  border-bottom: 1px solid var(--divider);
+  margin-bottom: 12px;
+}
+
+/* Popular articles widget */
+.sidebar-article-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sidebar-article-item {
+  display: flex;
+  gap: 10px;
+  color: var(--text-primary);
+  transition: color 0.15s;
+}
+
+.sidebar-article-item:hover {
+  color: var(--brand-primary);
+}
+
+.sidebar-article-rank {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  min-width: 20px;
+  line-height: 1.3;
+}
+
+.sidebar-article-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.sidebar-article-title {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.sidebar-article-meta {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  margin-top: 4px;
+}
+
+/* Tags widget */
+.sidebar-tags-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.sidebar-tag {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.sidebar-tag:hover {
+  background: var(--brand-muted);
+  color: var(--brand-primary);
+}
+
+/* Skeleton loading for sidebar widgets */
+.sidebar-skeleton-line {
+  height: 14px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+.sidebar-skeleton-line:last-child {
+  width: 60%;
+}
+
+/* ===== Adjust main content in layout ===== */
+
+.site-layout main {
+  min-width: 0;
+  padding-top: 0;
+}
