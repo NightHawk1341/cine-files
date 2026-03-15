@@ -4,22 +4,13 @@
 .home-section { padding: 24px 0; }
 .home-section:first-child { padding-top: 32px; }
 
+.home-section-toolbar { padding-bottom: 8px; }
+
 .home-section-title {
   font-size: var(--page-title-size);
   font-weight: 600;
   color: var(--text-primary);
   margin-bottom: 16px;
-}
-
-/* Featured grid — larger cards for first row */
-.article-grid-featured {
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-}
-
-@media (min-width: 900px) {
-  .article-grid-featured {
-    grid-template-columns: repeat(4, 1fr);
-  }
 }
 
 /* Tag cloud (shared) */
