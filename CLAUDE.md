@@ -195,6 +195,9 @@ Only YouTube, VK Video, and RuTube embeds are allowed.
 ### 10. SPA router manages page lifecycle
 Pages register via `Router.registerPage()`. The router handles CSS injection/cleanup, history API, and init/cleanup calls. Always implement `cleanup()` to prevent memory leaks.
 
+### 11. No seeding — database is populated manually
+The database is never seeded automatically. All data (articles, tags, categories, etc.) is inserted manually by the owner. Do not rely on seed scripts or placeholder/fake content as a substitute for real data. If the database is empty, the site should show an empty state, not fake content.
+
 ## Documentation
 See `docs/` directory for detailed documentation.
 
