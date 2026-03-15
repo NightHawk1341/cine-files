@@ -53,21 +53,22 @@ ON CONFLICT ("slug") DO NOTHING;
 
 -- ============================================================
 -- ARTICLES
--- Uses first admin/editor user as author. If no such user
--- exists, the INSERT will fail with a FK violation — create
--- an admin user first.
+-- Uses first available user as author.
 -- ============================================================
 
 DO $$
 DECLARE
   _author_id INTEGER;
 BEGIN
+  -- Prefer admin/editor, fall back to any user
   SELECT id INTO _author_id FROM users
-    WHERE role IN ('admin', 'editor')
-    ORDER BY id LIMIT 1;
+    ORDER BY
+      CASE WHEN role = 'admin' THEN 0 WHEN role = 'editor' THEN 1 ELSE 2 END,
+      id
+    LIMIT 1;
 
   IF _author_id IS NULL THEN
-    RAISE EXCEPTION 'No admin or editor user found. Create one before running this migration.';
+    RAISE EXCEPTION 'No users found. The admin user insert above may have failed.';
   END IF;
 
   -- 1. Nolan new film (news, featured)
