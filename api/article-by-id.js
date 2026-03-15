@@ -1,3 +1,5 @@
+const { config } = require('../lib/config');
+
 /**
  * GET /api/articles/:id — get article by numeric ID or slug
  */
@@ -180,6 +182,7 @@ function formatRow(row, tags) {
     isPinned: row.is_pinned,
     allowComments: row.allow_comments,
     tributeProductIds: row.tribute_product_ids || [],
+    url: `${config.appUrl}/${row.category_slug}/${row.slug}`,
     category: {
       slug: row.category_slug,
       nameRu: row.category_name_ru,

@@ -2,56 +2,89 @@
 
 ## Overview
 
-CineFiles integrates with [TR-BUTE](https://buy-tribute.com) (sister e-commerce project) to display product cards within articles and provide cross-site article linking.
+CineFiles integrates with [TR-BUTE](https://buy-tribute.com) (sister e-commerce project) in two directions:
+- **Outbound**: CineFiles fetches product data from TR-BUTE to render product cards in articles
+- **Inbound**: TR-BUTE fetches articles from CineFiles to display on product pages and in editorial grid strips
 
-## Components
+## Outbound: CineFiles -> TR-BUTE
 
-### TributeProductsBlock (`components/tribute/TributeProductsBlock.tsx`)
-- **Type**: React Server Component
-- **Purpose**: Fetches and renders TR-BUTE product cards within article content
-- **Data**: Fetched live from TR-BUTE API at render time
-- **Injection**: Passed via `customBlocks` prop to `ArticleBody`
+### API Client
 
-### ProductCard (`components/tribute/ProductCard.tsx`)
-- **Purpose**: Individual product card display
-- **Shows**: Product image, title, price, link to TR-BUTE
+`lib/tribute-api.js` provides:
+- `fetchTributeProducts(ids)` — Fetch product details by IDs
+- `checkTributeUser(provider, providerId)` — Check if a user exists on TR-BUTE
 
-## Article Content Block
+**Authentication**: `X-API-Key` header with `TRIBUTE_API_KEY`
+
+### Article Content Block
 
 The `tribute_products` block type in articles stores an array of TR-BUTE product IDs. When rendering:
 
 1. `ArticleBody` encounters a `tribute_products` block
-2. Delegates rendering to `TributeProductsBlock` (server component)
-3. Server component calls TR-BUTE API to fetch current product data
-4. Products rendered as styled cards with links back to TR-BUTE
+2. Calls TR-BUTE API to fetch current product data
+3. Products rendered as styled cards with links back to TR-BUTE
 
-## Related Articles API
+## Inbound: TR-BUTE -> CineFiles
 
-**Endpoint**: `GET /api/articles/related`
+TR-BUTE calls these CineFiles API endpoints with `X-API-Key` header (validated against `CINEFILES_API_KEY`):
 
-**Parameters**:
-- `productId` — Find articles mentioning a TR-BUTE product
-- `tagSlug` — Find articles with a specific tag
+### Endpoints Called by TR-BUTE
 
-**Used by**: TR-BUTE site to show "Related CineFiles articles" for products (e.g., movie merchandise links back to movie review).
+#### 1. Featured Articles (Editorial Grid Strips)
+`GET /api/articles?featured=true&status=published&limit={n}`
 
-## API Client
+Used on TR-BUTE main page, catalog, and favorites for editorial strip carousels between product cards.
 
-`lib/tribute-api.ts` provides:
-- `fetchTributeProducts(productIds)` — Fetch product details by IDs
-- `checkTributeUser(userId)` — Check if a user exists on TR-BUTE (for cross-platform features)
+#### 2. Related Articles by Product ID
+`GET /api/articles/related?tribute_product_id={id}&limit={n}`
 
-**Authentication**: `X-API-Key` header with `TRIBUTE_API_KEY`
+Shown on TR-BUTE product pages alongside the product.
+
+#### 3. Related Articles by Tag
+`GET /api/articles/related?tag_slug={slug}&limit={n}`
+
+Used for catalog-context article matching.
+
+#### 4. Search Articles (Admin)
+`GET /api/search?q={query}&limit=10`
+
+Used in TR-BUTE admin for article picker (manual overrides).
+
+#### 5. Single Article by Slug
+`GET /api/articles/{slug}`
+
+Used for admin-configured article overrides by URL.
+
+### Response Format
+
+All endpoints return articles with at minimum:
+```json
+{
+  "title": "string",
+  "lead": "string",
+  "coverImageUrl": "string",
+  "publishedAt": "ISO 8601",
+  "url": "full CineFiles article URL",
+  "category": { "slug": "string", "nameRu": "string" }
+}
+```
+
+The `url` field is constructed from `APP_URL` + category slug + article slug.
 
 ## Configuration
 
-| Variable | Description |
-|----------|-------------|
-| `TRIBUTE_API_URL` | TR-BUTE API base URL |
-| `TRIBUTE_API_KEY` | API key for authenticated requests |
+| Variable | Direction | Description |
+|----------|-----------|-------------|
+| `TRIBUTE_API_URL` | Outbound | TR-BUTE API base URL |
+| `TRIBUTE_API_KEY` | Outbound | API key CineFiles sends to TR-BUTE |
+| `CINEFILES_API_KEY` | Inbound | API key TR-BUTE sends to CineFiles |
 
 ## Article Model
 
-Articles have a `tributeProductIds` field (String array) that stores linked TR-BUTE product IDs. This enables:
-- Rendering product cards in article content
-- Querying related articles by product ID
+Articles have a `tribute_product_ids` integer array field that stores linked TR-BUTE product IDs. This enables:
+- Rendering product cards in article content (outbound)
+- Querying related articles by product ID (inbound)
+
+## TR-BUTE Integration Details
+
+TR-BUTE caches CineFiles responses for 1 hour (editorial/product) and 10 minutes (search). All requests have a 5-second timeout with graceful degradation (empty array on failure). When `CINEFILES_API_URL` or `CINEFILES_API_KEY` is absent, TR-BUTE hides all CineFiles UI sections.

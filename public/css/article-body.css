@@ -82,7 +82,87 @@ ul.article-list { list-style: disc; }
 }
 .article-infobox-content { padding: 16px; }
 
-.article-tribute-block,
+.article-tribute-block {
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 1.5em 0;
+  background-color: var(--bg-secondary);
+}
+.article-tribute-header {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border-color);
+}
+.article-tribute-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-tertiary);
+}
+.article-tribute-grid {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+.article-tribute-grid::-webkit-scrollbar { height: 4px; }
+.article-tribute-grid::-webkit-scrollbar-track { background: transparent; }
+.article-tribute-grid::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 2px; }
+.article-tribute-loading {
+  min-height: 180px;
+}
+
+.tribute-card {
+  flex: 0 0 180px;
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: var(--card-bg);
+  border: 1px solid var(--card-border);
+  text-decoration: none;
+  color: var(--text-primary);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+@media (hover: hover) {
+  .tribute-card:hover {
+    border-color: var(--card-border-hover);
+    box-shadow: var(--shadow-sm);
+  }
+}
+.tribute-card-image {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  background-color: var(--bg-tertiary);
+}
+.tribute-card-no-image {
+  display: block;
+}
+.tribute-card-info {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.tribute-card-name {
+  font-size: 13px;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.tribute-card-price {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--brand-primary);
+}
+
 .article-movie-card {
   border: 1px dashed var(--border-color);
   border-radius: 12px;
@@ -90,7 +170,6 @@ ul.article-list { list-style: disc; }
   text-align: center;
   margin: 1.5em 0;
 }
-.article-tribute-placeholder,
 .article-movie-card-placeholder { font-size: 14px; color: var(--text-tertiary); }
 
 @media (max-width: 768px) {
