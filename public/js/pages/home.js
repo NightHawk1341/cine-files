@@ -143,11 +143,11 @@ Router.registerPage('/', {
         var a = document.createElement('a');
         a.className = 'tag-pill';
         a.href = '/tag/' + tag.slug;
-        a.textContent = tag.name_ru;
-        if (tag.article_count > 0) {
+        a.textContent = tag.nameRu;
+        if (tag.articleCount > 0) {
           var count = document.createElement('span');
           count.className = 'tag-pill-count';
-          count.textContent = tag.article_count;
+          count.textContent = tag.articleCount;
           a.appendChild(count);
         }
         tagsCloud.appendChild(a);
@@ -162,7 +162,7 @@ Router.registerPage('/', {
         link.href = '/' + cat.slug;
         var name = document.createElement('span');
         name.className = 'category-card-name';
-        name.textContent = cat.name_ru;
+        name.textContent = cat.nameRu;
         link.appendChild(name);
         if (cat.description) {
           var desc = document.createElement('span');

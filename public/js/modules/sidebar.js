@@ -156,13 +156,14 @@ var Sidebar = (function () {
       container.innerHTML = '';
       var top = articles
         .slice()
-        .sort(function (a, b) { return (b.view_count || 0) - (a.view_count || 0); })
+        .sort(function (a, b) { return (b.viewCount || 0) - (a.viewCount || 0); })
         .slice(0, 5);
 
       top.forEach(function (article, idx) {
+        var catSlug = article.category ? article.category.slug : 'articles';
         var link = document.createElement('a');
         link.className = 'sidebar-article-item';
-        link.href = '/' + (article.category_slug || 'articles') + '/' + article.slug;
+        link.href = '/' + catSlug + '/' + article.slug;
 
         var rank = document.createElement('span');
         rank.className = 'sidebar-article-rank';
@@ -177,10 +178,11 @@ var Sidebar = (function () {
         title.textContent = article.title;
         info.appendChild(title);
 
+        var authorName = article.author ? article.author.displayName : '';
         var meta = document.createElement('div');
         meta.className = 'sidebar-article-meta';
-        meta.textContent = (article.author_name || '') +
-          (article.view_count ? ' \u00b7 ' + article.view_count + ' \u043f\u0440\u043e\u0441\u043c.' : '');
+        meta.textContent = (authorName || '') +
+          (article.viewCount ? ' \u00b7 ' + article.viewCount + ' \u043f\u0440\u043e\u0441\u043c.' : '');
         info.appendChild(meta);
 
         link.appendChild(info);
@@ -208,7 +210,7 @@ var Sidebar = (function () {
         var a = document.createElement('a');
         a.className = 'sidebar-tag';
         a.href = '/tag/' + tag.slug;
-        a.textContent = tag.name_ru;
+        a.textContent = tag.nameRu;
         container.appendChild(a);
       });
     }

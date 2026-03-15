@@ -5,22 +5,12 @@
 var ArticleCard = (function () {
   /**
    * Build an article card element.
-   * @param {object} article
-   * @param {string} article.slug
-   * @param {string} article.category_slug
-   * @param {string} article.title
-   * @param {string} [article.lead]
-   * @param {string} [article.cover_image_url]
-   * @param {string} [article.cover_image_alt]
-   * @param {string} [article.published_at]
-   * @param {string} [article.author_name]
-   * @param {number} [article.view_count]
-   * @param {number} [article.comment_count]
-   * @param {Array} [article.tags]
+   * @param {object} article — article object from API (camelCase, nested category/author)
    * @returns {HTMLElement}
    */
   function build(article) {
-    var href = '/' + article.category_slug + '/' + article.slug;
+    var categorySlug = article.category ? article.category.slug : '';
+    var href = '/' + categorySlug + '/' + article.slug;
 
     var card = document.createElement('article');
     card.className = 'article-card';
@@ -30,13 +20,13 @@ var ArticleCard = (function () {
     link.href = href;
 
     // Image
-    if (article.cover_image_url) {
+    if (article.coverImageUrl) {
       var imageWrapper = document.createElement('div');
       imageWrapper.className = 'article-card-image-wrapper';
       var img = document.createElement('img');
       img.className = 'article-card-image';
-      img.src = Media.resolveImageUrl(article.cover_image_url);
-      img.alt = article.cover_image_alt || article.title;
+      img.src = Media.resolveImageUrl(article.coverImageUrl);
+      img.alt = article.coverImageAlt || article.title;
       img.loading = 'lazy';
       imageWrapper.appendChild(img);
       link.appendChild(imageWrapper);
@@ -62,31 +52,32 @@ var ArticleCard = (function () {
     var meta = document.createElement('div');
     meta.className = 'article-card-meta';
 
-    if (article.author_name) {
+    var authorName = article.author ? article.author.displayName : '';
+    if (authorName) {
       var author = document.createElement('span');
       author.className = 'article-card-author';
-      author.textContent = article.author_name;
+      author.textContent = authorName;
       meta.appendChild(author);
     }
 
-    if (article.published_at) {
+    if (article.publishedAt) {
       var date = document.createElement('time');
       date.className = 'article-card-date';
-      date.textContent = Utils.formatDate(article.published_at);
+      date.textContent = Utils.formatDate(article.publishedAt);
       meta.appendChild(date);
     }
 
-    if (article.view_count > 0) {
+    if (article.viewCount > 0) {
       var views = document.createElement('span');
       views.className = 'article-card-stat';
-      views.textContent = article.view_count + ' просм.';
+      views.textContent = article.viewCount + ' просм.';
       meta.appendChild(views);
     }
 
-    if (article.comment_count > 0) {
+    if (article.commentCount > 0) {
       var comments = document.createElement('span');
       comments.className = 'article-card-stat';
-      comments.textContent = article.comment_count + ' комм.';
+      comments.textContent = article.commentCount + ' комм.';
       meta.appendChild(comments);
     }
 
@@ -102,7 +93,7 @@ var ArticleCard = (function () {
         var tagLink = document.createElement('a');
         tagLink.className = 'article-card-tag';
         tagLink.href = '/tag/' + tag.slug;
-        tagLink.textContent = tag.name_ru || tag.nameRu;
+        tagLink.textContent = tag.nameRu || tag.nameEn || tag.slug;
         tagsDiv.appendChild(tagLink);
       });
       card.appendChild(tagsDiv);

@@ -11,6 +11,8 @@ var CommentList = (function () {
   async function render(container, articleId) {
     container.innerHTML = '';
 
+    if (!articleId) return;
+
     var section = document.createElement('section');
     section.className = 'comment-section';
 
@@ -55,12 +57,13 @@ var CommentList = (function () {
 
     var author = document.createElement('span');
     author.className = 'comment-author';
-    author.textContent = comment.author_name || 'Аноним';
+    var authorName = comment.user ? comment.user.displayName : '';
+    author.textContent = authorName || 'Аноним';
     header.appendChild(author);
 
     var date = document.createElement('time');
     date.className = 'comment-date';
-    date.textContent = Utils.formatDate(comment.created_at);
+    date.textContent = Utils.formatDate(comment.createdAt);
     header.appendChild(date);
 
     el.appendChild(header);
@@ -73,7 +76,7 @@ var CommentList = (function () {
     } else {
       var body = document.createElement('div');
       body.className = 'comment-body';
-      body.innerHTML = Utils.sanitizeInlineHtml(comment.text || '');
+      body.innerHTML = Utils.sanitizeInlineHtml(comment.body || '');
       el.appendChild(body);
     }
 
@@ -113,13 +116,13 @@ var CommentList = (function () {
 
       submitBtn.disabled = true;
       try {
-        var body = { article_id: Number(articleId), text: text };
-        if (parentId) body.parent_id = Number(parentId);
+        var payload = { articleId: Number(articleId), body: text };
+        if (parentId) payload.parentId = Number(parentId);
 
         await Utils.apiFetch('/api/comments', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(body),
+          body: JSON.stringify(payload),
         });
 
         Toast.show('Комментарий отправлен', 'success');

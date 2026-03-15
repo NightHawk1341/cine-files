@@ -10,7 +10,6 @@ Use CSS classes (`classList.add/remove/toggle`) for conditional visibility — N
 
 | Class | Element | When Added | When Removed |
 |-------|---------|------------|-------------|
-| `nav-link-active` | `.header-nav-link` | Route matches link href | Route changes |
 | `active-page` | `.bottom-nav-button` | Route matches link href | Route changes |
 | `header-button-active` | `.header-search-desktop` | Path is `/search` | Path is not `/search` |
 | `modal-open` | `body` | — | Router cleanup on navigation |
@@ -21,7 +20,6 @@ Use CSS classes (`classList.add/remove/toggle`) for conditional visibility — N
 
 | Class | Element | When Added | When Removed |
 |-------|---------|------------|-------------|
-| `nav-open` | `.header-nav` | Burger menu toggled open | Burger toggled closed, link click, outside click |
 | `header-hidden` | `#site-header` | Scrolling down (desktop) | Scrolling up (desktop) |
 
 ## Footer (`public/js/modules/footer.js`)

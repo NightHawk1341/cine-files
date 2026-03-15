@@ -18,7 +18,7 @@ Router.registerPage('/author/:id', {
         '/api/articles?author_id=' + encodeURIComponent(params.id) + '&limit=24&status=published'
       );
       articles = data.articles || [];
-      authorName = articles.length > 0 ? articles[0].author_name : 'Автор';
+      authorName = articles.length > 0 && articles[0].author ? articles[0].author.displayName : 'Автор';
     } catch (err) {
       // API unavailable
     }
