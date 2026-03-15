@@ -36,9 +36,10 @@ app.use(helmet({
 app.use(cors({
   origin: [
     config.appUrl,
+    config.tribute.apiUrl.replace(/\/api\/?$/, ''),
     'http://localhost:3000',
     'http://localhost:5173',
-  ],
+  ].filter(Boolean),
   credentials: true,
 }));
 
