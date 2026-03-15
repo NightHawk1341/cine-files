@@ -90,8 +90,9 @@ cine-files/
     pages/                     # HTML templates
     fonts/                     # Montserrat WOFF2
     icons/                     # SVG icons
+  migrations/                   # Manual SQL migrations (run via Supabase SQL editor)
+    001-seed-data.sql          # Initial categories, tags, articles
   scripts/
-    seed.js                    # Database seed (raw SQL)
     pre-commit-check.js        # API registration + syntax check
     validate-routes.js         # Route order validation
     validate-router-selectors.js  # Content selector validation
@@ -124,7 +125,8 @@ cine-files/
 - **`requireEnv()` / `getEnv()`** for all env vars
 - **Parameterized SQL only** (`$1, $2` placeholders)
 - **`Number()`** cast for numeric DB columns
-- **No auto-migrations** — manual SQL via Supabase dashboard
+- **No auto-migrations** — do NOT add startup `ALTER TABLE` calls or migration scripts to `server.js` or anywhere else
+- **Schema changes**: provide raw SQL for the user to run in Supabase SQL editor, update `SQL_SCHEMA.sql`, add numbered migration file to `migrations/` (e.g. `002-add-column.sql`)
 
 ### CSS & Theming
 - **NEVER hardcode colors** — always use CSS variables from `public/css/global.css`
@@ -152,10 +154,12 @@ cine-files/
 - Admin routes require `requireAdmin` middleware
 
 ### Database
-- PostgreSQL via `pg` driver — `lib/db.js` provides pool singleton
+- PostgreSQL hosted on Supabase — schema changes applied manually via Supabase SQL editor
+- `pg` driver — `lib/db.js` provides pool singleton
 - 12 tables (see `SQL_SCHEMA.sql`)
 - Denormalized counters: `view_count`/`comment_count` on articles, `article_count` on tags
 - Soft-delete pattern for comments (status field, not actual deletion)
+- Migration files in `migrations/` — numbered sequentially (e.g. `001-seed-data.sql`), run manually
 
 ### API Pattern
 - Handler files in `api/` export factory functions: `function list({ pool }) { return handler }`
