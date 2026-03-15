@@ -20,6 +20,7 @@ Router.registerPage('/', {
     featuredSection.innerHTML = '<h2 class="home-section-title">Избранное</h2>';
     var featuredGrid = document.createElement('div');
     featuredGrid.className = 'article-grid article-grid-featured';
+    for (var s = 0; s < 4; s++) featuredGrid.appendChild(Skeleton.articleCard());
     featuredSection.appendChild(featuredGrid);
     page.appendChild(featuredSection);
 
@@ -29,6 +30,7 @@ Router.registerPage('/', {
     latestSection.innerHTML = '<h2 class="home-section-title">Последние статьи</h2>';
     var latestGrid = document.createElement('div');
     latestGrid.className = 'article-grid';
+    for (var s = 0; s < 8; s++) latestGrid.appendChild(Skeleton.articleCard());
     latestSection.appendChild(latestGrid);
     page.appendChild(latestSection);
 
@@ -38,6 +40,14 @@ Router.registerPage('/', {
     tagsSection.innerHTML = '<h2 class="home-section-title">Популярные теги</h2>';
     var tagsCloud = document.createElement('div');
     tagsCloud.className = 'tag-cloud';
+    for (var s = 0; s < 8; s++) {
+      var pill = document.createElement('span');
+      pill.className = 'tag-pill skeleton';
+      pill.style.width = (60 + Math.random() * 60) + 'px';
+      pill.style.height = '32px';
+      pill.innerHTML = '&nbsp;';
+      tagsCloud.appendChild(pill);
+    }
     tagsSection.appendChild(tagsCloud);
     page.appendChild(tagsSection);
 
@@ -70,6 +80,11 @@ Router.registerPage('/', {
       tagsList = Placeholders.getTags();
       usedPlaceholders = true;
     }
+
+    // Clear skeletons and populate with real data
+    featuredGrid.innerHTML = '';
+    latestGrid.innerHTML = '';
+    tagsCloud.innerHTML = '';
 
     // Featured = first 4
     if (articles.length > 0) {
