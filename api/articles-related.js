@@ -2,16 +2,10 @@ const { config } = require('../lib/config');
 
 /**
  * GET /api/articles/related
- * Called by TR-BUTE to show related CineFiles articles.
+ * Public endpoint — called by TR-BUTE to show related CineFiles articles.
  */
 function list({ pool }) {
   return async (req, res) => {
-    const apiKey = req.headers['x-api-key'];
-    const validKey = config.cinefilesApi.apiKey || config.tribute.apiKey;
-    if (validKey && apiKey !== validKey) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
-
     const tributeProductId = req.query.tribute_product_id;
     const tagSlug = req.query.tag_slug;
     const limit = Math.min(parseInt(req.query.limit || '5'), 20);

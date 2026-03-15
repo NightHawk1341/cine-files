@@ -56,7 +56,6 @@ GitHub Actions secrets mirror these for the CI/CD deploy workflow.
 | Variable | Description |
 |----------|-------------|
 | `TRIBUTE_API_URL` | TR-BUTE API base URL |
-| `TRIBUTE_API_KEY` | API key for TR-BUTE cross-site requests |
 
 ## Optional Variables
 
@@ -72,7 +71,6 @@ GitHub Actions secrets mirror these for the CI/CD deploy workflow.
 - Rotate `JWT_SECRET` to invalidate all active sessions
 - `CRON_SECRET` is sent as `Authorization: Bearer <token>` — keep it private
 - `TMDB_PROXY_SECRET` is sent via `X-Proxy-Secret` header
-- `TRIBUTE_API_KEY` is sent via `X-API-Key` header
 - GitHub Actions secrets must be kept in sync with platform secrets
 
 ## GitHub Actions Secrets
