@@ -68,19 +68,32 @@ When adding a new page to the SPA, you MUST:
 - [ ] Test page loads via SPA navigation AND direct URL
 - [ ] Verify cleanup works (navigate away and back — no stale state)
 
-## Adding a New Component
+## Adding a New Module (persistent UI)
 
-### 1. Create Component
-- [ ] Create `public/js/components/[component].js` as an IIFE
+### 1. Create Module
+- [ ] Create `public/js/modules/[module].js` as an IIFE
 - [ ] Return public API object (e.g. `{ init, show, hide }`)
 
 ### 2. Register
-- [ ] Add `<script>` tag to `index.html` in correct load order (after core, before pages)
-- [ ] If component appends to `document.body`, ensure consuming pages remove it in `cleanup()`
+- [ ] Add `<script>` tag to `index.html` in the Modules section (after core, before components/pages)
+- [ ] If module appends to `document.body`, ensure consuming pages remove it in `cleanup()`
 
 ### 3. Style
-- [ ] Add CSS to `public/css/components/[component].css`
-- [ ] Add `<link>` to `index.html` global CSS section (component CSS is global)
+- [ ] Add CSS to `public/css/[module].css`
+- [ ] Add `<link>` to `index.html` global CSS section
+
+## Adding a New Component (content renderer)
+
+### 1. Create Component
+- [ ] Create `public/js/components/[component].js` as an IIFE
+- [ ] Return public API object (e.g. `{ build, render }`)
+
+### 2. Register
+- [ ] Add `<script>` tag to `index.html` in the Components section (after modules, before pages)
+
+### 3. Style
+- [ ] Add CSS to `public/css/[component].css`
+- [ ] Add `<link>` to `index.html` global CSS section
 
 ## Adding New Environment Variables
 

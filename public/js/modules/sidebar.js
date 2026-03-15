@@ -194,10 +194,8 @@ var Sidebar = (function () {
           render(data.articles || []);
         })
         .catch(function () {
-          render(Placeholders.getArticles());
+          container.innerHTML = '';
         });
-    } else {
-      render(Placeholders.getArticles());
     }
   }
 
@@ -221,10 +219,8 @@ var Sidebar = (function () {
           render(data.tags || []);
         })
         .catch(function () {
-          render(Placeholders.getTags());
+          container.innerHTML = '';
         });
-    } else {
-      render(Placeholders.getTags());
     }
   }
 

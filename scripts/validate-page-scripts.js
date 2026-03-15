@@ -48,11 +48,11 @@ var requiredScripts = [
   '/js/utils.js',
   '/js/core/router.js',
   '/js/core/media.js',
-  '/js/components/toast.js',
-  '/js/components/header.js',
-  '/js/components/footer.js',
-  '/js/components/bottom-nav.js',
-  '/js/components/theme-toggle.js',
+  '/js/modules/toast.js',
+  '/js/modules/header.js',
+  '/js/modules/footer.js',
+  '/js/modules/bottom-nav.js',
+  '/js/modules/theme-toggle.js',
 ];
 
 requiredScripts.forEach(function (s) {

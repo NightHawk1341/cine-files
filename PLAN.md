@@ -432,13 +432,12 @@ Created complete SPA frontend matching TR-BUTE architecture:
 **Shared utilities (`public/js/`):**
 - `utils.js` — formatDate, escapeHtml, sanitizeInlineHtml, apiFetch, debounce, pluralize, createElement
 
-**Persistent components (`public/js/components/`):**
+**Persistent modules (`public/js/modules/`):**
 - `header.js` — burger menu, nav, hide-on-scroll (desktop only), mobile search bottom sheet
 - `footer.js` — nav links, collapsible social groups (mobile), click-outside-close
 - `bottom-nav.js` — fixed mobile nav, pressed state feedback
+- `sidebar.js` — persistent left nav + right widgets (desktop only)
 - `theme-toggle.js` — dark/light switcher, localStorage, system preference fallback, FOUC prevention
-
-**UI components (`public/js/components/`):**
 - `toast.js` — notification toasts (default/success/error/warning/info variants)
 - `bottom-sheet.js` — slide-up mobile panel
 - `modal.js` — confirmation dialog with variants (danger/warning/success/info)

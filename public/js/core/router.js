@@ -20,6 +20,9 @@ const Router = (function () {
   /** Persistent elements that survive all navigations (never removed by router) */
   var persistentSelectors = [
     '#site-header',
+    '.site-layout',
+    '#sidebar-left',
+    '#sidebar-right',
     '.footer',
     '.bottom-nav',
     '#scroll-to-top',

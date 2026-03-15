@@ -32,9 +32,9 @@
   <link rel="stylesheet" href="/css/bottom-nav.css">
   <link rel="stylesheet" href="/css/sidebar.css">
   <link rel="stylesheet" href="/css/page-layouts.css">
-  <link rel="stylesheet" href="/css/components/article-card.css">
-  <link rel="stylesheet" href="/css/components/article-body.css">
-  <link rel="stylesheet" href="/css/components/comment-list.css">
+  <link rel="stylesheet" href="/css/article-card.css">
+  <link rel="stylesheet" href="/css/article-body.css">
+  <link rel="stylesheet" href="/css/comment-list.css">
 
   <!-- RSS -->
   <link rel="alternate" type="application/rss+xml" title="CineFiles RSS" href="/feed/rss.xml">
@@ -251,27 +251,25 @@
     </svg>
   </button>
 
-  <!-- Core scripts -->
+  <!-- Global: core scripts (always loaded, no UI) -->
   <script src="/js/utils.js"></script>
   <script src="/js/core/router.js"></script>
   <script src="/js/core/media.js"></script>
 
-  <!-- UI components -->
-  <script src="/js/components/toast.js"></script>
-  <script src="/js/components/bottom-sheet.js"></script>
-  <script src="/js/components/modal.js"></script>
-  <script src="/js/components/skeleton.js"></script>
-  <script src="/js/components/scroll-to-top.js"></script>
-  <script src="/js/components/image-zoom.js"></script>
+  <!-- Modules: persistent UI (survive all navigations) -->
+  <script src="/js/modules/toast.js"></script>
+  <script src="/js/modules/bottom-sheet.js"></script>
+  <script src="/js/modules/modal.js"></script>
+  <script src="/js/modules/skeleton.js"></script>
+  <script src="/js/modules/scroll-to-top.js"></script>
+  <script src="/js/modules/image-zoom.js"></script>
+  <script src="/js/modules/theme-toggle.js"></script>
+  <script src="/js/modules/header.js"></script>
+  <script src="/js/modules/footer.js"></script>
+  <script src="/js/modules/bottom-nav.js"></script>
+  <script src="/js/modules/sidebar.js"></script>
 
-  <!-- Layout components -->
-  <script src="/js/components/theme-toggle.js"></script>
-  <script src="/js/components/header.js"></script>
-  <script src="/js/components/footer.js"></script>
-  <script src="/js/components/bottom-nav.js"></script>
-  <script src="/js/components/sidebar.js"></script>
-
-  <!-- Content components -->
+  <!-- Components: content renderers (used by pages) -->
   <script src="/js/components/article-card.js"></script>
   <script src="/js/components/article-body.js"></script>
   <script src="/js/components/comment-list.js"></script>
