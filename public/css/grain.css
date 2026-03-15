@@ -50,9 +50,7 @@ html[data-theme="light"] .grain-overlay.grain-loaded {
 
 /* Ensure content layers above grain */
 main,
-.header,
 .footer,
-.bottom-nav,
 .bottom-sheet,
 .modal-overlay,
 .scroll-to-top {

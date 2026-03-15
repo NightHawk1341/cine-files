@@ -34,8 +34,7 @@ function get({ pool }) {
       const manualIds = row.tribute_product_ids || [];
 
       if (manualIds.length > 0) {
-        const result = await fetchTributeProducts(manualIds);
-        const products = Array.isArray(result) ? result : (result.products || []);
+        const products = await fetchTributeProducts(manualIds);
         return res.json({ products, source: 'manual' });
       }
 
