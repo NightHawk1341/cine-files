@@ -18,7 +18,7 @@ Router.registerPage('/tag/:slug', {
         Utils.apiFetch('/api/tags/' + encodeURIComponent(params.slug)),
         Utils.apiFetch('/api/articles?tag=' + encodeURIComponent(params.slug) + '&limit=24&status=published'),
       ]);
-      tagData = td;
+      tagData = td.tag || td;
       articles = ad.articles || [];
     } catch (err) {
       // API unavailable
@@ -28,7 +28,7 @@ Router.registerPage('/tag/:slug', {
     var container = document.createElement('div');
     container.className = 'container page-content';
 
-    var tagName = tagData ? (tagData.name_ru || tagData.name_en || params.slug) : params.slug;
+    var tagName = tagData ? (tagData.nameRu || tagData.nameEn || params.slug) : params.slug;
 
     var h1 = document.createElement('h1');
     h1.className = 'tag-page-title';

@@ -3,8 +3,17 @@
  * Route: /:category/:slug
  */
 
+var _articleProductsController = null;
+
 Router.registerPage('/:category/:slug', {
   styles: ['/css/article.css'],
+
+  cleanup: function () {
+    if (_articleProductsController) {
+      _articleProductsController.abort();
+      _articleProductsController = null;
+    }
+  },
 
   async init(params) {
     var content = document.getElementById('page-content');
@@ -148,6 +157,11 @@ Router.registerPage('/:category/:slug', {
       container.appendChild(tagsDiv);
     }
 
+    // Products placeholder (populated async below)
+    var productsSection = document.createElement('div');
+    productsSection.className = 'article-products-section';
+    container.appendChild(productsSection);
+
     // Comments
     var commentsContainer = document.createElement('div');
     commentsContainer.className = 'article-comments';
@@ -158,5 +172,44 @@ Router.registerPage('/:category/:slug', {
 
     // Update page title
     document.title = article.title + ' — CineFiles';
+
+    // Async: fetch and render auto-matched TR-BUTE products
+    _articleProductsController = new AbortController();
+    var signal = _articleProductsController.signal;
+    fetch('/api/articles/' + encodeURIComponent(params.slug) + '/products', { signal: signal })
+      .then(function (res) { return res.json(); })
+      .then(function (data) {
+        var products = data.products || [];
+        if (products.length > 0) {
+          _renderArticleProducts(productsSection, products);
+        }
+      })
+      .catch(function () { /* graceful degradation — products are optional */ });
   },
 });
+
+function _renderArticleProducts(section, products) {
+  section.classList.add('article-products-section--visible');
+  section.innerHTML =
+    '<div class="article-products-header">' +
+      '<span class="article-products-label">Мерч</span>' +
+      '<a class="article-products-link" href="https://buy-tribute.com" target="_blank" rel="noopener">TR-BUTE</a>' +
+    '</div>' +
+    '<div class="article-products-grid">' +
+      products.map(function (p) {
+        var imgHtml = p.imageUrl
+          ? '<img class="tribute-card-image" src="' + Utils.escapeHtml(p.imageUrl) + '" alt="' + Utils.escapeHtml(p.name) + '" loading="lazy">'
+          : '<div class="tribute-card-image tribute-card-no-image"></div>';
+        var priceHtml = p.price
+          ? '<span class="tribute-card-price">' + Utils.escapeHtml(Number(p.price).toLocaleString('ru-RU') + '\u00a0\u20BD') + '</span>'
+          : '';
+        return '<a class="tribute-card" href="' + Utils.escapeHtml(p.url) + '" target="_blank" rel="noopener">' +
+          imgHtml +
+          '<div class="tribute-card-info">' +
+            '<span class="tribute-card-name">' + Utils.escapeHtml(p.name) + '</span>' +
+            priceHtml +
+          '</div>' +
+        '</a>';
+      }).join('') +
+    '</div>';
+}

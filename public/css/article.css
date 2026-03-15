@@ -54,6 +54,56 @@
   .article-tag:hover { color: var(--text-primary); background-color: var(--bg-quaternary); }
 }
 
+/* ===== Auto-matched TR-BUTE products ===== */
+.article-products-section {
+  display: none;
+  margin-top: 40px;
+  padding-top: 24px;
+  border-top: 1px solid var(--divider);
+}
+
+.article-products-section--visible {
+  display: block;
+}
+
+.article-products-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.article-products-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-tertiary);
+}
+
+.article-products-link {
+  font-size: 12px;
+  color: var(--link-color);
+  text-decoration: none;
+}
+
+@media (hover: hover) {
+  .article-products-link:hover { color: var(--link-hover); }
+}
+
+.article-products-grid {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 4px;
+}
+
+.article-products-grid::-webkit-scrollbar { height: 4px; }
+.article-products-grid::-webkit-scrollbar-track { background: transparent; }
+.article-products-grid::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 2px; }
+
 @media (max-width: 768px) {
   .article-page { padding-top: 16px; }
   .article-title { font-size: var(--heading-mobile); }

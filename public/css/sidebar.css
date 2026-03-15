@@ -21,7 +21,8 @@
   .site-layout {
     grid-template-columns: 220px 1fr 280px;
     gap: 0;
-    padding: 0 24px;
+    padding-left: 24px;
+    padding-right: 24px;
   }
 
   .sidebar {

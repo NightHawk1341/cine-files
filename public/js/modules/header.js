@@ -4,7 +4,6 @@
  */
 
 var Header = (function () {
-  var menuOpen = false;
   var hidden = false;
   var lastScrollY = 0;
   var ticking = false;
@@ -12,29 +11,9 @@ var Header = (function () {
 
   function init() {
     var header = document.getElementById('site-header');
-    var burgerBtn = document.getElementById('header-burger');
-    var nav = document.getElementById('header-nav');
     var searchMobileBtn = document.getElementById('header-search-mobile');
 
-    if (!header || !burgerBtn || !nav) return;
-
-    // Burger toggle
-    burgerBtn.addEventListener('click', function () {
-      menuOpen = !menuOpen;
-      nav.classList.toggle('nav-open', menuOpen);
-      burgerBtn.innerHTML = menuOpen
-        ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>'
-        : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>';
-    });
-
-    // Close menu on nav link click
-    nav.addEventListener('click', function (e) {
-      if (e.target.closest('.header-nav-link')) {
-        menuOpen = false;
-        nav.classList.remove('nav-open');
-        burgerBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>';
-      }
-    });
+    if (!header) return;
 
     // Mobile search bottom sheet
     if (searchMobileBtn) {
