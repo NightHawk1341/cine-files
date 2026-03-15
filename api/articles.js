@@ -14,12 +14,14 @@ function list({ pool }) {
     const featured = req.query.featured;
     const authorId = req.query.author_id;
     const tributeProductId = req.query.tribute_product_id;
+    const tag = req.query.tag;
 
     const sort = req.query.sort;
 
     const conditions = ['a.status = $1'];
     const params = [status];
     let paramIdx = 2;
+    let joinTag = '';
 
     if (category) {
       conditions.push(`c.slug = $${paramIdx}`);
@@ -39,6 +41,11 @@ function list({ pool }) {
       params.push(parseInt(tributeProductId));
       paramIdx++;
     }
+    if (tag) {
+      joinTag = `JOIN article_tags atg ON atg.article_id = a.id JOIN tags tg ON atg.tag_id = tg.id AND tg.slug = $${paramIdx}`;
+      params.push(tag);
+      paramIdx++;
+    }
 
     const whereClause = conditions.join(' AND ');
 
@@ -49,6 +56,7 @@ function list({ pool }) {
          FROM articles a
          JOIN categories c ON a.category_id = c.id
          JOIN users u ON a.author_id = u.id
+         ${joinTag}
          WHERE ${whereClause}
          ORDER BY a.is_pinned DESC, ${sort === 'views' ? 'a.view_count DESC,' : ''} a.published_at DESC NULLS LAST
          LIMIT $${paramIdx} OFFSET $${paramIdx + 1}`,
@@ -57,6 +65,7 @@ function list({ pool }) {
       pool.query(
         `SELECT COUNT(*)::int AS total FROM articles a
          JOIN categories c ON a.category_id = c.id
+         ${joinTag}
          WHERE ${whereClause}`,
         params
       ),

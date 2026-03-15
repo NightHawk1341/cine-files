@@ -49,7 +49,7 @@ Router.registerPage('/tags', {
       };
 
       tags.forEach(function (tag) {
-        var type = tag.tag_type || tag.type || 'topic';
+        var type = tag.tagType || 'topic';
         if (!groups[type]) groups[type] = [];
         groups[type].push(tag);
       });
@@ -70,11 +70,11 @@ Router.registerPage('/tags', {
           var a = document.createElement('a');
           a.className = 'tag-pill';
           a.href = '/tag/' + tag.slug;
-          a.textContent = tag.name_ru;
-          if (tag.article_count > 0) {
+          a.textContent = tag.nameRu;
+          if (tag.articleCount > 0) {
             var count = document.createElement('span');
             count.className = 'tag-pill-count';
-            count.textContent = tag.article_count;
+            count.textContent = tag.articleCount;
             a.appendChild(count);
           }
           cloud.appendChild(a);

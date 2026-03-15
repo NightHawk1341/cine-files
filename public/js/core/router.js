@@ -224,13 +224,6 @@ const Router = (function () {
    * @param {string} path
    */
   function updateActiveStates(path) {
-    // Header nav links
-    document.querySelectorAll('.header-nav-link').forEach(function (link) {
-      var href = link.getAttribute('href');
-      var isActive = href === '/' ? path === '/' : path.startsWith(href);
-      link.classList.toggle('nav-link-active', isActive);
-    });
-
     // Bottom nav items
     document.querySelectorAll('.bottom-nav-button').forEach(function (link) {
       var href = link.getAttribute('href');
