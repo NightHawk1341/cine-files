@@ -14,7 +14,7 @@ CineFiles integrates with [TR-BUTE](https://buy-tribute.com) (sister e-commerce 
 - `fetchTributeProducts(ids)` — Fetch product details by IDs
 - `checkTributeUser(provider, providerId)` — Check if a user exists on TR-BUTE
 
-**Authentication**: `X-API-Key` header with `TRIBUTE_API_KEY`
+**Authentication**: None required — TR-BUTE product endpoints are public
 
 ### Article Content Block
 
@@ -26,7 +26,7 @@ The `tribute_products` block type in articles stores an array of TR-BUTE product
 
 ## Inbound: TR-BUTE -> CineFiles
 
-TR-BUTE calls these CineFiles API endpoints with `X-API-Key` header (validated against `CINEFILES_API_KEY`):
+TR-BUTE calls these public CineFiles API endpoints (no authentication required):
 
 ### Endpoints Called by TR-BUTE
 
@@ -76,8 +76,6 @@ The `url` field is constructed from `APP_URL` + category slug + article slug.
 | Variable | Direction | Description |
 |----------|-----------|-------------|
 | `TRIBUTE_API_URL` | Outbound | TR-BUTE API base URL |
-| `TRIBUTE_API_KEY` | Outbound | API key CineFiles sends to TR-BUTE |
-| `CINEFILES_API_KEY` | Inbound | API key TR-BUTE sends to CineFiles |
 
 ## Article Model
 
@@ -87,4 +85,4 @@ Articles have a `tribute_product_ids` integer array field that stores linked TR-
 
 ## TR-BUTE Integration Details
 
-TR-BUTE caches CineFiles responses for 1 hour (editorial/product) and 10 minutes (search). All requests have a 5-second timeout with graceful degradation (empty array on failure). When `CINEFILES_API_URL` or `CINEFILES_API_KEY` is absent, TR-BUTE hides all CineFiles UI sections.
+TR-BUTE caches CineFiles responses for 1 hour (editorial/product) and 10 minutes (search). All requests have a 5-second timeout with graceful degradation (empty array on failure). When `CINEFILES_API_URL` is absent, TR-BUTE hides all CineFiles UI sections.
