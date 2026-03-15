@@ -140,8 +140,14 @@ var ArticleBody = (function () {
       case 'tribute_products': {
         var tribute = document.createElement('div');
         tribute.className = 'article-tribute-block';
-        tribute.innerHTML = '<p class="article-tribute-placeholder">Связанные товары TR-BUTE: ' +
-          Utils.escapeHtml((block.productIds || []).join(', ')) + '</p>';
+        var productIds = block.productIds || [];
+        if (productIds.length === 0) return null;
+        tribute.innerHTML =
+          '<div class="article-tribute-header">' +
+            '<span class="article-tribute-label">TR-BUTE</span>' +
+          '</div>' +
+          '<div class="article-tribute-grid article-tribute-loading"></div>';
+        loadTributeProducts(tribute, productIds);
         return tribute;
       }
 
@@ -179,6 +185,44 @@ var ArticleBody = (function () {
     iframe.title = provider + ' video';
     wrapper.appendChild(iframe);
     return wrapper;
+  }
+
+  function loadTributeProducts(container, productIds) {
+    var grid = container.querySelector('.article-tribute-grid');
+
+    fetch('/api/tribute/products?ids=' + productIds.join(','))
+      .then(function (res) { return res.json(); })
+      .then(function (data) {
+        grid.classList.remove('article-tribute-loading');
+        var products = data.products || [];
+        if (products.length === 0) {
+          container.style.display = 'none';
+          return;
+        }
+        grid.innerHTML = products.map(function (p) {
+          var imgHtml = p.imageUrl
+            ? '<img class="tribute-card-image" src="' + Utils.escapeHtml(p.imageUrl) + '" alt="' + Utils.escapeHtml(p.name) + '" loading="lazy">'
+            : '<div class="tribute-card-image tribute-card-no-image"></div>';
+          var priceHtml = p.price
+            ? '<span class="tribute-card-price">' + Utils.escapeHtml(formatPrice(p.price)) + '</span>'
+            : '';
+          return '<a class="tribute-card" href="' + Utils.escapeHtml(p.url) + '" target="_blank" rel="noopener">' +
+            imgHtml +
+            '<div class="tribute-card-info">' +
+              '<span class="tribute-card-name">' + Utils.escapeHtml(p.name) + '</span>' +
+              priceHtml +
+            '</div>' +
+          '</a>';
+        }).join('');
+      })
+      .catch(function () {
+        grid.classList.remove('article-tribute-loading');
+        container.style.display = 'none';
+      });
+  }
+
+  function formatPrice(price) {
+    return Number(price).toLocaleString('ru-RU') + ' \u20BD';
   }
 
   return {

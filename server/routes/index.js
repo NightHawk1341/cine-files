@@ -122,6 +122,12 @@ function setupRoutes(app, deps) {
   app.put('/api/settings', requireAdmin, settings.update(deps));
 
   // ============================================================
+  // TR-BUTE product proxy
+  // ============================================================
+  const tributeProducts = require('../../api/tribute-products');
+  app.get('/api/tribute/products', tributeProducts.list());
+
+  // ============================================================
   // TMDB
   // ============================================================
   app.get('/api/tmdb/search', requireEditor, tmdbSearch.search());
