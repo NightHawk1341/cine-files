@@ -17,27 +17,27 @@ Use CSS classes (`classList.add/remove/toggle`) for conditional visibility — N
 | `sheet-open` | `body` | — | Router cleanup on navigation |
 | `popup-open` | `body` | — | Router cleanup on navigation |
 
-## Header (`public/js/components/header.js`)
+## Header (`public/js/modules/header.js`)
 
 | Class | Element | When Added | When Removed |
 |-------|---------|------------|-------------|
 | `nav-open` | `.header-nav` | Burger menu toggled open | Burger toggled closed, link click, outside click |
 | `header-hidden` | `#site-header` | Scrolling down (desktop) | Scrolling up (desktop) |
 
-## Footer (`public/js/components/footer.js`)
+## Footer (`public/js/modules/footer.js`)
 
 | Class | Element | When Added | When Removed |
 |-------|---------|------------|-------------|
 | `collapsed` | `.footer-social-group` | Group toggle closed, mobile default | Group toggle open |
 | `hidden` | `.footer-social-list` | Group toggle closed | Group toggle open |
 
-## Bottom Nav (`public/js/components/bottom-nav.js`)
+## Bottom Nav (`public/js/modules/bottom-nav.js`)
 
 | Class | Element | When Added | When Removed |
 |-------|---------|------------|-------------|
 | `mobile-pressed-to-active` | `.bottom-nav-button` | Touch start | Touch end, touch cancel |
 
-## Modal (`public/js/components/modal.js`)
+## Modal (`public/js/modules/modal.js`)
 
 | Class | Element | When Added | When Removed |
 |-------|---------|------------|-------------|
@@ -45,7 +45,7 @@ Use CSS classes (`classList.add/remove/toggle`) for conditional visibility — N
 
 Modal creates `.modal-overlay` appended to `body`. Removed on close.
 
-## Bottom Sheet (`public/js/components/bottom-sheet.js`)
+## Bottom Sheet (`public/js/modules/bottom-sheet.js`)
 
 | Class | Element | When Added | When Removed |
 |-------|---------|------------|-------------|
@@ -54,7 +54,7 @@ Modal creates `.modal-overlay` appended to `body`. Removed on close.
 
 Sheet creates `.bottom-sheet-overlay` appended to `body`. Removed on close.
 
-## Image Zoom (`public/js/components/image-zoom.js`)
+## Image Zoom (`public/js/modules/image-zoom.js`)
 
 | Class | Element | When Added | When Removed |
 |-------|---------|------------|-------------|
@@ -62,7 +62,7 @@ Sheet creates `.bottom-sheet-overlay` appended to `body`. Removed on close.
 
 Creates `.image-zoom-overlay` appended to `body`. Removed on close.
 
-## Toast (`public/js/components/toast.js`)
+## Toast (`public/js/modules/toast.js`)
 
 | Class | Element | When Added | When Removed |
 |-------|---------|------------|-------------|
@@ -72,7 +72,7 @@ Creates `.image-zoom-overlay` appended to `body`. Removed on close.
 
 Toast container is persistent — appended once and reused.
 
-## Theme Toggle (`public/js/components/theme-toggle.js`)
+## Theme Toggle (`public/js/modules/theme-toggle.js`)
 
 | Class | Element | When Added | When Removed |
 |-------|---------|------------|-------------|
@@ -80,13 +80,13 @@ Toast container is persistent — appended once and reused.
 
 Also sets `data-theme` attribute on `html` and updates `meta[name="theme-color"]`.
 
-## Scroll-to-Top (`public/js/components/scroll-to-top.js`)
+## Scroll-to-Top (`public/js/modules/scroll-to-top.js`)
 
 | Class | Element | When Added | When Removed |
 |-------|---------|------------|-------------|
 | `scroll-to-top-visible` | `#scroll-to-top` | Scroll > 300px | Scroll <= 300px |
 
-## Comment List (`public/js/components/comment-list.js`)
+## Comment List (`public/js/modules/comment-list.js`)
 
 | Class | Element | When Added | When Removed |
 |-------|---------|------------|-------------|

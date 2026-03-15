@@ -81,15 +81,15 @@ cine-files/
     tribute-api.js             # TR-BUTE product fetch
   public/
     index.html                 # SPA entry point
-    css/                       # Global + page-specific + component CSS
+    css/                       # Global + page-specific CSS (flat, no subdirs)
     js/
       core/router.js           # SPA router (registerPage pattern)
       core/media.js            # resolveImageUrl helper
       utils.js                 # Shared utilities
-      components/              # Persistent + UI components (vanilla JS)
+      modules/                 # Persistent UI modules (survive navigations)
+      components/              # Content renderers (article-card, article-body, comment-list)
       pages/                   # Page scripts (home, article, category, etc.)
       pages/admin/             # Admin page scripts
-    pages/                     # HTML templates
     fonts/                     # Montserrat WOFF2
     icons/                     # SVG icons
   migrations/                   # Manual SQL migrations (run via Supabase SQL editor)
@@ -136,7 +136,7 @@ cine-files/
 - **NEVER hardcode colors** — always use CSS variables from `public/css/global.css`
 - **CSS variable names** match TR-BUTE (sister project) — only values differ
 - **Font loading**: Montserrat from `/fonts/` (WOFF2), NEVER Google Fonts
-- **New styles**: page CSS in `public/css/`, component CSS in `public/css/components/`
+- **New styles**: all CSS in flat `public/css/` directory (no subdirs)
 - Dark theme defaults live in `:root`; light theme overrides are in `html[data-theme="light"]`. Both blocks are in `global.css`
 
 #### CSS Variables Quick Reference
@@ -163,7 +163,7 @@ Skeleton:      --skeleton-bg-base  --skeleton-bg-highlight
 ### Content Model
 - Articles use **block-based content** (JSON array of typed blocks)
 - 11+ block types: paragraph, heading, image, quote, list, embed, divider, spoiler, infobox, tribute_products, movie_card
-- Block rendering: `public/js/components/article-body.js`
+- Block rendering: `public/js/components/article-body.js` (content renderer)
 - Block editing: `public/js/pages/admin/article-editor.js`
 
 ### Auth & Roles
