@@ -10,8 +10,7 @@
     "check:selectors": "node scripts/validate-router-selectors.js",
     "check:page-scripts": "node scripts/validate-page-scripts.js",
     "check:spa-styles": "node scripts/validate-spa-styles.js",
-    "check:claude": "node scripts/pre-commit-check.js && node scripts/validate-routes.js && node scripts/validate-router-selectors.js && node scripts/validate-page-scripts.js && node scripts/validate-spa-styles.js",
-    "db:seed": "node scripts/seed.js"
+    "check:claude": "node scripts/pre-commit-check.js && node scripts/validate-routes.js && node scripts/validate-router-selectors.js && node scripts/validate-page-scripts.js && node scripts/validate-spa-styles.js"
   },
   "keywords": [],
   "author": "",

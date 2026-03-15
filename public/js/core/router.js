@@ -17,6 +17,15 @@ const Router = (function () {
   let pageSpecificStyles = [];
   /** @type {Record<string, string>} */
   let contentSelectors = {};
+  /** Persistent elements that survive all navigations (never removed by router) */
+  var persistentSelectors = [
+    '#site-header',
+    '.footer',
+    '.bottom-nav',
+    '#scroll-to-top',
+    '.grain-overlay',
+    '.toast-container',
+  ];
   let isNavigating = false;
 
   /** @type {Map<string, number>} */

@@ -1,40 +1,119 @@
 # Development Checklist
 
-Run through this checklist before submitting any changes.
+This checklist ensures all necessary steps are completed when adding new features to CineFiles.
 
-## Before Writing Code
-- [ ] Read `CLAUDE.md` and relevant docs in `docs/`
-- [ ] Understand the existing code you are modifying
-- [ ] Check if a shared UI component in `components/ui/` already solves the need
+## Adding New API Endpoints
 
-## CSS & Styling
-- [ ] No hardcoded colors — all colors use CSS variables from `styles/globals.css`
-- [ ] New CSS variables match TR-BUTE naming convention
-- [ ] Light theme overrides added for any new dark-theme variables
-- [ ] Interactive elements have `.active` + `.active:hover` states
-- [ ] New styles placed in correct directory (`styles/pages/` or `styles/components/`)
-- [ ] CSS Module selectors are pure (contain at least one local class)
+When creating a new API endpoint, you MUST:
 
-## Components
-- [ ] Client components have `'use client'` directive
-- [ ] Server components do NOT have `'use client'` directive
-- [ ] Props are typed with TypeScript interfaces
-- [ ] No inline styles — use CSS Modules or global utility classes
-- [ ] Hydration-safe patterns used (check mounted state before client-only features)
+### 1. Create the Handler File
+- [ ] Create handler in `api/[endpoint-name].js`
+- [ ] Export a factory function: `function list({ pool, config }) { return handler }`
+- [ ] Use parameterized SQL only (`$1, $2` placeholders)
 
-## Content & Localization
-- [ ] User-facing strings added to `locales/ru.json`
-- [ ] No emojis in code or UI
-- [ ] No AI-sounding comments
+### 2. Register Route
+- [ ] **CRITICAL:** Add `require` + `app.*` line to `server/routes/index.js`
+- [ ] Add authentication middleware if needed (`requireAuth`, `requireEditor`, `requireAdmin`)
+- [ ] Specific routes MUST come before parameterized catch-all routes in the same prefix group
 
-## Security
-- [ ] New image sources added to `images.remotePatterns` in `next.config.js`
-- [ ] New embed providers added to CSP `frame-src` with `// csp=YYYYMM` comment
-- [ ] API routes use appropriate auth guards (`requireAuth`, `requireEditor`, `requireAdmin`)
-- [ ] No secrets in client-side code
+### 3. Verify
+- [ ] Run `npm run check:claude` — all validators must pass
+- [ ] Test endpoint responds (not 404)
+- [ ] Check auth blocks unauthorized access
 
-## Before Completing
-- [ ] Run `npm run check` (build + lint)
+## Adding New Database Fields
+
+When adding a field to a table, you MUST:
+
+### 1. Create Migration
+- [ ] Create migration file in `migrations/`
+- [ ] Use naming: `NNN_description.sql` (e.g. `002_add_subtitle_to_articles.sql`)
+- [ ] Include `ALTER TABLE` statement
+- [ ] Provide the SQL in your response for the user to run in Supabase SQL editor
+- [ ] Do NOT add auto-migrations to `server.js` or anywhere else
+
+### 2. Update Schema Reference
+- [ ] Update `SQL_SCHEMA.sql` to reflect new structure
+
+### 3. Update API Handlers
+- [ ] **Create/Update handlers:** Add field to INSERT/UPDATE column lists
+- [ ] **List/Detail handlers:** Add field to ALL SELECT statements
+- [ ] **Cast numeric columns** with `Number()` before arithmetic
+
+### 4. Update Frontend
+- [ ] Add field to page display (if user-facing)
+- [ ] Add field to admin form (if editable)
+
+## Adding a New Page
+
+When adding a new page to the SPA, you MUST:
+
+### 1. Create Page Script
+- [ ] Create `public/js/pages/[page].js`
+- [ ] Register via `Router.registerPage('/route', { init, cleanup, styles: [...] })`
+- [ ] `init()` must show skeleton loading states before API fetch, not empty containers
+- [ ] `cleanup()` must reset module state, clear timers, remove body-appended elements
+
+### 2. Create Page CSS
+- [ ] Create `public/css/[page].css` for page-specific styles only
+- [ ] Use CSS variables — NEVER hardcode colors
+- [ ] Reference in page script's `styles` array
+
+### 3. Register in index.html
+- [ ] Add `<script src="/js/pages/[page].js"></script>` to `index.html`
+- [ ] Place BEFORE catch-all routes (`article.js`, `category.js`)
+
+### 4. Validate
+- [ ] Run `npm run check:claude`
+- [ ] Test page loads via SPA navigation AND direct URL
+- [ ] Verify cleanup works (navigate away and back — no stale state)
+
+## Adding a New Component
+
+### 1. Create Component
+- [ ] Create `public/js/components/[component].js` as an IIFE
+- [ ] Return public API object (e.g. `{ init, show, hide }`)
+
+### 2. Register
+- [ ] Add `<script>` tag to `index.html` in correct load order (after core, before pages)
+- [ ] If component appends to `document.body`, ensure consuming pages remove it in `cleanup()`
+
+### 3. Style
+- [ ] Add CSS to `public/css/components/[component].css`
+- [ ] Add `<link>` to `index.html` global CSS section (component CSS is global)
+
+## Adding New Environment Variables
+
+- [ ] Add to `lib/config.js` using `requireEnv()` or `getEnv()`
+- [ ] Add `-e VAR_NAME="${{ secrets.VAR_NAME }}"` to `.github/workflows/deploy-yandex.yml` docker run command
+- [ ] Vercel reads from project settings automatically
+- [ ] Document in `docs/ENV_VARS.md`
+
+## Modifying CSS or Theming
+
+- [ ] Use CSS variables from `public/css/global.css` — never hardcode colors
+- [ ] CSS variable names match TR-BUTE (sister project)
 - [ ] Test in both dark and light themes
-- [ ] Test on mobile viewport (bottom-nav visible, touch interactions work)
-- [ ] Comment counts and denormalized fields updated if modifying comments/articles
+- [ ] Interactive elements need `.active` + `.active:hover` states (inside `@media (hover: hover)`)
+- [ ] If adding page-specific CSS, reference it in the page script's `styles` array
+
+## Common Mistakes to Avoid
+
+1. **404 Errors:** Forgetting to register route in `server/routes/index.js`
+2. **Route Order:** Specific routes must come BEFORE parameterized catch-all routes
+3. **Script Order:** Catch-all page scripts (`article.js`, `category.js`) must be LAST in `index.html`
+4. **Missing Cleanup:** Not implementing `cleanup()` causes stale state on repeat visits
+5. **Body-Appended DOM:** Modals/overlays appended to `document.body` survive navigation — remove in `cleanup()`
+6. **Style Leaks:** Page CSS not in `styles` array stays in `<head>` after navigation
+7. **Inline Styles on Persistent Elements:** Using `element.style.*` on header/footer/body leaks across pages — use `classList`
+8. **Hardcoded Colors:** Break light theme — always use CSS variables
+9. **Number() Cast:** PostgreSQL returns numeric columns as strings — wrap with `Number()` before arithmetic
+10. **Missing Skeletons:** Pages must show skeleton loading states before API fetch, not empty containers
+
+## Before Completing Any Task
+
+```bash
+npm run check:claude
+```
+
+All validators must pass before committing.
