@@ -178,11 +178,25 @@ No changes needed on CineFiles side for this direction — it already works via 
 
 ## Testing
 
-Test articles exist in migration `migrations/001_test_articles.sql` for these movies/shows (which have products in TR-BUTE):
-- Поток, Анора, Разделение, Одни из нас, Американский психопат
-- Субстанция, Дюна: Часть вторая, Один дома, Заводной апельсин, Аркейн
+Test data lives in `migrations/001_test_articles.sql` (run manually in Supabase SQL editor). It creates:
 
-Each article has a corresponding tag (e.g., slug `anora`, `dyuna-chast-vtoraya`). Searching TR-BUTE for these names should return matching products.
+- 10 tags with `tag_type: 'movie'` or `'series'`:
+  - `potok` (Поток / Flow)
+  - `anora` (Анора / Anora)
+  - `razdelenie` (Разделение / Severance) — series
+  - `odni-iz-nas` (Одни из нас / The Last of Us) — series
+  - `amerikanskiy-psikhopat` (Американский психопат / American Psycho)
+  - `substantsiya` (Субстанция / The Substance)
+  - `dyuna-chast-vtoraya` (Дюна: Часть вторая / Dune: Part Two)
+  - `odin-doma` (Один дома / Home Alone)
+  - `zavodoy-apelsin` (Заводной апельсин / A Clockwork Orange)
+  - `arkeyn` (Аркейн / Arcane) — series
+
+- 10 articles across 4 categories (news, reviews, articles, analysis), each linked to its corresponding tag with `is_primary = TRUE`
+
+Searching TR-BUTE for the Russian tag names (e.g., "Дюна", "Аркейн", "Один дома") should return matching products.
+
+**Prerequisites**: The migration assumes categories with IDs 13 (news), 14 (reviews), 15 (articles), 18 (analysis) exist, and at least one admin user is in the `users` table.
 
 ## Edge Cases
 

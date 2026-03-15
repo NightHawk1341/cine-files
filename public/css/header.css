@@ -94,60 +94,6 @@
 .header-logo-full { display: inline; }
 .header-logo-short { display: none; }
 
-/* Desktop nav */
-.header-nav {
-  display: flex;
-  align-items: stretch;
-  height: 100%;
-  gap: 0;
-}
-
-.header-nav-link {
-  position: relative;
-  color: var(--text-tertiary);
-  text-decoration: none;
-  font-size: clamp(0.75rem, 0.675rem + 0.3vw, 0.8125rem);
-  font-weight: 500;
-  padding: 0 clamp(0.5rem, 0.375rem + 0.5vw, 0.625rem);
-  height: 100%;
-  display: flex;
-  align-items: center;
-  white-space: nowrap;
-  transition: opacity 0.2s, color 0.2s;
-}
-
-.header-nav-link::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 0;
-  height: 2px;
-  background-color: var(--text-tertiary);
-  transition: width 300ms ease;
-}
-
-@media (hover: hover) {
-  .header-nav-link:hover { opacity: 0.7; color: var(--text-secondary); }
-  .header-nav-link:hover::after { width: 100%; }
-}
-
-.nav-link-active { color: var(--active-page-color); }
-.nav-link-active::after { width: 30%; background-color: var(--active-page-color); }
-
-@media (hover: hover) {
-  .nav-link-active:hover { opacity: 0.85; }
-  .nav-link-active:hover::after { width: 100%; background-color: var(--active-page-color); }
-}
-
-/* Pressed state */
-.pressed-to-active {
-  color: var(--active-page-color);
-  filter: brightness(0.7);
-  transition: filter 100ms ease;
-}
-
 /* Right buttons */
 .header-right-buttons {
   display: flex;
@@ -190,27 +136,6 @@
   .header-search-mobile { display: flex; }
   .header-search-desktop { display: none; }
   .header-right-buttons { padding-left: 7px; }
-
-  .header-nav {
-    display: none;
-    position: fixed;
-    top: var(--header-height);
-    left: 0;
-    right: 0;
-    bottom: 0;
-    flex-direction: column;
-    background-color: var(--bg-primary);
-    padding: 16px;
-    gap: 4px;
-    border-top: 1px solid var(--border-color);
-    z-index: 998;
-    height: auto;
-  }
-
-  .nav-open { display: flex; }
-
-  .header-nav-link { font-size: 16px; padding: 12px 16px; height: auto; }
-  .header-nav-link::after { display: none; }
 }
 
 @media (max-width: 300px) {
@@ -218,6 +143,3 @@
   .header-logo-short { display: inline; }
 }
 
-@media (max-width: 900px) {
-  .header-nav-link { padding: 0 6px; }
-}
