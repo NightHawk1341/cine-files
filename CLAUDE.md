@@ -26,7 +26,6 @@ Sister project to [TR-BUTE](https://buy-tribute.com) (e-commerce). They share CS
 - `npm start` — production server
 - `npm run dev` — development server (nodemon)
 - `npm run check:claude` — run all validation checks before committing
-- `npm run db:seed` — seed database
 
 ### Validation Commands
 Run before completing any task:
