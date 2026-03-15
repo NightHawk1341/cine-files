@@ -1,4 +1,5 @@
 const { generateSlug } = require('../server/utils/transliterate');
+const { config } = require('../lib/config');
 
 /**
  * GET /api/articles
@@ -177,6 +178,7 @@ function formatArticle(tagsByArticle) {
     isPinned: row.is_pinned,
     allowComments: row.allow_comments,
     tributeProductIds: row.tribute_product_ids || [],
+    url: `${config.appUrl}/${row.category_slug}/${row.slug}`,
     category: {
       slug: row.category_slug,
       nameRu: row.category_name_ru,

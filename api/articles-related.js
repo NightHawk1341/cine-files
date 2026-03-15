@@ -7,7 +7,8 @@ const { config } = require('../lib/config');
 function list({ pool }) {
   return async (req, res) => {
     const apiKey = req.headers['x-api-key'];
-    if (config.tribute.apiKey && apiKey !== config.tribute.apiKey) {
+    const validKey = config.cinefilesApi.apiKey || config.tribute.apiKey;
+    if (validKey && apiKey !== validKey) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
