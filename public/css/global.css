@@ -361,6 +361,7 @@ main {
   flex: 1 0 auto;
   padding-top: var(--header-height);
   min-width: 0;
+  overflow: hidden;
 }
 
 .site-layout {
