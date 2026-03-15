@@ -14,6 +14,8 @@ function list({ pool }) {
     const authorId = req.query.author_id;
     const tributeProductId = req.query.tribute_product_id;
 
+    const sort = req.query.sort;
+
     const conditions = ['a.status = $1'];
     const params = [status];
     let paramIdx = 2;
@@ -47,7 +49,7 @@ function list({ pool }) {
          JOIN categories c ON a.category_id = c.id
          JOIN users u ON a.author_id = u.id
          WHERE ${whereClause}
-         ORDER BY a.is_pinned DESC, a.published_at DESC NULLS LAST
+         ORDER BY a.is_pinned DESC, ${sort === 'views' ? 'a.view_count DESC,' : ''} a.published_at DESC NULLS LAST
          LIMIT $${paramIdx} OFFSET $${paramIdx + 1}`,
         [...params, limit, offset]
       ),

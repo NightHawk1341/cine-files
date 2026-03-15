@@ -1,10 +1,9 @@
 /**
- * Home page — featured articles grid, latest content, popular tags.
- * Content-focused layout matching TR-BUTE's density.
+ * Home page — filter toolbar (new/popular) + vertical article feed, tags, categories.
  */
 
 Router.registerPage('/', {
-  styles: ['/css/style.css'],
+  styles: ['/css/style.css', '/css/filter-toolbar.css'],
 
   async init() {
     var content = document.getElementById('page-content');
@@ -13,25 +12,36 @@ Router.registerPage('/', {
     var page = document.createElement('div');
     page.className = 'home-page';
 
-    // Featured section (skeleton first)
-    var featuredSection = document.createElement('section');
-    featuredSection.className = 'home-section container';
-    featuredSection.innerHTML = '<h2 class="home-section-title">Избранное</h2>';
-    var featuredGrid = document.createElement('div');
-    featuredGrid.className = 'article-grid article-grid-featured';
-    for (var s = 0; s < 4; s++) featuredGrid.appendChild(Skeleton.articleCard());
-    featuredSection.appendChild(featuredGrid);
-    page.appendChild(featuredSection);
+    // Filter toolbar
+    var toolbarSection = document.createElement('section');
+    toolbarSection.className = 'home-section home-section-toolbar container';
 
-    // Latest section
-    var latestSection = document.createElement('section');
-    latestSection.className = 'home-section container';
-    latestSection.innerHTML = '<h2 class="home-section-title">Последние статьи</h2>';
-    var latestGrid = document.createElement('div');
-    latestGrid.className = 'article-grid';
-    for (var s = 0; s < 8; s++) latestGrid.appendChild(Skeleton.articleCard());
-    latestSection.appendChild(latestGrid);
-    page.appendChild(latestSection);
+    var toolbar = document.createElement('div');
+    toolbar.className = 'filter-toolbar';
+
+    var btnNew = document.createElement('button');
+    btnNew.className = 'filter-toolbar-btn active';
+    btnNew.textContent = 'Новые';
+    btnNew.setAttribute('data-sort', 'new');
+
+    var btnPopular = document.createElement('button');
+    btnPopular.className = 'filter-toolbar-btn';
+    btnPopular.textContent = 'Популярные';
+    btnPopular.setAttribute('data-sort', 'popular');
+
+    toolbar.appendChild(btnNew);
+    toolbar.appendChild(btnPopular);
+    toolbarSection.appendChild(toolbar);
+    page.appendChild(toolbarSection);
+
+    // Feed section (skeleton first)
+    var feedSection = document.createElement('section');
+    feedSection.className = 'home-section container';
+    var feed = document.createElement('div');
+    feed.className = 'article-feed';
+    for (var s = 0; s < 6; s++) feed.appendChild(Skeleton.articleCard());
+    feedSection.appendChild(feed);
+    page.appendChild(feedSection);
 
     // Popular tags
     var tagsSection = document.createElement('section');
@@ -61,46 +71,73 @@ Router.registerPage('/', {
 
     content.appendChild(page);
 
-    // Load data from API
-    var articles = [];
+    // State
+    var currentSort = 'new';
+    var cachedArticles = { new: null, popular: null };
+
+    // Load and render articles
+    async function loadArticles(sortKey) {
+      feed.innerHTML = '';
+      for (var s = 0; s < 6; s++) feed.appendChild(Skeleton.articleCard());
+
+      if (cachedArticles[sortKey]) {
+        renderArticles(cachedArticles[sortKey]);
+        return;
+      }
+
+      try {
+        var sortParam = sortKey === 'popular' ? '&sort=views' : '';
+        var data = await Utils.apiFetch('/api/articles?limit=20&status=published' + sortParam);
+        var articles = data.articles || [];
+        cachedArticles[sortKey] = articles;
+        renderArticles(articles);
+      } catch (err) {
+        feed.innerHTML = '';
+      }
+    }
+
+    function renderArticles(articles) {
+      feed.innerHTML = '';
+      if (articles.length === 0) return;
+      articles.forEach(function (a) {
+        feed.appendChild(ArticleCard.build(a));
+      });
+    }
+
+    // Toolbar click handler
+    toolbar.addEventListener('click', function (e) {
+      var btn = e.target.closest('.filter-toolbar-btn');
+      if (!btn || btn.classList.contains('active')) return;
+
+      toolbar.querySelector('.filter-toolbar-btn.active').classList.remove('active');
+      btn.classList.add('active');
+
+      currentSort = btn.getAttribute('data-sort');
+      loadArticles(currentSort);
+    });
+
+    // Initial data load
     var tagsList = [];
     var cats = [];
 
     try {
       var [articlesData, tagsData, catsData] = await Promise.all([
-        Utils.apiFetch('/api/articles?limit=12&status=published'),
+        Utils.apiFetch('/api/articles?limit=20&status=published'),
         Utils.apiFetch('/api/tags?limit=20&sort=article_count'),
         Utils.apiFetch('/api/categories'),
       ]);
-      articles = articlesData.articles || [];
+      cachedArticles['new'] = articlesData.articles || [];
       tagsList = tagsData.tags || [];
       cats = catsData.categories || catsData || [];
     } catch (err) {
-      // API unavailable — show empty state
+      // API unavailable
     }
 
-    // Clear skeletons and populate with real data
-    featuredGrid.innerHTML = '';
-    latestGrid.innerHTML = '';
-    tagsCloud.innerHTML = '';
-
-    // Featured = first 4
-    if (articles.length > 0) {
-      articles.slice(0, 4).forEach(function (a) {
-        featuredGrid.appendChild(ArticleCard.build(a));
-      });
-    }
-
-    // Latest = remaining articles
-    if (articles.length > 4) {
-      articles.slice(4).forEach(function (a) {
-        latestGrid.appendChild(ArticleCard.build(a));
-      });
-    } else if (articles.length <= 4 && articles.length > 0) {
-      latestSection.style.display = 'none';
-    }
+    // Render feed
+    renderArticles(cachedArticles['new'] || []);
 
     // Tags
+    tagsCloud.innerHTML = '';
     if (tagsList.length > 0) {
       tagsList.forEach(function (tag) {
         var a = document.createElement('a');
@@ -117,7 +154,7 @@ Router.registerPage('/', {
       });
     }
 
-    // Categories quick nav
+    // Categories
     if (Array.isArray(cats)) {
       cats.forEach(function (cat) {
         var link = document.createElement('a');
