@@ -57,9 +57,12 @@ function setupRoutes(app, deps) {
   // ============================================================
   // Articles — specific routes before :id catch-all
   // ============================================================
+  const articleProducts = require('../../api/article-products');
+
   app.get('/api/articles/related', articlesRelated.list(deps));
   app.get('/api/articles', articles.list(deps));
   app.post('/api/articles', requireEditor, articles.create(deps));
+  app.get('/api/articles/:id/products', articleProducts.get(deps));
   app.get('/api/articles/:id', articleById.get(deps));
   app.put('/api/articles/:id', requireEditor, articleById.update(deps));
   app.delete('/api/articles/:id', requireAuth, articleById.remove(deps));
