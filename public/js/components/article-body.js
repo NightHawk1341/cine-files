@@ -27,7 +27,7 @@ var ArticleBody = (function () {
       case 'paragraph': {
         var p = document.createElement('p');
         p.className = 'article-paragraph';
-        p.innerHTML = Utils.sanitizeInlineHtml(block.text);
+        p.innerHTML = Utils.sanitizeInlineHtml(block.text || block.content);
         return p;
       }
 
@@ -35,7 +35,7 @@ var ArticleBody = (function () {
         var level = Math.min(Math.max(block.level || 2, 2), 6);
         var h = document.createElement('h' + level);
         h.className = 'article-heading';
-        h.textContent = block.text;
+        h.textContent = block.text || block.content;
         return h;
       }
 
@@ -66,7 +66,7 @@ var ArticleBody = (function () {
         var bq = document.createElement('blockquote');
         bq.className = 'article-quote';
         var qp = document.createElement('p');
-        qp.innerHTML = Utils.sanitizeInlineHtml(block.text);
+        qp.innerHTML = Utils.sanitizeInlineHtml(block.text || block.content);
         bq.appendChild(qp);
 
         if (block.author || block.source) {

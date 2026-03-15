@@ -164,7 +164,7 @@
 }
 
 @media (max-width: 550px) {
-  .footer-left-group { flex-wrap: wrap; justify-content: center; }
+  .footer-left-group { flex-wrap: wrap; justify-content: center; flex-shrink: 1; }
 }
 
 @media (max-width: 413px) {
