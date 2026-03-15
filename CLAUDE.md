@@ -4,10 +4,12 @@
 
 Before making changes, read these docs in order:
 1. This file (CLAUDE.md) — project rules and conventions
-2. `PLAN.md` — architecture plan and progress
-3. `docs/STRUCTURE.md` — full project structure
-4. `docs/THEMING.md` — CSS variable system (shared with TR-BUTE)
-5. `docs/CONTENT_SYSTEM.md` — block-based content model
+2. `DEVELOPMENT_CHECKLIST.md` — common mistakes to avoid
+3. `.claude/README.md` — implementation protocols and validation commands
+4. `docs/SPA_LIFECYCLE.md` — how the SPA router manages content, styles, and DOM elements across navigations
+5. `docs/CONDITIONAL_VISIBILITY.md` — all JS-driven conditional visibility and styling across the public site
+6. `docs/THEMING.md` — CSS variable system (shared with TR-BUTE)
+7. `docs/CONTENT_SYSTEM.md` — block-based content model
 
 ## Project Overview
 CineFiles is a cinema/entertainment news and review site. Russian-language primary, i18n-ready.
@@ -91,7 +93,7 @@ cine-files/
     fonts/                     # Montserrat WOFF2
     icons/                     # SVG icons
   migrations/                   # Manual SQL migrations (run via Supabase SQL editor)
-    001-seed-data.sql          # Initial categories, tags, articles
+    001_seed_data.sql          # Initial categories, tags, articles
   scripts/
     pre-commit-check.js        # API registration + syntax check
     validate-routes.js         # Route order validation
@@ -128,7 +130,7 @@ cine-files/
 - **Parameterized SQL only** (`$1, $2` placeholders)
 - **`Number()`** cast for numeric DB columns — the `pg` driver returns `numeric`/`decimal` columns as strings. Skipping this causes silent string concatenation (`"1500" + "300"` -> `"1500300"`)
 - **No auto-migrations** — do NOT add startup `ALTER TABLE` calls or migration scripts to `server.js` or anywhere else
-- **Schema changes**: provide raw SQL for the user to run in Supabase SQL editor, update `SQL_SCHEMA.sql`, add numbered migration file to `migrations/` (e.g. `002-add-column.sql`)
+- **Schema changes**: provide raw SQL for the user to run in Supabase SQL editor, update `SQL_SCHEMA.sql`, add numbered migration file to `migrations/` (e.g. `002_add_column.sql`)
 
 ### CSS & Theming
 - **NEVER hardcode colors** — always use CSS variables from `public/css/global.css`
@@ -176,7 +178,7 @@ Skeleton:      --skeleton-bg-base  --skeleton-bg-highlight
 - 12 tables (see `SQL_SCHEMA.sql`)
 - Denormalized counters: `view_count`/`comment_count` on articles, `article_count` on tags
 - Soft-delete pattern for comments (status field, not actual deletion)
-- Migration files in `migrations/` — numbered sequentially (e.g. `001-seed-data.sql`), run manually
+- Migration files in `migrations/` — numbered sequentially (e.g. `001_seed_data.sql`), run manually
 
 ### API Pattern
 - Handler files in `api/` export factory functions: `function list({ pool }) { return handler }`
@@ -232,8 +234,18 @@ If a `MutationObserver` callback inserts or removes elements inside the observed
 ### 14. All media goes through Yandex S3
 Images are stored in Yandex Cloud Object Storage. Upload via `lib/storage.js`. Use `resolveImageUrl()` from `public/js/core/media.js` to get URLs. Adding a new image source domain requires updating CSP `img-src` in `server/app.js`.
 
+### 15. `style.css` is home page only
+Despite its generic name, `public/css/style.css` is loaded ONLY on the home page (`/`). Do NOT add general-purpose styles here — use `global.css` for global styles or create a page-specific CSS file.
+
+### 16. Conditional visibility changes must be documented
+When adding JS-driven `classList` toggling or `style.*` changes that affect visibility or appearance, add an entry to `docs/CONDITIONAL_VISIBILITY.md` in the appropriate module section.
+
 ## Documentation
-See `docs/` directory for detailed documentation.
+- `DEVELOPMENT_CHECKLIST.md` — step-by-step checklists for adding endpoints, DB fields, pages
+- `.claude/README.md` — implementation protocols and validation commands
+- `docs/SPA_LIFECYCLE.md` — persistent elements, cleanup contract, common bugs
+- `docs/CONDITIONAL_VISIBILITY.md` — all JS-driven visibility and styling changes
+- `docs/` directory — see full list below for system-specific documentation
 
 ## Progress
 - **Phase 1: Foundation** — COMPLETE (Express server, pg pool, auth, config, middleware)
