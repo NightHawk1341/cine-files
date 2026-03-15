@@ -1,0 +1,61 @@
+/* ===== GRAIN OVERLAY ===== */
+/* Full-page grain texture overlay with animated flip */
+/* Uses same TRIBUTE_GRAIN_WHITE.png as TR-BUTE sister project */
+
+@keyframes grainFlip {
+  0%, 24.9% { transform: scale(1, 1); }
+  25%, 49.9% { transform: scale(-1, 1); }
+  50%, 74.9% { transform: scale(-1, -1); }
+  75%, 99.9% { transform: scale(1, -1); }
+  100% { transform: scale(1, 1); }
+}
+
+.grain-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 1;
+  background-image: url('/icons/grain.png');
+  background-size: 1000px 1000px;
+  background-repeat: repeat;
+  animation: grainFlip 0.5s steps(1) infinite;
+  will-change: transform;
+  transform: translateZ(0);
+  contain: layout style;
+  backface-visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.4s ease-out;
+  filter: invert(1);
+}
+
+.grain-overlay.grain-loaded {
+  opacity: 0.12;
+}
+
+html[data-theme="light"] .grain-overlay {
+  filter: none;
+}
+
+html[data-theme="light"] .grain-overlay.grain-loaded {
+  opacity: 0.06;
+}
+
+@media (max-width: 1024px) {
+  .grain-overlay.grain-loaded { opacity: 0.10; }
+  html[data-theme="light"] .grain-overlay.grain-loaded { opacity: 0.05; }
+}
+
+/* Ensure content layers above grain */
+main,
+.header,
+.footer,
+.bottom-nav,
+.bottom-sheet,
+.modal-overlay,
+.scroll-to-top {
+  position: relative;
+  z-index: 2;
+}

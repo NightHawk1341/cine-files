@@ -115,7 +115,56 @@ async function performSearch(query, container) {
       container.appendChild(artSection);
     }
   } catch (err) {
-    console.error('Search error:', err);
-    container.innerHTML = '<p class="search-placeholder">Произошла ошибка при поиске</p>';
+    // API unavailable — search placeholder data client-side
+    var q = query.toLowerCase();
+    var allArticles = Placeholders.getArticles();
+    var allTags = Placeholders.getTags();
+
+    var matchedArticles = allArticles.filter(function (a) {
+      return a.title.toLowerCase().indexOf(q) !== -1 ||
+        (a.lead && a.lead.toLowerCase().indexOf(q) !== -1);
+    });
+    var matchedTags = allTags.filter(function (t) {
+      return t.name_ru.toLowerCase().indexOf(q) !== -1;
+    });
+
+    container.innerHTML = '';
+
+    if (matchedTags.length === 0 && matchedArticles.length === 0) {
+      container.innerHTML = '<p class="search-placeholder">Ничего не найдено по запросу &laquo;' +
+        Utils.escapeHtml(query) + '&raquo;</p>';
+      return;
+    }
+
+    if (matchedTags.length > 0) {
+      var tagSection = document.createElement('div');
+      tagSection.className = 'search-tags-section';
+      tagSection.innerHTML = '<h2 class="search-section-title">Теги <span class="search-result-count">' +
+        matchedTags.length + '</span></h2>';
+      var tagList = document.createElement('div');
+      tagList.className = 'tag-cloud';
+      matchedTags.forEach(function (tag) {
+        var a = document.createElement('a');
+        a.className = 'tag-pill';
+        a.href = '/tag/' + tag.slug;
+        a.textContent = tag.name_ru;
+        tagList.appendChild(a);
+      });
+      tagSection.appendChild(tagList);
+      container.appendChild(tagSection);
+    }
+
+    if (matchedArticles.length > 0) {
+      var artSection = document.createElement('div');
+      artSection.innerHTML = '<h2 class="search-section-title">Статьи <span class="search-result-count">' +
+        matchedArticles.length + '</span></h2>';
+      var grid = document.createElement('div');
+      grid.className = 'article-grid';
+      matchedArticles.forEach(function (a) {
+        grid.appendChild(ArticleCard.build(a));
+      });
+      artSection.appendChild(grid);
+      container.appendChild(artSection);
+    }
   }
 }

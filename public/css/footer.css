@@ -1,0 +1,188 @@
+/* ===== FOOTER (persistent module on all pages) ===== */
+
+.footer {
+  background-color: var(--bg-primary);
+  padding: 20px;
+  border-top: 1px solid var(--border-color);
+  margin-top: auto;
+  flex-shrink: 0;
+  position: relative;
+  width: 100%;
+}
+
+.footer-content {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.footer-left { display: flex; }
+
+.footer-left-group {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--filter-group-bg);
+  border: 1px solid var(--filter-group-border);
+  border-radius: 40px;
+  padding: 7px;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.footer-left-link {
+  color: var(--text-tertiary);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: normal;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 40px;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+}
+
+@media (hover: hover) {
+  .footer-left-link:hover {
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border-hover);
+    color: var(--text-secondary);
+  }
+}
+
+.footer-right { display: flex; }
+
+.footer-right-group {
+  display: flex;
+  position: relative;
+  margin: 0 4px;
+  flex-wrap: nowrap;
+  gap: 3px;
+  background-color: var(--filter-group-bg);
+  border: 1px solid var(--filter-group-border);
+  border-radius: 40px;
+  padding: 7px;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.footer-right-group.collapsed {
+  width: 28px;
+  border-radius: 50%;
+  padding: 7px;
+  justify-content: center;
+}
+
+.footer-right-group.collapsed .footer-socials-list {
+  display: none !important;
+}
+
+.footer-socials-button {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 15px;
+  cursor: pointer;
+  padding: 5px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.footer-right-group.collapsed .footer-socials-button { width: 14px; height: 14px; }
+
+.footer-logo-icon {
+  width: 17px;
+  height: 17px;
+  color: var(--icon-color);
+  fill: var(--icon-color);
+  opacity: 0.5;
+  transition: opacity 0.2s;
+}
+
+@media (hover: hover) {
+  .footer-socials-button:hover .footer-logo-icon { opacity: 0.75; }
+  .footer-right-group.collapsed:hover { background-color: var(--bg-tertiary); border-color: var(--border-hover); }
+}
+
+.footer-socials-list {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 4px;
+  list-style: none;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+}
+
+.footer-socials-list.hidden {
+  display: none;
+}
+
+.footer-socials-list:not(.hidden) {
+  padding-left: 3px;
+  padding-right: 3px;
+}
+
+.footer-social {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 22px;
+  width: 22px;
+  opacity: 0.5;
+  transition: opacity 0.2s;
+  padding: 3px;
+}
+
+.footer-social svg { width: 100%; height: 100%; color: var(--icon-color); fill: var(--icon-color); }
+
+@media (hover: hover) {
+  .footer-social:hover { opacity: 1; }
+}
+
+.footer-meta-note {
+  text-align: center;
+  font-size: 11px;
+  color: var(--text-tertiary);
+  margin: 10px 0 0;
+  padding: 0 20px;
+  opacity: 0.6;
+}
+
+@media (max-width: 1024px) {
+  .footer { padding-bottom: clamp(3.75rem, 3.5rem + 1vw, 4.25rem); }
+}
+
+@media (max-width: 550px) {
+  .footer-left-group { flex-wrap: wrap; justify-content: center; }
+}
+
+@media (max-width: 413px) {
+  .footer-content { flex-direction: column; text-align: center; }
+  .footer-right { justify-content: center; }
+}
+
+/* ===== SPINNER ===== */
+.spinner {
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  border-top: 3px solid var(--brand-primary);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spinnerRotate 1s linear infinite;
+  margin: 20px auto;
+}
+
+html[data-theme="light"] .spinner { border-color: rgba(0, 0, 0, 0.1); border-top-color: var(--brand-primary); }
+
+@keyframes spinnerRotate { to { transform: rotate(360deg); } }

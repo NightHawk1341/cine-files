@@ -14,16 +14,16 @@ var Footer = (function () {
     if (!isMobile) {
       // Desktop: expand all groups
       document.querySelectorAll('.footer-right-group').forEach(function (g) {
-        g.classList.remove('footer-right-group-collapsed');
+        g.classList.remove('collapsed');
         var list = g.querySelector('.footer-socials-list');
-        if (list) list.style.display = '';
+        if (list) list.classList.remove('hidden');
       });
     } else if (!openGroup) {
       // Mobile: collapse all
       document.querySelectorAll('.footer-right-group').forEach(function (g) {
-        g.classList.add('footer-right-group-collapsed');
+        g.classList.add('collapsed');
         var list = g.querySelector('.footer-socials-list');
-        if (list) list.style.display = 'none';
+        if (list) list.classList.add('hidden');
       });
     }
   }
@@ -38,9 +38,9 @@ var Footer = (function () {
     document.querySelectorAll('.footer-right-group').forEach(function (g) {
       var name = g.getAttribute('data-group');
       var isOpen = name === openGroup;
-      g.classList.toggle('footer-right-group-collapsed', !isOpen);
+      g.classList.toggle('collapsed', !isOpen);
       var list = g.querySelector('.footer-socials-list');
-      if (list) list.style.display = isOpen ? '' : 'none';
+      if (list) list.classList.toggle('hidden', !isOpen);
     });
   }
 
@@ -74,9 +74,9 @@ var Footer = (function () {
       if (right && !right.contains(e.target)) {
         openGroup = null;
         document.querySelectorAll('.footer-right-group').forEach(function (g) {
-          g.classList.add('footer-right-group-collapsed');
+          g.classList.add('collapsed');
           var list = g.querySelector('.footer-socials-list');
-          if (list) list.style.display = 'none';
+          if (list) list.classList.add('hidden');
         });
       }
     };

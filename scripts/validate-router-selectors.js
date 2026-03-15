@@ -26,7 +26,7 @@ if (indexHtml.indexOf('id="page-content"') === -1) {
 // Check that persistent layout elements exist (by id or class)
 var requiredElements = [
   { selector: 'site-header', desc: 'Header' },
-  { selector: 'footer-inner', desc: 'Footer' },
+  { selector: 'footer-content', desc: 'Footer' },
   { selector: 'bottom-nav', desc: 'Bottom navigation' },
   { selector: 'scroll-to-top', desc: 'Scroll to top button' },
 ];
