@@ -2,18 +2,17 @@
 -- CineFiles Seed Data
 -- Run manually via Supabase SQL editor
 -- Creates a placeholder admin user if none exists.
--- After first Telegram login, update the placeholder with your
--- real telegram_id:
---   UPDATE users SET telegram_id = 'YOUR_ID'
---     WHERE display_name = 'Admin' AND telegram_id IS NULL;
+-- Update telegram_id to your real one later:
+--   UPDATE users SET telegram_id = 'YOUR_REAL_ID'
+--     WHERE display_name = 'Admin';
 -- ============================================================
 
 -- ============================================================
--- ADMIN USER (placeholder — update telegram_id after first login)
+-- ADMIN USER (placeholder — update telegram_id to yours later)
 -- ============================================================
 
 INSERT INTO "users" ("telegram_id", "display_name", "login_method", "role", "created_at")
-SELECT NULL, 'Admin', 'telegram', 'admin', NOW()
+SELECT 'placeholder', 'Admin', 'telegram', 'admin', NOW()
 WHERE NOT EXISTS (SELECT 1 FROM users WHERE role IN ('admin', 'editor'));
 
 
