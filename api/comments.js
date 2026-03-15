@@ -8,8 +8,8 @@ function list({ pool }) {
     const limit = Math.min(parseInt(req.query.limit || '20'), 50);
     const offset = (page - 1) * limit;
 
-    if (!articleId) {
-      return res.status(400).json({ error: 'article_id is required' });
+    if (!articleId || isNaN(parseInt(articleId))) {
+      return res.status(400).json({ error: 'article_id is required and must be a number' });
     }
 
     const [commentsResult, countResult] = await Promise.all([

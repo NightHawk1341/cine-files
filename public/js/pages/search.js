@@ -93,7 +93,7 @@ async function performSearch(query, container) {
         var a = document.createElement('a');
         a.className = 'tag-pill';
         a.href = '/tag/' + tag.slug;
-        a.textContent = tag.name_ru;
+        a.textContent = tag.nameRu;
         tagList.appendChild(a);
       });
       tagSection.appendChild(tagList);

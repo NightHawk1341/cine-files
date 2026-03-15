@@ -26,12 +26,13 @@ Router.registerPage('/:category/:slug', {
     var article = null;
 
     try {
-      article = await Utils.apiFetch('/api/articles/' + encodeURIComponent(params.slug));
+      var data = await Utils.apiFetch('/api/articles/' + encodeURIComponent(params.slug));
+      article = data.article || data;
     } catch (err) {
       // API unavailable
     }
 
-    if (!article) {
+    if (!article || !article.title) {
       content.innerHTML = '<div class="container-narrow" style="padding:60px 0;text-align:center">' +
         '<h1 style="font-size:var(--heading-desktop);color:var(--text-primary);margin-bottom:16px">Статья не найдена</h1>' +
         '<p style="color:var(--text-secondary)">Возможно, она была удалена или не существует</p>' +
@@ -44,18 +45,18 @@ Router.registerPage('/:category/:slug', {
     container.className = 'container-narrow article-page';
 
     // Cover image
-    if (article.cover_image_url) {
+    if (article.coverImageUrl) {
       var cover = document.createElement('div');
       cover.className = 'article-cover';
       var coverImg = document.createElement('img');
       coverImg.className = 'article-cover-image zoomable-image';
-      coverImg.src = Media.resolveImageUrl(article.cover_image_url);
-      coverImg.alt = article.cover_image_alt || article.title;
+      coverImg.src = Media.resolveImageUrl(article.coverImageUrl);
+      coverImg.alt = article.coverImageAlt || article.title;
       cover.appendChild(coverImg);
-      if (article.cover_credit) {
+      if (article.coverImageCredit) {
         var credit = document.createElement('p');
         credit.className = 'article-cover-credit';
-        credit.textContent = article.cover_credit;
+        credit.textContent = article.coverImageCredit;
         cover.appendChild(credit);
       }
       container.appendChild(cover);
@@ -65,11 +66,11 @@ Router.registerPage('/:category/:slug', {
     var header = document.createElement('header');
     header.className = 'article-header';
 
-    if (article.category_name_ru || article.category_slug) {
+    if (article.category) {
       var catLink = document.createElement('a');
       catLink.className = 'article-category-link';
-      catLink.href = '/' + article.category_slug;
-      catLink.textContent = article.category_name_ru || article.category_slug;
+      catLink.href = '/' + article.category.slug;
+      catLink.textContent = article.category.nameRu || article.category.slug;
       header.appendChild(catLink);
     }
 
@@ -89,39 +90,39 @@ Router.registerPage('/:category/:slug', {
     var meta = document.createElement('div');
     meta.className = 'article-meta';
 
-    if (article.author_name) {
+    if (article.author && article.author.displayName) {
       var authorLink = document.createElement('a');
       authorLink.className = 'article-meta-author';
-      authorLink.href = '/author/' + (article.author_id || 1);
-      authorLink.textContent = article.author_name;
+      authorLink.href = '/author/' + article.author.id;
+      authorLink.textContent = article.author.displayName;
       meta.appendChild(authorLink);
     }
 
-    if (article.published_at) {
+    if (article.publishedAt) {
       var date = document.createElement('time');
       date.className = 'article-meta-date';
-      date.textContent = Utils.formatDate(article.published_at);
+      date.textContent = Utils.formatDate(article.publishedAt);
       meta.appendChild(date);
     }
 
-    if (article.updated_at && article.updated_at !== article.published_at) {
+    if (article.updatedAt && article.updatedAt !== article.publishedAt) {
       var updated = document.createElement('span');
       updated.className = 'article-meta-updated';
-      updated.textContent = '(обновлено ' + Utils.formatDate(article.updated_at) + ')';
+      updated.textContent = '(обновлено ' + Utils.formatDate(article.updatedAt) + ')';
       meta.appendChild(updated);
     }
 
-    if (article.view_count > 0) {
+    if (article.viewCount > 0) {
       var views = document.createElement('span');
       views.className = 'article-meta-stat';
-      views.textContent = article.view_count + ' просм.';
+      views.textContent = article.viewCount + ' просм.';
       meta.appendChild(views);
     }
 
-    if (article.comment_count > 0) {
+    if (article.commentCount > 0) {
       var comments = document.createElement('span');
       comments.className = 'article-meta-stat';
-      comments.textContent = article.comment_count + ' комм.';
+      comments.textContent = article.commentCount + ' комм.';
       meta.appendChild(comments);
     }
 
@@ -137,9 +138,9 @@ Router.registerPage('/:category/:slug', {
     }
 
     // Body blocks
-    if (article.content_blocks && article.content_blocks.length > 0) {
+    if (article.body && article.body.length > 0) {
       var body = document.createElement('div');
-      ArticleBody.render(body, article.content_blocks);
+      ArticleBody.render(body, article.body);
       container.appendChild(body);
     }
 
@@ -151,7 +152,7 @@ Router.registerPage('/:category/:slug', {
         var tagLink = document.createElement('a');
         tagLink.className = 'article-tag';
         tagLink.href = '/tag/' + tag.slug;
-        tagLink.textContent = tag.name_ru;
+        tagLink.textContent = tag.nameRu || tag.nameEn || tag.slug;
         tagsDiv.appendChild(tagLink);
       });
       container.appendChild(tagsDiv);

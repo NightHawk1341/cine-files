@@ -1,5 +1,5 @@
 /**
- * Header — persistent site header with burger menu, nav, search, theme toggle.
+ * Header — persistent site header with search and theme toggle.
  * Matches TR-BUTE header behavior: hide on scroll down (desktop only).
  */
 
@@ -11,31 +11,8 @@ var Header = (function () {
 
   function init() {
     var header = document.getElementById('site-header');
-    var searchMobileBtn = document.getElementById('header-search-mobile');
 
     if (!header) return;
-
-    // Mobile search bottom sheet
-    if (searchMobileBtn) {
-      searchMobileBtn.addEventListener('click', function () {
-        BottomSheet.open('search-sheet');
-      });
-    }
-
-    // Search form submission
-    var searchForm = document.getElementById('search-sheet-form');
-    if (searchForm) {
-      searchForm.addEventListener('submit', function (e) {
-        e.preventDefault();
-        var input = document.getElementById('search-sheet-input');
-        var query = input ? input.value.trim() : '';
-        if (query.length >= 2) {
-          BottomSheet.close('search-sheet');
-          Router.navigate('/search?q=' + encodeURIComponent(query));
-          if (input) input.value = '';
-        }
-      });
-    }
 
     // Hide header on scroll down (desktop only)
     scrollHandler = function () {
