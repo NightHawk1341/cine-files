@@ -4,10 +4,12 @@
 
 Before making changes, read these docs in order:
 1. This file (CLAUDE.md) — project rules and conventions
-2. `PLAN.md` — architecture plan and progress
-3. `docs/STRUCTURE.md` — full project structure
-4. `docs/THEMING.md` — CSS variable system (shared with TR-BUTE)
-5. `docs/CONTENT_SYSTEM.md` — block-based content model
+2. `DEVELOPMENT_CHECKLIST.md` — common mistakes to avoid
+3. `.claude/README.md` — implementation protocols and validation commands
+4. `docs/SPA_LIFECYCLE.md` — how the SPA router manages content, styles, and DOM elements across navigations
+5. `docs/CONDITIONAL_VISIBILITY.md` — all JS-driven conditional visibility and styling across the public site
+6. `docs/THEMING.md` — CSS variable system (shared with TR-BUTE)
+7. `docs/CONTENT_SYSTEM.md` — block-based content model
 
 ## Project Overview
 CineFiles is a cinema/entertainment news and review site. Russian-language primary, i18n-ready.
@@ -26,7 +28,6 @@ Sister project to [TR-BUTE](https://buy-tribute.com) (e-commerce). They share CS
 - `npm start` — production server
 - `npm run dev` — development server (nodemon)
 - `npm run check:claude` — run all validation checks before committing
-- `npm run db:seed` — seed database
 
 ### Validation Commands
 Run before completing any task:
@@ -91,8 +92,9 @@ cine-files/
     pages/                     # HTML templates
     fonts/                     # Montserrat WOFF2
     icons/                     # SVG icons
+  migrations/                   # Manual SQL migrations (run via Supabase SQL editor)
+    001_seed_data.sql          # Initial categories, tags, articles
   scripts/
-    seed.js                    # Database seed (raw SQL)
     pre-commit-check.js        # API registration + syntax check
     validate-routes.js         # Route order validation
     validate-router-selectors.js  # Content selector validation
@@ -107,33 +109,51 @@ cine-files/
 ## Key Conventions
 
 ### Code Quality Rules
-- Never use emojis in code or UI
-- Do not write AI-sounding comments (no "elegant", "robust", "seamlessly", etc.)
-- All interactive elements need `.active` + `.active:hover` states
-- Hardcoded colors break light theme — always use CSS variables
-- New external services need CSP entries in `server/app.js`
-- Dropdowns and popovers must scroll into view when opened
+- Never use emojis in code or UI — use SVG icons or inline `<svg>` elements instead
+- Do not write AI-sounding comments (no "elegant", "robust", "seamlessly", "enhanced for better UX", or task/ticket references in production code)
+- All interactive elements need `.active` + `.active:hover` states — the active+hover style should be a visual progression of the active state, not a regression to the inactive hover. Wrap hover rules in `@media (hover: hover)`
+- Hardcoded colors break light theme — always use CSS variables from `global.css`
+- New external services need CSP entries in `server/app.js` — tag with `// csp=YYYYMM` comment. Check which directives are needed: `scriptSrc`, `frameSrc`, `connectSrc`, `imgSrc`, `styleSrc`, `fontSrc`. Missing entries cause silent resource blocks only visible in DevTools
+- Dropdowns and popovers must scroll into view when opened — use 100ms `setTimeout` after adding `active` class so the dropdown renders before measuring. Account for header height and bottom nav height (mobile <=1024px)
 - Run `npm run check:claude` before completing any task
 - Conditional visibility/styling must use CSS classes, not inline styles
+- Inline styles on persistent elements (header, footer, body) leak across pages — use `classList.add/remove` instead of `element.style.*`. If inline styles are unavoidable, reset them in `cleanup()`
 
 ### JavaScript Conventions (matching TR-BUTE)
 - **Plain JavaScript** — CommonJS modules, no TypeScript
 - **`registerPage('/route', { init, cleanup })`** pattern for all pages
-- **Cleanup** must reset module state, clear timers, remove body-appended elements
-- **Page CSS** in `pageSpecificStyles` array (router cleans up on navigation)
-- **`contentSelectors`** must match HTML class names
-- **`requireEnv()` / `getEnv()`** for all env vars
+- **Every page script must register init + cleanup** — `cleanup` must reset module-level state, clear timers/intervals, abort in-flight fetches, and remove body-appended elements. Missing cleanup causes stale state on repeat visits (the "hard refresh required" bug)
+- **Page-specific DOM appended to body must be cleaned up** — the SPA router only replaces content inside `#page-content`. Anything appended to `document.body` (modals, overlays, tooltips) survives navigation and must be explicitly removed in `cleanup()`
+- **Page CSS** in `pageSpecificStyles` array (router cleans up on navigation). Without this, CSS stays in `<head>` after navigating away and leaks styles into other pages. Symptom: page looks wrong after SPA navigation but correct after hard refresh
+- **`contentSelectors`** must match HTML class names — mismatches cause page swap failures
+- **`requireEnv()` / `getEnv()`** for all env vars — new env vars must be added to `lib/config.js` and to `.github/workflows/deploy-yandex.yml` as `--environment VAR_NAME=${{ secrets.VAR_NAME }}`. Missing vars cause silent failures on Yandex Cloud
 - **Parameterized SQL only** (`$1, $2` placeholders)
-- **`Number()`** cast for numeric DB columns
-- **No auto-migrations** — manual SQL via Supabase dashboard
+- **`Number()`** cast for numeric DB columns — the `pg` driver returns `numeric`/`decimal` columns as strings. Skipping this causes silent string concatenation (`"1500" + "300"` -> `"1500300"`)
+- **No auto-migrations** — do NOT add startup `ALTER TABLE` calls or migration scripts to `server.js` or anywhere else
+- **Schema changes**: provide raw SQL for the user to run in Supabase SQL editor, update `SQL_SCHEMA.sql`, add numbered migration file to `migrations/` (e.g. `002_add_column.sql`)
 
 ### CSS & Theming
 - **NEVER hardcode colors** — always use CSS variables from `public/css/global.css`
 - **CSS variable names** match TR-BUTE (sister project) — only values differ
 - **Font loading**: Montserrat from `/fonts/` (WOFF2), NEVER Google Fonts
-- **Skeleton loading**: use `--skeleton-bg-base`/`--skeleton-bg-highlight`
-- **Shadows**: use `--shadow-sm`, `--shadow-md`, `--shadow-lg`
 - **New styles**: page CSS in `public/css/`, component CSS in `public/css/components/`
+- Dark theme defaults live in `:root`; light theme overrides are in `html[data-theme="light"]`. Both blocks are in `global.css`
+
+#### CSS Variables Quick Reference
+```
+Backgrounds:   --bg-primary  --bg-secondary  --bg-tertiary  --bg-quaternary  --bg-overlay
+Text:          --text-primary  --text-secondary  --text-tertiary  --text-inverse
+Borders:       --border-color  --border-hover  --border-active  --divider
+Brand:         --brand-primary  --brand-secondary  --brand-hover  --brand-muted
+Shadows:       --shadow-sm  --shadow-md  --shadow-lg  --modal-popup-shadow
+Status:        --status-pending  --status-info  --status-success  --status-warning
+               --status-error  (each has a matching --status-*-bg)
+Cards:         --card-bg  --card-bg-hover  --card-border  --card-border-hover
+Tabs:          --tab-inactive-bg  --tab-active-bg  --tab-counter-bg
+Interactive:   --link-color  --link-hover  --favorite-color
+Glass:         --glass-bg  --glass-border
+Skeleton:      --skeleton-bg-base  --skeleton-bg-highlight
+```
 
 ### Localization
 - **Russian-first UI** — all user-facing strings in Russian
@@ -153,15 +173,22 @@ cine-files/
 - Admin routes require `requireAdmin` middleware
 
 ### Database
-- PostgreSQL via `pg` driver — `lib/db.js` provides pool singleton
+- PostgreSQL hosted on Supabase — schema changes applied manually via Supabase SQL editor
+- `pg` driver — `lib/db.js` provides pool singleton
 - 12 tables (see `SQL_SCHEMA.sql`)
 - Denormalized counters: `view_count`/`comment_count` on articles, `article_count` on tags
 - Soft-delete pattern for comments (status field, not actual deletion)
+- Migration files in `migrations/` — numbered sequentially (e.g. `001_seed_data.sql`), run manually
 
 ### API Pattern
 - Handler files in `api/` export factory functions: `function list({ pool }) { return handler }`
-- Routes registered flat in `server/routes/index.js`
+- Routes registered flat in `server/routes/index.js` — no separate router files, just `require` + `app.*` lines
 - Express server (`server.js`) for Docker/dev, Vercel routes to `server.js` via `@vercel/node`
+
+### Route Registration Rules
+All routes live in `server/routes/index.js` as flat `app.get/post/put/patch/delete` calls. Ordering constraints (violations cause silent 404s or wrong handler):
+1. Specific routes (e.g. `/api/articles/search`) must be registered **before** dynamic parameter routes (e.g. `/api/articles/:slug`) in the same prefix group
+2. Catch-all page routes (`/:category`, `/:category/:slug`) must be registered **last** in `index.html` script order
 
 ## Gotchas & Common Pitfalls
 
@@ -177,8 +204,8 @@ TMDB blocks some Russian IPs. The `/api/tmdb/*` proxy runs on Vercel (US region)
 ### 4. Docker build
 Dockerfile in `docker/Dockerfile` copies server files and serves via `node server.js`.
 
-### 5. Cron jobs need bearer auth
-All `/api/cron/*` endpoints require `Authorization: Bearer {CRON_SECRET}`. Vercel passes this automatically for configured crons.
+### 5. Cron jobs need bearer auth and respect platform limits
+All `/api/cron/*` endpoints require `Authorization: Bearer {CRON_SECRET}`. Vercel passes this automatically for configured crons. Vercel Hobby plan only allows daily (or less frequent) cron schedules — expressions running more than once per day fail deployment. When adding cron jobs: register the schedule in `vercel.json` `crons` array and the route in `server/routes/index.js`.
 
 ### 6. Comment deletion updates article counts
 When moderating/deleting comments, the `commentCount` on the associated Article must be updated. The moderation endpoint handles this.
@@ -195,8 +222,30 @@ Only YouTube, VK Video, and RuTube embeds are allowed.
 ### 10. SPA router manages page lifecycle
 Pages register via `Router.registerPage()`. The router handles CSS injection/cleanup, history API, and init/cleanup calls. Always implement `cleanup()` to prevent memory leaks.
 
+### 11. No seeding — database is populated manually
+The database is never seeded automatically. All data (articles, tags, categories, etc.) is inserted manually by the owner. Do not rely on seed scripts or placeholder/fake content as a substitute for real data. If the database is empty, the site should show an empty state, not fake content.
+
+### 12. New env vars must be added to deploy workflow
+Yandex Cloud deploys via Docker through GitHub Actions. Env vars are passed as `-e` flags in `.github/workflows/deploy-yandex.yml`. When adding a new env var, add `-e VAR_NAME="${{ secrets.VAR_NAME }}"` to the `docker run` command. Missing vars cause silent failures — the app starts but the feature doesn't work. Vercel reads env vars from its project settings automatically.
+
+### 13. MutationObserver/ResizeObserver must not modify their own target
+If a `MutationObserver` callback inserts or removes elements inside the observed subtree, it triggers itself infinitely. Similarly, if a `ResizeObserver` callback changes styles that affect the observed element's size, it loops. Fix: disconnect the observer before making DOM changes and reconnect after. The `mutating` flag pattern does NOT work because observer callbacks are async microtasks.
+
+### 14. All media goes through Yandex S3
+Images are stored in Yandex Cloud Object Storage. Upload via `lib/storage.js`. Use `resolveImageUrl()` from `public/js/core/media.js` to get URLs. Adding a new image source domain requires updating CSP `img-src` in `server/app.js`.
+
+### 15. `style.css` is home page only
+Despite its generic name, `public/css/style.css` is loaded ONLY on the home page (`/`). Do NOT add general-purpose styles here — use `global.css` for global styles or create a page-specific CSS file.
+
+### 16. Conditional visibility changes must be documented
+When adding JS-driven `classList` toggling or `style.*` changes that affect visibility or appearance, add an entry to `docs/CONDITIONAL_VISIBILITY.md` in the appropriate module section.
+
 ## Documentation
-See `docs/` directory for detailed documentation.
+- `DEVELOPMENT_CHECKLIST.md` — step-by-step checklists for adding endpoints, DB fields, pages
+- `.claude/README.md` — implementation protocols and validation commands
+- `docs/SPA_LIFECYCLE.md` — persistent elements, cleanup contract, common bugs
+- `docs/CONDITIONAL_VISIBILITY.md` — all JS-driven visibility and styling changes
+- `docs/` directory — see full list below for system-specific documentation
 
 ## Progress
 - **Phase 1: Foundation** — COMPLETE (Express server, pg pool, auth, config, middleware)

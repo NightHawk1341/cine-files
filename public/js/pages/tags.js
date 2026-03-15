@@ -1,7 +1,6 @@
 /**
  * All tags page — grouped by type.
  * Route: /tags
- * Falls back to placeholder data when API is unavailable.
  */
 
 Router.registerPage('/tags', {
@@ -17,8 +16,7 @@ Router.registerPage('/tags', {
       var data = await Utils.apiFetch('/api/tags?limit=500');
       tags = data.tags || [];
     } catch (err) {
-      // API unavailable — use placeholder data
-      tags = Placeholders.getTags();
+      // API unavailable
     }
 
     content.innerHTML = '';

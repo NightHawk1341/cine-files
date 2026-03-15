@@ -1,7 +1,6 @@
 /**
  * Tag page — articles for a specific tag.
  * Route: /tag/:slug
- * Falls back to placeholder data when API is unavailable.
  */
 
 Router.registerPage('/tag/:slug', {
@@ -22,9 +21,7 @@ Router.registerPage('/tag/:slug', {
       tagData = td;
       articles = ad.articles || [];
     } catch (err) {
-      // API unavailable — use placeholder data
-      tagData = Placeholders.getTag(params.slug);
-      articles = Placeholders.getByTag(params.slug);
+      // API unavailable
     }
 
     content.innerHTML = '';

@@ -1,7 +1,6 @@
 /**
  * Author page — author profile + articles.
  * Route: /author/:id
- * Falls back to placeholder data when API is unavailable.
  */
 
 Router.registerPage('/author/:id', {
@@ -21,14 +20,7 @@ Router.registerPage('/author/:id', {
       articles = data.articles || [];
       authorName = articles.length > 0 ? articles[0].author_name : 'Автор';
     } catch (err) {
-      // API unavailable — use placeholder data filtered by author
-      var all = Placeholders.getArticles();
-      var names = {
-        '1': 'Редактор Иванов',
-        '2': 'Мария Петрова',
-      };
-      authorName = names[params.id] || 'Автор';
-      articles = all.filter(function (a) { return a.author_name === authorName; });
+      // API unavailable
     }
 
     content.innerHTML = '';

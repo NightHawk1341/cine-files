@@ -1,7 +1,6 @@
 /**
  * Home page — featured articles grid, latest content, popular tags.
  * Content-focused layout matching TR-BUTE's density.
- * Falls back to placeholder data when API is unavailable.
  */
 
 Router.registerPage('/', {
@@ -20,6 +19,7 @@ Router.registerPage('/', {
     featuredSection.innerHTML = '<h2 class="home-section-title">Избранное</h2>';
     var featuredGrid = document.createElement('div');
     featuredGrid.className = 'article-grid article-grid-featured';
+    for (var s = 0; s < 4; s++) featuredGrid.appendChild(Skeleton.articleCard());
     featuredSection.appendChild(featuredGrid);
     page.appendChild(featuredSection);
 
@@ -29,6 +29,7 @@ Router.registerPage('/', {
     latestSection.innerHTML = '<h2 class="home-section-title">Последние статьи</h2>';
     var latestGrid = document.createElement('div');
     latestGrid.className = 'article-grid';
+    for (var s = 0; s < 8; s++) latestGrid.appendChild(Skeleton.articleCard());
     latestSection.appendChild(latestGrid);
     page.appendChild(latestSection);
 
@@ -38,6 +39,14 @@ Router.registerPage('/', {
     tagsSection.innerHTML = '<h2 class="home-section-title">Популярные теги</h2>';
     var tagsCloud = document.createElement('div');
     tagsCloud.className = 'tag-cloud';
+    for (var s = 0; s < 8; s++) {
+      var pill = document.createElement('span');
+      pill.className = 'tag-pill skeleton';
+      pill.style.width = (60 + Math.random() * 60) + 'px';
+      pill.style.height = '32px';
+      pill.innerHTML = '&nbsp;';
+      tagsCloud.appendChild(pill);
+    }
     tagsSection.appendChild(tagsCloud);
     page.appendChild(tagsSection);
 
@@ -52,24 +61,28 @@ Router.registerPage('/', {
 
     content.appendChild(page);
 
-    // Load data — try API first, fall back to placeholders
+    // Load data from API
     var articles = [];
     var tagsList = [];
-    var usedPlaceholders = false;
+    var cats = [];
 
     try {
-      var [articlesData, tagsData] = await Promise.all([
+      var [articlesData, tagsData, catsData] = await Promise.all([
         Utils.apiFetch('/api/articles?limit=12&status=published'),
         Utils.apiFetch('/api/tags?limit=20&sort=article_count'),
+        Utils.apiFetch('/api/categories'),
       ]);
       articles = articlesData.articles || [];
       tagsList = tagsData.tags || [];
+      cats = catsData.categories || catsData || [];
     } catch (err) {
-      // API unavailable — use placeholder data
-      articles = Placeholders.getArticles();
-      tagsList = Placeholders.getTags();
-      usedPlaceholders = true;
+      // API unavailable — show empty state
     }
+
+    // Clear skeletons and populate with real data
+    featuredGrid.innerHTML = '';
+    latestGrid.innerHTML = '';
+    tagsCloud.innerHTML = '';
 
     // Featured = first 4
     if (articles.length > 0) {
@@ -105,20 +118,23 @@ Router.registerPage('/', {
     }
 
     // Categories quick nav
-    var cats = Placeholders.getCategories();
-    cats.forEach(function (cat) {
-      var link = document.createElement('a');
-      link.className = 'category-card';
-      link.href = '/' + cat.slug;
-      var name = document.createElement('span');
-      name.className = 'category-card-name';
-      name.textContent = cat.name_ru;
-      link.appendChild(name);
-      var desc = document.createElement('span');
-      desc.className = 'category-card-desc';
-      desc.textContent = cat.description;
-      link.appendChild(desc);
-      catsGrid.appendChild(link);
-    });
+    if (Array.isArray(cats)) {
+      cats.forEach(function (cat) {
+        var link = document.createElement('a');
+        link.className = 'category-card';
+        link.href = '/' + cat.slug;
+        var name = document.createElement('span');
+        name.className = 'category-card-name';
+        name.textContent = cat.name_ru;
+        link.appendChild(name);
+        if (cat.description) {
+          var desc = document.createElement('span');
+          desc.className = 'category-card-desc';
+          desc.textContent = cat.description;
+          link.appendChild(desc);
+        }
+        catsGrid.appendChild(link);
+      });
+    }
   },
 });

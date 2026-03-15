@@ -1,7 +1,6 @@
 /**
  * Category page — article listing with pagination.
  * Route: /:category (must be registered after specific routes)
- * Falls back to placeholder data when API is unavailable.
  */
 
 Router.registerPage('/:category', {
@@ -12,10 +11,9 @@ Router.registerPage('/:category', {
     content.innerHTML = '<div class="container page-content">' + Skeleton.grid(6).outerHTML + '</div>';
 
     var articles = [];
-    var categoryName = '';
+    var categoryName = params.category.charAt(0).toUpperCase() + params.category.slice(1);
     var total = 0;
     var page = Number(Utils.getQueryParam('page')) || 1;
-    var usedPlaceholders = false;
 
     try {
       var data = await Utils.apiFetch(
@@ -24,13 +22,9 @@ Router.registerPage('/:category', {
       );
       articles = data.articles || [];
       total = data.total || 0;
-      categoryName = data.category_name || Placeholders.getCategoryName(params.category);
+      categoryName = data.category_name || categoryName;
     } catch (err) {
-      // API unavailable — use placeholder data
-      articles = Placeholders.getByCategory(params.category);
-      total = articles.length;
-      categoryName = Placeholders.getCategoryName(params.category);
-      usedPlaceholders = true;
+      // API unavailable — show empty state
     }
 
     var totalPages = Math.ceil(total / 12);
@@ -57,8 +51,8 @@ Router.registerPage('/:category', {
       });
       container.appendChild(grid);
 
-      // Pagination (only for API data)
-      if (!usedPlaceholders && totalPages > 1) {
+      // Pagination
+      if (totalPages > 1) {
         var nav = document.createElement('nav');
         nav.className = 'category-pagination';
 

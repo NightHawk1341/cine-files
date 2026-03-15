@@ -1,7 +1,6 @@
 /**
  * Article page — displays single article with blocks, tags, and comments.
  * Route: /:category/:slug
- * Falls back to placeholder data when API is unavailable.
  */
 
 Router.registerPage('/:category/:slug', {
@@ -16,14 +15,11 @@ Router.registerPage('/:category/:slug', {
       '</div>';
 
     var article = null;
-    var usedPlaceholders = false;
 
     try {
       article = await Utils.apiFetch('/api/articles/' + encodeURIComponent(params.slug));
     } catch (err) {
-      // API unavailable — use placeholder data
-      article = Placeholders.getBySlug(params.slug);
-      usedPlaceholders = true;
+      // API unavailable
     }
 
     if (!article) {
@@ -64,7 +60,7 @@ Router.registerPage('/:category/:slug', {
       var catLink = document.createElement('a');
       catLink.className = 'article-category-link';
       catLink.href = '/' + article.category_slug;
-      catLink.textContent = article.category_name_ru || Placeholders.getCategoryName(article.category_slug);
+      catLink.textContent = article.category_name_ru || article.category_slug;
       header.appendChild(catLink);
     }
 
@@ -152,13 +148,11 @@ Router.registerPage('/:category/:slug', {
       container.appendChild(tagsDiv);
     }
 
-    // Comments (only load from API, skip for placeholders)
-    if (!usedPlaceholders) {
-      var commentsContainer = document.createElement('div');
-      commentsContainer.className = 'article-comments';
-      container.appendChild(commentsContainer);
-      CommentList.render(commentsContainer, article.id);
-    }
+    // Comments
+    var commentsContainer = document.createElement('div');
+    commentsContainer.className = 'article-comments';
+    container.appendChild(commentsContainer);
+    CommentList.render(commentsContainer, article.id);
 
     content.appendChild(container);
 
