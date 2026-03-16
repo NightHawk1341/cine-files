@@ -6,6 +6,7 @@ const { config } = require('../lib/config');
  */
 function list({ pool }) {
   return async (req, res) => {
+    try {
     const page = Math.max(1, parseInt(req.query.page || '1'));
     const limit = Math.min(parseInt(req.query.limit || '20'), 100);
     const offset = (page - 1) * limit;
@@ -131,6 +132,10 @@ function list({ pool }) {
       articles,
       pagination: { page, limit, total, pages: Math.ceil(total / limit) },
     });
+    } catch (err) {
+      console.error('Articles list error:', err);
+      res.status(500).json({ error: 'Internal server error' });
+    }
   };
 }
 

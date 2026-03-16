@@ -12,6 +12,9 @@ const { authenticateToken } = require('./middleware/auth');
 
 const app = express();
 
+// Trust first proxy (Yandex Cloud LB / Vercel edge) so req.ip is correct for rate limiting
+app.set('trust proxy', 1);
+
 // ============================================================
 // Security
 // ============================================================
@@ -56,7 +59,7 @@ app.use(cookieParser());
 // ============================================================
 var generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100,
+  max: 300,
   standardHeaders: true,
   legacyHeaders: false,
 });
@@ -68,8 +71,18 @@ var authLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-app.use('/api/', generalLimiter);
+// Cross-site integration endpoints (called by TR-BUTE) get a higher limit
+var crossSiteLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 600,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 app.use('/api/auth/', authLimiter);
+app.use('/api/articles/related', crossSiteLimiter);
+app.use('/api/tribute/', crossSiteLimiter);
+app.use('/api/', generalLimiter);
 
 // ============================================================
 // Auth middleware (parses token on every request, does not reject)
