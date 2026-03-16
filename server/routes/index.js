@@ -1,4 +1,14 @@
+const multer = require('multer');
 const { requireAuth, requireEditor, requireAdmin, requireCronAuth } = require('../middleware/auth');
+
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: function (req, file, cb) {
+    var allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/avif', 'image/gif'];
+    cb(null, allowed.includes(file.mimetype));
+  },
+});
 
 /**
  * Register all API routes.
@@ -113,8 +123,7 @@ function setupRoutes(app, deps) {
   // Media
   // ============================================================
   app.get('/api/media', requireEditor, media.list(deps));
-  // Note: multer or formidable middleware needed for file uploads
-  app.post('/api/media/upload', requireEditor, mediaUpload.upload(deps));
+  app.post('/api/media/upload', requireEditor, upload.single('file'), mediaUpload.upload(deps));
   app.delete('/api/media/:id', requireAdmin, media.remove(deps));
 
   // ============================================================

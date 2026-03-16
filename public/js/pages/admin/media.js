@@ -15,8 +15,76 @@ Router.registerPage('/admin/media', {
 
     var header = document.createElement('div');
     header.className = 'admin-header';
-    header.innerHTML = '<h1 class="admin-title">Медиатека</h1>';
+    header.innerHTML =
+      '<h1 class="admin-title">Медиатека</h1>' +
+      '<button class="admin-btn-primary" id="admin-media-upload-btn">Загрузить</button>';
     container.appendChild(header);
+
+    // Upload zone
+    var uploadZone = document.createElement('div');
+    uploadZone.className = 'admin-upload-zone';
+    uploadZone.id = 'admin-upload-zone';
+    uploadZone.innerHTML =
+      '<input type="file" id="admin-upload-file" accept="image/jpeg,image/png,image/webp,image/avif,image/gif" style="display:none">' +
+      '<p class="admin-upload-text">Перетащите файл сюда или нажмите "Загрузить"</p>' +
+      '<div class="admin-upload-fields" id="admin-upload-fields" style="display:none">' +
+        '<input class="admin-input" id="admin-upload-alt" type="text" placeholder="Alt текст">' +
+        '<input class="admin-input" id="admin-upload-credit" type="text" placeholder="Источник">' +
+        '<button class="admin-btn-primary" id="admin-upload-submit">Загрузить файл</button>' +
+      '</div>' +
+      '<div id="admin-upload-progress" style="display:none" class="admin-upload-text">Загрузка...</div>';
+    container.appendChild(uploadZone);
+
+    // Upload event handlers
+    document.getElementById('admin-media-upload-btn').addEventListener('click', function () {
+      document.getElementById('admin-upload-file').click();
+    });
+
+    var _pendingFile = null;
+    document.getElementById('admin-upload-file').addEventListener('change', function (e) {
+      if (e.target.files.length > 0) {
+        _pendingFile = e.target.files[0];
+        document.getElementById('admin-upload-fields').style.display = 'flex';
+        uploadZone.querySelector('.admin-upload-text').textContent = _pendingFile.name;
+      }
+    });
+
+    uploadZone.addEventListener('dragover', function (e) { e.preventDefault(); uploadZone.classList.add('admin-upload-zone--active'); });
+    uploadZone.addEventListener('dragleave', function () { uploadZone.classList.remove('admin-upload-zone--active'); });
+    uploadZone.addEventListener('drop', function (e) {
+      e.preventDefault();
+      uploadZone.classList.remove('admin-upload-zone--active');
+      if (e.dataTransfer.files.length > 0) {
+        _pendingFile = e.dataTransfer.files[0];
+        document.getElementById('admin-upload-fields').style.display = 'flex';
+        uploadZone.querySelector('.admin-upload-text').textContent = _pendingFile.name;
+      }
+    });
+
+    document.getElementById('admin-upload-submit').addEventListener('click', async function () {
+      if (!_pendingFile) return;
+      document.getElementById('admin-upload-fields').style.display = 'none';
+      document.getElementById('admin-upload-progress').style.display = 'block';
+
+      var formData = new FormData();
+      formData.append('file', _pendingFile);
+      var altVal = document.getElementById('admin-upload-alt').value;
+      var creditVal = document.getElementById('admin-upload-credit').value;
+      if (altVal) formData.append('alt', altVal);
+      if (creditVal) formData.append('credit', creditVal);
+
+      try {
+        var res = await fetch('/api/media/upload', { method: 'POST', body: formData });
+        if (!res.ok) throw new Error('Upload failed');
+        Toast.show('Файл загружен', 'success');
+        Router.navigate('/admin/media');
+      } catch (err) {
+        Toast.show('Не удалось загрузить', 'error');
+        document.getElementById('admin-upload-progress').style.display = 'none';
+        document.getElementById('admin-upload-fields').style.display = 'flex';
+      }
+      _pendingFile = null;
+    });
 
     var grid = document.createElement('div');
     grid.className = 'admin-media-grid';
