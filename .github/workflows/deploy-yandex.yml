@@ -83,8 +83,8 @@ jobs:
             --environment YANDEX_CLIENT_SECRET=${{ secrets.YANDEX_CLIENT_SECRET }} \
             --environment VK_CLIENT_ID=${{ secrets.VK_CLIENT_ID }} \
             --environment VK_CLIENT_SECRET=${{ secrets.VK_CLIENT_SECRET }} \
-            --environment TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }} \
-            --environment TELEGRAM_BOT_ID=${{ secrets.TELEGRAM_BOT_ID }} \
+            --environment BOT_TOKEN=${{ secrets.BOT_TOKEN }} \
+            --environment TELEGRAM_OIDC_SECRET=${{ secrets.TELEGRAM_OIDC_SECRET }} \
             --environment YANDEX_S3_ENDPOINT=${{ secrets.YANDEX_S3_ENDPOINT }} \
             --environment YANDEX_S3_REGION=${{ secrets.YANDEX_S3_REGION }} \
             --environment YANDEX_S3_BUCKET=${{ secrets.YANDEX_S3_BUCKET }} \
