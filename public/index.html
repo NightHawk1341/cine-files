@@ -21,6 +21,11 @@
     })();
   </script>
 
+  <!-- Resource hints for external origins -->
+  <link rel="preconnect" href="https://api.themoviedb.org" crossorigin>
+  <link rel="preconnect" href="https://storage.yandexcloud.net">
+  <link rel="preconnect" href="https://cdn.cinefiles-txt.com">
+
   <!-- Preload font -->
   <link rel="preload" href="/fonts/Montserrat-VariableFont_wght.woff2" as="font" type="font/woff2" crossorigin>
 
@@ -37,6 +42,7 @@
   <link rel="stylesheet" href="/css/comment-list.css">
   <link rel="stylesheet" href="/css/article-editor-modal.css">
   <link rel="stylesheet" href="/css/media-picker.css">
+  <link rel="stylesheet" href="/css/integration-slot.css">
 
   <!-- RSS -->
   <link rel="alternate" type="application/rss+xml" title="CineFiles RSS" href="/feed/rss.xml">
@@ -261,6 +267,7 @@
   <!-- Components: content renderers (used by pages) -->
   <script src="/js/components/media-picker.js"></script>
   <script src="/js/components/article-editor-modal.js"></script>
+  <script src="/js/components/integration-slot.js"></script>
   <script src="/js/components/article-card.js"></script>
   <script src="/js/components/article-body.js"></script>
   <script src="/js/components/comment-list.js"></script>

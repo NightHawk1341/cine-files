@@ -10,7 +10,9 @@
     "check:selectors": "node scripts/validate-router-selectors.js",
     "check:page-scripts": "node scripts/validate-page-scripts.js",
     "check:spa-styles": "node scripts/validate-spa-styles.js",
-    "check:claude": "node scripts/pre-commit-check.js && node scripts/validate-routes.js && node scripts/validate-router-selectors.js && node scripts/validate-page-scripts.js && node scripts/validate-spa-styles.js"
+    "check:claude": "node scripts/pre-commit-check.js && node scripts/validate-routes.js && node scripts/validate-router-selectors.js && node scripts/validate-page-scripts.js && node scripts/validate-spa-styles.js",
+    "build": "node scripts/minify.js",
+    "build:dry": "node scripts/minify.js --dry-run"
   },
   "keywords": [],
   "author": "",
@@ -28,6 +30,7 @@
     "pg": "^8.13.0"
   },
   "devDependencies": {
+    "esbuild": "^0.24.0",
     "nodemon": "^3.1.14"
   },
   "engines": {

@@ -31,6 +31,7 @@ function get({ pool }) {
       );
 
       const article = formatRow(rows[0], tagsResult.rows);
+      res.set('Cache-Control', 'public, max-age=60, s-maxage=600, stale-while-revalidate=3600');
       res.json({ article });
     } catch (err) {
       console.error('Article get error:', err);

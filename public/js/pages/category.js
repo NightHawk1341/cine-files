@@ -51,6 +51,11 @@ Router.registerPage('/:category', {
       });
       container.appendChild(grid);
 
+      // Inject integration placements between articles
+      if (typeof IntegrationSlot !== 'undefined') {
+        IntegrationSlot.injectBetween(grid, 4);
+      }
+
       // Pagination
       if (totalPages > 1) {
         var nav = document.createElement('nav');

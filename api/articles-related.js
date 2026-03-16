@@ -92,6 +92,7 @@ function list({ pool }) {
         },
       }));
 
+      res.set('Cache-Control', 'public, max-age=300, s-maxage=3600, stale-while-revalidate=3600');
       res.json({ articles });
     } catch (err) {
       console.error('Articles related error:', err);

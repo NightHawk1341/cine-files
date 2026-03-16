@@ -131,6 +131,7 @@ function list({ pool }) {
       articles = fallbackResult.rows.map(formatArticle(fallbackTags));
     }
 
+    res.set('Cache-Control', 'public, max-age=60, s-maxage=300, stale-while-revalidate=600');
     res.json({
       articles,
       pagination: { page, limit, total, pages: Math.ceil(total / limit) },

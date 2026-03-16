@@ -61,6 +61,7 @@ function list({ pool }) {
       } : null,
     }));
 
+    res.set('Cache-Control', 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=86400');
     res.json({
       tags,
       pagination: { page, limit, total, pages: Math.ceil(total / limit) },

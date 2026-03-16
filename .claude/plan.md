@@ -333,10 +333,51 @@ New file: `public/js/components/ad-slot.js`
 
 ## Implementation Order
 
-1. **Phase 1** — Auth foundation (everything depends on this)
-2. **Phase 2** — Profile page + saved articles
-3. **Phase 3** — Article editor modal (core CMS feature)
-4. **Phase 4** — Media upload (needed for editor image blocks)
-5. **Phase 5** — Inline comment moderation
-6. **Phase 6** — Admin miniapp sections (can partially parallelize with 3-5)
-7. **Phase 7** — Public ad rendering
+1. **Phase 1** — Auth foundation (everything depends on this) — COMPLETE
+2. **Phase 2** — Profile page + saved articles — COMPLETE
+3. **Phase 3** — Article editor modal (core CMS feature) — COMPLETE
+4. **Phase 4** — Media upload (needed for editor image blocks) — COMPLETE
+5. **Phase 5** — Inline comment moderation — COMPLETE
+6. **Phase 6** — Admin miniapp sections (can partially parallelize with 3-5) — COMPLETE
+7. **Phase 7** — Public integration rendering
+8. **Phase 8** — Performance optimizations
+
+---
+
+## Phase 8: Performance Optimizations
+
+### 8.1 — Resource hints in `public/index.html`
+Add preconnect hints after FOUC prevention script, before font preload:
+- `api.themoviedb.org` (TMDB API proxy target)
+- `storage.yandexcloud.net` (S3 media)
+- `cdn.cinefiles-txt.com` (CDN)
+
+### 8.2 — Cache-Control headers on public API endpoints
+Add `res.set('Cache-Control', ...)` before `res.json(...)` in read-only public endpoints:
+
+| Endpoint | Cache value |
+|----------|-------------|
+| `api/categories.js` (list) | `public, max-age=3600, s-maxage=86400, stale-while-revalidate=86400` |
+| `api/tags.js` (list) | `public, max-age=3600, s-maxage=86400, stale-while-revalidate=86400` |
+| `api/articles.js` (list) | `public, max-age=60, s-maxage=300, stale-while-revalidate=600` |
+| `api/article-by-id.js` (get) | `public, max-age=60, s-maxage=600, stale-while-revalidate=3600` |
+| `api/search.js` | `public, max-age=30, s-maxage=60, stale-while-revalidate=300` |
+| `api/articles-related.js` (list) | `public, max-age=300, s-maxage=3600, stale-while-revalidate=3600` |
+| `api/collections.js` (list, get only) | `public, max-age=300, s-maxage=3600, stale-while-revalidate=3600` |
+
+Do NOT add to auth, write, admin, or cron endpoints.
+
+### 8.3 — Improve static file serving in `server/app.js`
+Replace maxAge config with ETag-based caching:
+- JS/CSS/HTML: `no-cache` (always revalidate via ETag — code changes propagate immediately)
+- Everything else (fonts, images, icons): `public, max-age=86400` (24h cache)
+
+### 8.4 — esbuild minification build step
+- Add `esbuild` to devDependencies
+- Create `scripts/minify.js` — deployment-only in-place minification
+  - Collects `.css` and `.js` from `public/` (skip `fonts/`)
+  - Uses esbuild `transform()` API with `{ minify: true, legalComments: 'inline' }`
+  - Reports savings (original vs minified, percentage)
+  - `--dry-run` flag for preview without writing
+- Add `build` and `build:dry` npm scripts
+- Source files in git stay readable — only runs during deployment

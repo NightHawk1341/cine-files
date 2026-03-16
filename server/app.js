@@ -93,7 +93,14 @@ app.use(authenticateToken);
 // Static files
 // ============================================================
 app.use(express.static(path.join(__dirname, '..', 'public'), {
-  maxAge: config.isProd ? '1d' : 0,
+  etag: true,
+  setHeaders(res, filePath) {
+    if (filePath.endsWith('.js') || filePath.endsWith('.css') || filePath.endsWith('.html')) {
+      res.setHeader('Cache-Control', 'no-cache');
+    } else {
+      res.setHeader('Cache-Control', 'public, max-age=86400');
+    }
+  },
 }));
 
 // ============================================================

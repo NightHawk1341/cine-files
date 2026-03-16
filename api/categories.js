@@ -12,6 +12,7 @@ function list({ pool }) {
        ORDER BY c.sort_order ASC`
     );
 
+    res.set('Cache-Control', 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=86400');
     res.json({
       categories: rows.map(r => ({
         id: r.id,
