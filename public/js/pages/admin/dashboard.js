@@ -25,10 +25,13 @@ Router.registerPage('/admin', {
     var links = [
       { href: '/admin/articles', label: 'Статьи' },
       { href: '/admin/comments', label: 'Комментарии' },
+      { href: '/admin/categories', label: 'Категории' },
       { href: '/admin/tags', label: 'Теги' },
       { href: '/admin/users', label: 'Пользователи' },
       { href: '/admin/media', label: 'Медиатека' },
       { href: '/admin/collections', label: 'Подборки' },
+      { href: '/admin/integrations', label: 'Интеграции' },
+      { href: '/admin/moderation', label: 'Авто-модерация' },
       { href: '/admin/settings', label: 'Настройки' },
     ];
 

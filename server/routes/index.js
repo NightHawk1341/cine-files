@@ -46,6 +46,8 @@ function setupRoutes(app, deps) {
   const media = require('../../api/media');
   const collections = require('../../api/collections');
   const settings = require('../../api/settings');
+  const integrations = require('../../api/promos');
+  const moderation = require('../../api/admin-moderation');
 
   // ============================================================
   // Health check
@@ -78,6 +80,9 @@ function setupRoutes(app, deps) {
   // Categories
   // ============================================================
   app.get('/api/categories', categories.list(deps));
+  app.post('/api/categories', requireAdmin, categories.create(deps));
+  app.put('/api/categories/:id', requireAdmin, categories.update(deps));
+  app.delete('/api/categories/:id', requireAdmin, categories.remove(deps));
 
   // ============================================================
   // Articles — specific routes before :id catch-all
@@ -141,6 +146,26 @@ function setupRoutes(app, deps) {
   app.put('/api/collections/:id', requireAdmin, collections.update(deps));
   app.delete('/api/collections/:id', requireAdmin, collections.remove(deps));
   app.put('/api/collections/:id/articles', requireAdmin, collections.updateArticles(deps));
+
+  // ============================================================
+  // Integrations (partner placements)
+  // ============================================================
+  app.get('/api/integrations', integrations.list(deps));
+  app.get('/api/integrations/:id', integrations.get(deps));
+  app.post('/api/integrations', requireAdmin, integrations.create(deps));
+  app.put('/api/integrations/:id', requireAdmin, integrations.update(deps));
+  app.delete('/api/integrations/:id', requireAdmin, integrations.remove(deps));
+  app.post('/api/integrations/:id/view', integrations.view(deps));
+  app.post('/api/integrations/:id/click', integrations.click(deps));
+
+  // ============================================================
+  // Admin — word filter / auto-moderation
+  // ============================================================
+  app.get('/api/admin/moderation/words', requireAdmin, moderation.list(deps));
+  app.post('/api/admin/moderation/words', requireAdmin, moderation.create(deps));
+  app.put('/api/admin/moderation/words/:id', requireAdmin, moderation.update(deps));
+  app.delete('/api/admin/moderation/words/:id', requireAdmin, moderation.remove(deps));
+  app.post('/api/admin/moderation/test', requireAdmin, moderation.test(deps));
 
   // ============================================================
   // Settings
