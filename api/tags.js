@@ -80,7 +80,20 @@ function create({ pool }) {
         return res.status(400).json({ error: 'nameRu and tagType are required' });
       }
 
-      const slug = generateSlug(nameRu);
+      // Sync TMDB entity first so we can use its English title for the slug
+      let tmdbEntityId = null;
+      let tmdbTitleEn = null;
+      if (tmdbId && tmdbType) {
+        const entity = await syncTmdbEntity(tmdbType, tmdbId);
+        if (entity) {
+          tmdbEntityId = entity.id;
+          tmdbTitleEn = entity.title_en;
+        }
+      }
+
+      // Prefer English name for slug (proper "arcane" instead of transliterated "arkeyn")
+      const resolvedNameEn = nameEn || tmdbTitleEn || null;
+      const slug = generateSlug(resolvedNameEn || nameRu);
 
       const { rows: existing } = await pool.query(
         'SELECT id FROM tags WHERE slug = $1', [slug]
@@ -89,17 +102,11 @@ function create({ pool }) {
         return res.status(409).json({ error: 'Tag with this name already exists' });
       }
 
-      let tmdbEntityId = null;
-      if (tmdbId && tmdbType) {
-        const entity = await syncTmdbEntity(tmdbType, tmdbId);
-        if (entity) tmdbEntityId = entity.id;
-      }
-
       const { rows } = await pool.query(
         `INSERT INTO tags (slug, name_ru, name_en, tag_type, tmdb_entity_id)
          VALUES ($1, $2, $3, $4, $5)
          RETURNING *`,
-        [slug, nameRu, nameEn || null, tagType, tmdbEntityId]
+        [slug, nameRu, resolvedNameEn, tagType, tmdbEntityId]
       );
 
       res.status(201).json({ tag: formatTag(rows[0]) });
