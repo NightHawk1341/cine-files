@@ -12,7 +12,7 @@ GitHub Actions secrets mirror these for the CI/CD deploy workflow.
 | Variable | Description | Example |
 |----------|-------------|---------|
 | `NODE_ENV` | Runtime environment | `production` / `development` |
-| `APP_URL` | Public site URL | `https://cinefiles.ru` |
+| `APP_URL` | Public site URL | `https://cinefiles-txt.com` |
 | `DATABASE_URL` | PostgreSQL connection string (Supabase) | `postgresql://user:pass@host:5432/db` |
 | `JWT_SECRET` | Secret for signing JWT access tokens | Random 64+ char string |
 | `SESSION_SECRET` | Secret for session management | Random 64+ char string |
@@ -21,8 +21,8 @@ GitHub Actions secrets mirror these for the CI/CD deploy workflow.
 ### OAuth — Yandex (Primary)
 | Variable | Description |
 |----------|-------------|
-| `YANDEX_CLIENT_ID` | Yandex OAuth application ID |
-| `YANDEX_CLIENT_SECRET` | Yandex OAuth application secret |
+| `YANDEX_CLIENT_ID` | Yandex OAuth application ID (shared with TR-BUTE) |
+| `YANDEX_CLIENT_SECRET` | Yandex OAuth application secret (shared with TR-BUTE) |
 
 ### OAuth — VK
 | Variable | Description |
@@ -33,8 +33,8 @@ GitHub Actions secrets mirror these for the CI/CD deploy workflow.
 ### OAuth — Telegram (OIDC)
 | Variable | Description |
 |----------|-------------|
-| `TELEGRAM_BOT_TOKEN` | Telegram bot token (shared with TR-BUTE) |
-| `TELEGRAM_BOT_ID` | Numeric bot ID — the number before `:` in the bot token (used as OIDC `client_id`) |
+| `BOT_TOKEN` | Telegram bot token (shared with TR-BUTE). Bot ID is derived as the part before `:` |
+| `TELEGRAM_OIDC_SECRET` | Client Secret from BotFather > Bot Settings > Web Login |
 
 ### Yandex S3 (Image Storage)
 | Variable | Description | Default |
@@ -62,7 +62,6 @@ GitHub Actions secrets mirror these for the CI/CD deploy workflow.
 | Variable | Description | Default |
 |----------|-------------|---------|
 | `REDIS_URL` | Redis connection (optional caching layer) | Not set |
-| `DOCKER_BUILD` | Set to `true` during Docker builds (enables standalone output) | `false` |
 
 ## Security Notes
 
@@ -79,14 +78,13 @@ The deploy workflow (`.github/workflows/deploy-yandex.yml`) requires these addit
 
 | Secret | Description |
 |--------|-------------|
-| `YC_REGISTRY_ID` | Yandex Container Registry ID |
 | `YC_SA_JSON_KEY` | Yandex Cloud service account JSON key |
-| `DEPLOY_HOST` | Server hostname/IP for SSH deployment |
-| `DEPLOY_USER` | SSH username on deployment server |
-| `DEPLOY_SSH_KEY` | SSH private key for deployment |
+| `YC_REGISTRY_ID` | Yandex Container Registry ID |
+| `YC_CONTAINER_ID` | Yandex Serverless Container ID |
+| `YC_SERVICE_ACCOUNT_ID` | Yandex Cloud service account ID (for container runtime) |
 
-Plus all application env vars listed above (passed as secrets to the container).
+Plus all application env vars listed above (passed as `--environment` flags to the container).
 
 ## Configuration File
 
-Environment variables are parsed and validated in `lib/config.ts`. Missing required variables throw at startup, preventing silent misconfiguration.
+Environment variables are parsed and validated in `lib/config.js`. Missing required variables throw at startup, preventing silent misconfiguration.

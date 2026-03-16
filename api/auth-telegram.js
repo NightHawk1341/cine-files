@@ -69,7 +69,7 @@ function callback({ pool }) {
 
     try {
       const redirectUri = `${config.appUrl}/api/auth/telegram/callback`;
-      const { botId, botToken } = config.telegram;
+      const { botId, oidcSecret } = config.telegram;
 
       const tokenParams = new URLSearchParams();
       tokenParams.append('grant_type', 'authorization_code');
@@ -82,7 +82,7 @@ function callback({ pool }) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
-          'Authorization': `Basic ${Buffer.from(`${botId}:${botToken}`).toString('base64')}`,
+          'Authorization': `Basic ${Buffer.from(`${botId}:${oidcSecret}`).toString('base64')}`,
         },
         body: tokenParams.toString(),
       });
