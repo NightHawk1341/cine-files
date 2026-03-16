@@ -24,7 +24,7 @@ app.use(helmet({
       defaultSrc: ["'self'"],
       scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
       styleSrc: ["'self'", "'unsafe-inline'"],
-      imgSrc: ["'self'", 'data:', 'https://storage.yandexcloud.net', 'https://*.userapi.com', 'https://cdn.buy-tribute.com', 'https://buy-tribute.com'], // csp=202603
+      imgSrc: ["'self'", 'data:', 'https://storage.yandexcloud.net', 'https://cdn.cinefiles-txt.com', 'https://*.userapi.com', 'https://cdn.buy-tribute.com', 'https://buy-tribute.com'], // csp=202603
       mediaSrc: ["'self'", 'https://storage.yandexcloud.net'],
       frameSrc: ['https://www.youtube.com', 'https://vk.com', 'https://rutube.ru'],
       connectSrc: ["'self'", 'https://api.themoviedb.org', 'https://*.supabase.co', 'https://buy-tribute.com'],
