@@ -1,4 +1,14 @@
+const multer = require('multer');
 const { requireAuth, requireEditor, requireAdmin, requireCronAuth } = require('../middleware/auth');
+
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: function (req, file, cb) {
+    var allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/avif', 'image/gif'];
+    cb(null, allowed.includes(file.mimetype));
+  },
+});
 
 /**
  * Register all API routes.
@@ -22,6 +32,9 @@ function setupRoutes(app, deps) {
   const mediaUpload = require('../../api/media-upload');
   const authYandex = require('../../api/auth-yandex');
   const authTelegram = require('../../api/auth-telegram');
+  const authMe = require('../../api/auth-me');
+  const authLogout = require('../../api/auth-logout');
+  const userMe = require('../../api/user-me');
   const cronTokenCleanup = require('../../api/cron-token-cleanup');
   const cronTmdbSync = require('../../api/cron-tmdb-sync');
   const cronTmdbCleanup = require('../../api/cron-tmdb-cleanup');
@@ -33,6 +46,8 @@ function setupRoutes(app, deps) {
   const media = require('../../api/media');
   const collections = require('../../api/collections');
   const settings = require('../../api/settings');
+  const integrations = require('../../api/promos');
+  const moderation = require('../../api/admin-moderation');
 
   // ============================================================
   // Health check
@@ -44,6 +59,18 @@ function setupRoutes(app, deps) {
   // ============================================================
   // Auth
   // ============================================================
+  app.get('/api/auth/me', authMe.me(deps));
+  app.post('/api/auth/logout', authLogout.logout(deps));
+
+  // ============================================================
+  // User self-service
+  // ============================================================
+  app.get('/api/users/me/comments', requireAuth, userMe.comments(deps));
+  app.get('/api/users/me/articles', requireEditor, userMe.articles(deps));
+  app.get('/api/users/me/favorites', requireAuth, userMe.favorites(deps));
+  app.put('/api/users/me/favorites', requireAuth, userMe.updateFavorites(deps));
+  app.put('/api/users/me', requireAuth, userMe.update(deps));
+  app.delete('/api/users/me', requireAuth, userMe.remove(deps));
   app.get('/api/auth/yandex', authYandex.redirect());
   app.get('/api/auth/yandex/callback', authYandex.callback(deps));
   app.get('/api/auth/telegram', authTelegram.redirect());
@@ -53,6 +80,9 @@ function setupRoutes(app, deps) {
   // Categories
   // ============================================================
   app.get('/api/categories', categories.list(deps));
+  app.post('/api/categories', requireAdmin, categories.create(deps));
+  app.put('/api/categories/:id', requireAdmin, categories.update(deps));
+  app.delete('/api/categories/:id', requireAdmin, categories.remove(deps));
 
   // ============================================================
   // Articles — specific routes before :id catch-all
@@ -98,8 +128,7 @@ function setupRoutes(app, deps) {
   // Media
   // ============================================================
   app.get('/api/media', requireEditor, media.list(deps));
-  // Note: multer or formidable middleware needed for file uploads
-  app.post('/api/media/upload', requireEditor, mediaUpload.upload(deps));
+  app.post('/api/media/upload', requireEditor, upload.single('file'), mediaUpload.upload(deps));
   app.delete('/api/media/:id', requireAdmin, media.remove(deps));
 
   // ============================================================
@@ -117,6 +146,26 @@ function setupRoutes(app, deps) {
   app.put('/api/collections/:id', requireAdmin, collections.update(deps));
   app.delete('/api/collections/:id', requireAdmin, collections.remove(deps));
   app.put('/api/collections/:id/articles', requireAdmin, collections.updateArticles(deps));
+
+  // ============================================================
+  // Integrations (partner placements)
+  // ============================================================
+  app.get('/api/integrations', integrations.list(deps));
+  app.get('/api/integrations/:id', integrations.get(deps));
+  app.post('/api/integrations', requireAdmin, integrations.create(deps));
+  app.put('/api/integrations/:id', requireAdmin, integrations.update(deps));
+  app.delete('/api/integrations/:id', requireAdmin, integrations.remove(deps));
+  app.post('/api/integrations/:id/view', integrations.view(deps));
+  app.post('/api/integrations/:id/click', integrations.click(deps));
+
+  // ============================================================
+  // Admin — word filter / auto-moderation
+  // ============================================================
+  app.get('/api/admin/moderation/words', requireAdmin, moderation.list(deps));
+  app.post('/api/admin/moderation/words', requireAdmin, moderation.create(deps));
+  app.put('/api/admin/moderation/words/:id', requireAdmin, moderation.update(deps));
+  app.delete('/api/admin/moderation/words/:id', requireAdmin, moderation.remove(deps));
+  app.post('/api/admin/moderation/test', requireAdmin, moderation.test(deps));
 
   // ============================================================
   // Settings

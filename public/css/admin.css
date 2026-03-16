@@ -240,6 +240,39 @@
 
 .admin-setting-value { max-width: 400px; }
 
+/* Upload zone */
+.admin-upload-zone {
+  padding: 20px;
+  margin-bottom: 16px;
+  border: 2px dashed var(--border-color);
+  border-radius: 8px;
+  text-align: center;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+.admin-upload-zone--active {
+  border-color: var(--brand-primary);
+  background: var(--bg-secondary);
+}
+
+.admin-upload-text {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.admin-upload-fields {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.admin-upload-fields .admin-input {
+  flex: 1;
+  min-width: 140px;
+}
+
 @media (max-width: 768px) {
   .admin-nav { grid-template-columns: repeat(2, 1fr); }
   .admin-media-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }

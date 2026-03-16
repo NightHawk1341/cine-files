@@ -209,3 +209,57 @@ CREATE TABLE "collection_articles" (
 
     PRIMARY KEY ("collection_id", "article_id")
 );
+
+-- ============================================================
+-- USER FAVORITES
+-- ============================================================
+
+CREATE TABLE "user_favorites" (
+    "user_id"     INTEGER PRIMARY KEY REFERENCES "users"("id") ON DELETE CASCADE,
+    "article_ids" INTEGER[] NOT NULL DEFAULT '{}',
+    "updated_at"  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- ============================================================
+-- INTEGRATIONS (partner placements)
+-- ============================================================
+
+CREATE TABLE "integrations" (
+    "id"                  SERIAL PRIMARY KEY,
+    "title"               VARCHAR(200) NOT NULL,
+    "integration_type"    VARCHAR(30) NOT NULL DEFAULT 'featured',
+    "placement"           VARCHAR(50) NOT NULL DEFAULT 'sidebar',
+    "image_url"           TEXT,
+    "destination_url"     TEXT,
+    "alt_text"            VARCHAR(300),
+    "html_content"        TEXT,
+    "start_date"          TIMESTAMPTZ,
+    "end_date"            TIMESTAMPTZ,
+    "is_active"           BOOLEAN NOT NULL DEFAULT TRUE,
+    "priority"            INTEGER NOT NULL DEFAULT 0,
+    "max_views"           INTEGER NOT NULL DEFAULT 0,
+    "current_views"       INTEGER NOT NULL DEFAULT 0,
+    "click_count"         INTEGER NOT NULL DEFAULT 0,
+    "target_categories"   INTEGER[],
+    "created_at"          TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    "updated_at"          TIMESTAMPTZ
+);
+
+CREATE INDEX "integrations_is_active_idx" ON "integrations"("is_active");
+CREATE INDEX "integrations_placement_idx" ON "integrations"("placement");
+
+-- ============================================================
+-- MODERATION WORDS (auto-moderation)
+-- ============================================================
+
+CREATE TABLE "moderation_words" (
+    "id"         SERIAL PRIMARY KEY,
+    "word"       VARCHAR(200) NOT NULL UNIQUE,
+    "category"   VARCHAR(50) NOT NULL DEFAULT 'general',
+    "is_active"  BOOLEAN NOT NULL DEFAULT TRUE,
+    "created_at" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    "updated_at" TIMESTAMPTZ
+);
+
+CREATE INDEX "moderation_words_is_active_idx" ON "moderation_words"("is_active");
+CREATE INDEX "moderation_words_category_idx" ON "moderation_words"("category");

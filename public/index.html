@@ -35,6 +35,8 @@
   <link rel="stylesheet" href="/css/article-card.css">
   <link rel="stylesheet" href="/css/article-body.css">
   <link rel="stylesheet" href="/css/comment-list.css">
+  <link rel="stylesheet" href="/css/article-editor-modal.css">
+  <link rel="stylesheet" href="/css/media-picker.css">
 
   <!-- RSS -->
   <link rel="alternate" type="application/rss+xml" title="CineFiles RSS" href="/feed/rss.xml">
@@ -55,7 +57,7 @@
         <span class="header-logo-short">CF</span>
       </a>
 
-      <!-- Right: desktop search + theme toggle -->
+      <!-- Right: search + theme + new article + profile -->
       <div class="header-right-buttons">
         <a href="/search" class="header-button header-search-desktop" aria-label="Поиск">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -69,6 +71,19 @@
             <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
           </svg>
         </button>
+        <button class="header-button header-new-article" id="header-new-article" aria-label="Новая статья" style="display:none">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 20h9"/>
+            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+          </svg>
+        </button>
+        <a href="/profile" class="header-button header-profile-btn" id="header-profile-btn" aria-label="Профиль">
+          <img id="header-profile-avatar" class="header-avatar" src="" alt="" style="display:none">
+          <svg id="header-profile-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+        </a>
       </div>
     </div>
 
@@ -203,6 +218,17 @@
       </span>
       <span class="bottom-nav-label">Поиск</span>
     </a>
+    <a href="/profile" class="bottom-nav-button">
+      <span class="bottom-nav-icon-wrap">
+        <span class="bottom-nav-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+        </span>
+      </span>
+      <span class="bottom-nav-label">Профиль</span>
+    </a>
   </nav>
 
   <!-- Scroll to top -->
@@ -216,8 +242,10 @@
   <script src="/js/utils.js"></script>
   <script src="/js/core/router.js"></script>
   <script src="/js/core/media.js"></script>
+  <script src="/js/core/favorites.js"></script>
 
   <!-- Modules: persistent UI (survive all navigations) -->
+  <script src="/js/modules/auth.js"></script>
   <script src="/js/modules/toast.js"></script>
   <script src="/js/modules/bottom-sheet.js"></script>
   <script src="/js/modules/modal.js"></script>
@@ -231,6 +259,8 @@
   <script src="/js/modules/sidebar.js"></script>
 
   <!-- Components: content renderers (used by pages) -->
+  <script src="/js/components/media-picker.js"></script>
+  <script src="/js/components/article-editor-modal.js"></script>
   <script src="/js/components/article-card.js"></script>
   <script src="/js/components/article-body.js"></script>
   <script src="/js/components/comment-list.js"></script>
@@ -245,6 +275,7 @@
   <script src="/js/pages/legal.js"></script>
   <script src="/js/pages/collections.js"></script>
   <script src="/js/pages/collection.js"></script>
+  <script src="/js/pages/profile.js"></script>
 
   <!-- Admin pages -->
   <script src="/js/pages/admin/dashboard.js"></script>
@@ -255,6 +286,9 @@
   <script src="/js/pages/admin/users.js"></script>
   <script src="/js/pages/admin/media.js"></script>
   <script src="/js/pages/admin/collections.js"></script>
+  <script src="/js/pages/admin/categories.js"></script>
+  <script src="/js/pages/admin/integrations.js"></script>
+  <script src="/js/pages/admin/moderation.js"></script>
   <script src="/js/pages/admin/settings.js"></script>
 
   <!-- Catch-all routes (must be last) -->
