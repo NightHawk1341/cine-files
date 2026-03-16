@@ -5,32 +5,37 @@ const { config } = require('../lib/config');
  */
 function get({ pool }) {
   return async (req, res) => {
-    const { id } = req.params;
-    const isNumeric = /^\d+$/.test(id);
+    try {
+      const { id } = req.params;
+      const isNumeric = /^\d+$/.test(id);
 
-    const { rows } = await pool.query(
-      `SELECT a.*, c.slug AS category_slug, c.name_ru AS category_name_ru, c.name_en AS category_name_en,
-              u.id AS author_id_val, u.display_name AS author_display_name, u.avatar_url AS author_avatar_url
-       FROM articles a
-       JOIN categories c ON a.category_id = c.id
-       JOIN users u ON a.author_id = u.id
-       WHERE ${isNumeric ? 'a.id = $1' : 'a.slug = $1'}
-       LIMIT 1`,
-      [isNumeric ? parseInt(id) : id]
-    );
+      const { rows } = await pool.query(
+        `SELECT a.*, c.slug AS category_slug, c.name_ru AS category_name_ru, c.name_en AS category_name_en,
+                u.id AS author_id_val, u.display_name AS author_display_name, u.avatar_url AS author_avatar_url
+         FROM articles a
+         JOIN categories c ON a.category_id = c.id
+         JOIN users u ON a.author_id = u.id
+         WHERE ${isNumeric ? 'a.id = $1' : 'a.slug = $1'}
+         LIMIT 1`,
+        [isNumeric ? parseInt(id) : id]
+      );
 
-    if (!rows[0]) return res.status(404).json({ error: 'Article not found' });
+      if (!rows[0]) return res.status(404).json({ error: 'Article not found' });
 
-    // Fetch tags
-    const tagsResult = await pool.query(
-      `SELECT at.is_primary, t.slug, t.name_ru, t.name_en, t.tag_type
-       FROM article_tags at JOIN tags t ON at.tag_id = t.id
-       WHERE at.article_id = $1`,
-      [rows[0].id]
-    );
+      // Fetch tags
+      const tagsResult = await pool.query(
+        `SELECT at.is_primary, t.slug, t.name_ru, t.name_en, t.tag_type
+         FROM article_tags at JOIN tags t ON at.tag_id = t.id
+         WHERE at.article_id = $1`,
+        [rows[0].id]
+      );
 
-    const article = formatRow(rows[0], tagsResult.rows);
-    res.json({ article });
+      const article = formatRow(rows[0], tagsResult.rows);
+      res.json({ article });
+    } catch (err) {
+      console.error('Article get error:', err);
+      res.status(500).json({ error: 'Internal server error' });
+    }
   };
 }
 
