@@ -79,6 +79,7 @@ jobs:
               -e TMDB_PROXY_URL="${{ secrets.TMDB_PROXY_URL }}" \
               -e TMDB_PROXY_SECRET="${{ secrets.TMDB_PROXY_SECRET }}" \
               -e TRIBUTE_API_URL="${{ secrets.TRIBUTE_API_URL }}" \
+              -e TRIBUTE_API_KEY="${{ secrets.TRIBUTE_API_KEY }}" \
               ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
 
             # Wait for container to be healthy
