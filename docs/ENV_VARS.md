@@ -41,7 +41,7 @@ GitHub Actions secrets mirror these for the CI/CD deploy workflow.
 |----------|-------------|---------|
 | `YANDEX_S3_ENDPOINT` | S3 API endpoint | `https://storage.yandexcloud.net` |
 | `YANDEX_S3_REGION` | S3 region | `ru-central1` |
-| `YANDEX_S3_BUCKET` | S3 bucket name | `cinefiles-media` |
+| `YANDEX_S3_BUCKET` | S3 bucket name | `cinefiles-txt-uploads` |
 | `YANDEX_S3_ACCESS_KEY` | S3 access key ID | — |
 | `YANDEX_S3_SECRET_KEY` | S3 secret access key | — |
 

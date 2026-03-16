@@ -80,7 +80,7 @@ All secrets must be set in the GitHub repo Settings -> Secrets and variables -> 
 **Application Config:**
 | Secret | Description |
 |--------|-------------|
-| `APP_URL` | Production URL (e.g. `https://cinefiles.ru`) |
+| `APP_URL` | Production URL (e.g. `https://cinefiles-txt.com`) |
 | `DATABASE_URL` | Supabase PostgreSQL connection string |
 | `JWT_SECRET` | JWT signing secret (generate with `openssl rand -hex 32`) |
 | `SESSION_SECRET` | Session signing secret (generate with `openssl rand -hex 32`) |
@@ -137,7 +137,7 @@ All secrets must be set in the GitHub repo Settings -> Secrets and variables -> 
 
 ## Domain
 
-- **Production**: `cinefiles.ru` (Yandex Cloud Serverless Container)
+- **Production**: `cinefiles-txt.com` (Yandex Cloud Serverless Container)
 - **Vercel fallback**: `cine-files.vercel.app`
 - **DNS**: Domain bought on Vercel, pointed to Yandex Cloud
 
