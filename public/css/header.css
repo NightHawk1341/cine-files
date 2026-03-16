@@ -95,6 +95,18 @@
   height: 100%;
 }
 
+/* Header avatar */
+.header-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.header-profile-btn {
+  position: relative;
+}
+
 /* Mobile header */
 @media (max-width: 768px) {
   .header-right-buttons { padding-left: 7px; }

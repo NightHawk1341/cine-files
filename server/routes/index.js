@@ -22,6 +22,8 @@ function setupRoutes(app, deps) {
   const mediaUpload = require('../../api/media-upload');
   const authYandex = require('../../api/auth-yandex');
   const authTelegram = require('../../api/auth-telegram');
+  const authMe = require('../../api/auth-me');
+  const authLogout = require('../../api/auth-logout');
   const cronTokenCleanup = require('../../api/cron-token-cleanup');
   const cronTmdbSync = require('../../api/cron-tmdb-sync');
   const cronTmdbCleanup = require('../../api/cron-tmdb-cleanup');
@@ -44,6 +46,8 @@ function setupRoutes(app, deps) {
   // ============================================================
   // Auth
   // ============================================================
+  app.get('/api/auth/me', authMe.me(deps));
+  app.post('/api/auth/logout', authLogout.logout(deps));
   app.get('/api/auth/yandex', authYandex.redirect());
   app.get('/api/auth/yandex/callback', authYandex.callback(deps));
   app.get('/api/auth/telegram', authTelegram.redirect());
