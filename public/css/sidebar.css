@@ -108,9 +108,7 @@
 .sidebar-nav-icon svg {
   width: 18px;
   height: 18px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2;
+  fill: currentColor;
 }
 
 .sidebar-divider {

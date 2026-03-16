@@ -51,7 +51,7 @@
   flex-shrink: 0;
 }
 
-.header-button svg { width: 20px; height: 20px; fill: none; }
+.header-button svg { width: 20px; height: 20px; fill: currentColor; }
 
 @media (hover: hover) {
   .header-button:hover { opacity: 0.7; }

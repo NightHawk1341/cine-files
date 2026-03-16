@@ -9,22 +9,22 @@ var Sidebar = (function () {
   var popularLoaded = false;
 
   var navItems = [
-    { href: '/', label: 'Главная', icon: '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>' },
-    { href: '/news', label: 'Новости', icon: '<path d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v1m2 13a2 2 0 0 1-2-2V7m2 13a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2"/>' },
-    { href: '/reviews', label: 'Рецензии', icon: '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>' },
-    { href: '/articles', label: 'Статьи', icon: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>' },
+    { href: '/', label: 'Главная', icon: 'icon-home' },
+    { href: '/news', label: 'Новости', icon: 'icon-news' },
+    { href: '/reviews', label: 'Рецензии', icon: 'icon-star' },
+    { href: '/articles', label: 'Статьи', icon: 'icon-document' },
   ];
 
   var categoryItems = [
-    { href: '/interviews', label: 'Интервью', icon: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>' },
-    { href: '/lists', label: 'Подборки', icon: '<line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>' },
-    { href: '/analysis', label: 'Разборы', icon: '<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>' },
+    { href: '/interviews', label: 'Интервью', icon: 'icon-chat' },
+    { href: '/lists', label: 'Подборки', icon: 'icon-list' },
+    { href: '/analysis', label: 'Разборы', icon: 'icon-search' },
   ];
 
   var utilItems = [
-    { href: '/tags', label: 'Все теги', icon: '<path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/>' },
-    { href: '/collections', label: 'Подборки', icon: '<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>' },
-    { href: '/search', label: 'Поиск', icon: '<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>' },
+    { href: '/tags', label: 'Все теги', icon: 'icon-tag' },
+    { href: '/collections', label: 'Подборки', icon: 'icon-grid' },
+    { href: '/search', label: 'Поиск', icon: 'icon-search' },
   ];
 
   function buildNavLink(item) {
@@ -34,7 +34,7 @@ var Sidebar = (function () {
 
     var iconWrap = document.createElement('span');
     iconWrap.className = 'sidebar-nav-icon';
-    iconWrap.innerHTML = '<svg viewBox="0 0 24 24">' + item.icon + '</svg>';
+    iconWrap.innerHTML = '<svg viewBox="0 0 64 64"><use href="#' + item.icon + '"/></svg>';
     a.appendChild(iconWrap);
 
     var label = document.createElement('span');
