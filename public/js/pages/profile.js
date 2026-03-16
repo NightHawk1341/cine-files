@@ -50,24 +50,17 @@ function renderLoggedOut(container) {
     '<p class="profile-login-hint">Выберите способ входа:</p>' +
     '<div class="profile-login-buttons">' +
       '<a href="/api/auth/yandex" class="auth-login-btn auth-login-btn--yandex" data-no-spa>' +
-        '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">' +
-          '<path d="M13.32 8.6v11.4h-2.28V4h2.76c3.24 0 4.92 1.56 4.92 4.08 0 1.86-1.08 3.24-3.12 3.96L19.08 20h-2.52l-3.24-7.56V8.6zm0-2.64v4.92h.48c1.8 0 2.76-.96 2.76-2.52 0-1.56-.96-2.4-2.76-2.4h-.48z"/>' +
-        '</svg>' +
+        '<svg width="20" height="20" viewBox="0 0 24 24"><use href="#icon-yandex"/></svg>' +
         'Яндекс ID' +
       '</a>' +
       '<a href="/api/auth/telegram" class="auth-login-btn auth-login-btn--telegram" data-no-spa>' +
-        '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">' +
-          '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02-.12.03-1.99 1.27-5.62 3.72-.53.36-1.01.54-1.44.53-.47-.01-1.38-.27-2.06-.49-.83-.27-1.49-.42-1.43-.88.03-.24.37-.49 1.02-.74 3.99-1.74 6.65-2.89 7.99-3.44 3.81-1.58 4.6-1.86 5.12-1.87.11 0 .37.03.53.17.14.12.18.28.2.45-.01.06.01.24 0 .38z"/>' +
-        '</svg>' +
+        '<svg width="20" height="20" viewBox="0 0 24 24"><use href="#icon-telegram"/></svg>' +
         'Telegram' +
       '</a>' +
     '</div>' +
     '<div class="profile-theme-guest">' +
       '<button class="profile-theme-btn" id="profile-theme-toggle">' +
-        '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
-          '<circle cx="12" cy="12" r="5"/>' +
-          '<path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>' +
-        '</svg>' +
+        '<svg width="18" height="18" viewBox="0 0 64 64"><use href="#icon-sun"/></svg>' +
         '<span>Переключить тему</span>' +
       '</button>' +
     '</div>';
@@ -371,10 +364,10 @@ function getInitials(name) {
 
 function getLoginMethodIcon(method) {
   if (method === 'yandex') {
-    return '<svg width="14" height="14" viewBox="0 0 24 24" fill="var(--text-secondary)"><path d="M13.32 8.6v11.4h-2.28V4h2.76c3.24 0 4.92 1.56 4.92 4.08 0 1.86-1.08 3.24-3.12 3.96L19.08 20h-2.52l-3.24-7.56V8.6zm0-2.64v4.92h.48c1.8 0 2.76-.96 2.76-2.52 0-1.56-.96-2.4-2.76-2.4h-.48z"/></svg>';
+    return '<svg width="14" height="14" viewBox="0 0 24 24" style="color:var(--text-secondary)"><use href="#icon-yandex"/></svg>';
   }
   if (method === 'telegram') {
-    return '<svg width="14" height="14" viewBox="0 0 24 24" fill="var(--text-secondary)"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02-.12.03-1.99 1.27-5.62 3.72-.53.36-1.01.54-1.44.53-.47-.01-1.38-.27-2.06-.49-.83-.27-1.49-.42-1.43-.88.03-.24.37-.49 1.02-.74 3.99-1.74 6.65-2.89 7.99-3.44 3.81-1.58 4.6-1.86 5.12-1.87.11 0 .37.03.53.17.14.12.18.28.2.45-.01.06.01.24 0 .38z"/></svg>';
+    return '<svg width="14" height="14" viewBox="0 0 24 24" style="color:var(--text-secondary)"><use href="#icon-telegram"/></svg>';
   }
   return '';
 }
