@@ -42,6 +42,14 @@ var Header = (function () {
     // Init theme toggle
     ThemeToggle.init();
 
+    // New article button opens editor modal
+    var newArticleBtn = document.getElementById('header-new-article');
+    if (newArticleBtn) {
+      newArticleBtn.addEventListener('click', function () {
+        ArticleEditorModal.open(null);
+      });
+    }
+
     // Listen for auth changes
     authChangeHandler = function () {
       updateAuthButtons();
