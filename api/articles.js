@@ -96,8 +96,11 @@ function list({ pool }) {
     let articles = articlesResult.rows.map(formatArticle(tagsByArticle));
 
     // When featured=true returns no results, fall back to recent published articles
-    // so cross-site editorial strips always have content to display
-    if (featured === 'true' && articles.length === 0 && page === 1) {
+    // so cross-site editorial strips always have content to display.
+    // Callers can pass no_fallback=true to skip this (e.g. product pages that
+    // should show nothing rather than unrelated articles).
+    const noFallback = req.query.no_fallback === 'true';
+    if (featured === 'true' && articles.length === 0 && page === 1 && !noFallback) {
       const fallbackResult = await pool.query(
         `SELECT a.*, c.slug AS category_slug, c.name_ru AS category_name_ru, c.name_en AS category_name_en,
                 u.id AS author_id_val, u.display_name AS author_display_name, u.avatar_url AS author_avatar_url

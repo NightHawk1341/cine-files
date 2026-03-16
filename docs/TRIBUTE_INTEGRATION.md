@@ -35,15 +35,29 @@ TR-BUTE calls these public CineFiles API endpoints (no authentication required):
 
 Used on TR-BUTE main page, catalog, and favorites for editorial strip carousels between product cards.
 
+Pass `no_fallback=true` to prevent fallback to all recent articles when no featured articles exist (useful on product pages where showing unrelated articles is worse than showing nothing).
+
 #### 2. Related Articles by Product ID
 `GET /api/articles/related?tribute_product_id={id}&limit={n}`
 
-Shown on TR-BUTE product pages alongside the product.
+Shown on TR-BUTE product pages alongside the product. Queries the `tribute_product_ids` array on articles (set by editors in the CineFiles admin).
 
 #### 3. Related Articles by Tag
-`GET /api/articles/related?tag_slug={slug}&limit={n}`
+`GET /api/articles/related?tag_slug={terms}&limit={n}`
 
-Used for catalog-context article matching.
+Used for product-page and catalog-context article matching.
+
+`tag_slug` accepts **comma-separated search terms** — Russian names, English names, and/or transliterated slugs. Each term is matched against CineFiles tags via:
+1. Exact slug match (`t.slug = term`)
+2. Slug prefix match (`t.slug LIKE term || '-%'`) — so `dyuna` matches tag `dyuna-chast-vtoraya`
+3. Tag `name_ru` contains term (case-insensitive)
+4. Tag `name_en` contains term (case-insensitive)
+5. Term contains tag `name_ru` (reverse containment)
+6. Term contains tag `name_en` (reverse containment)
+
+Results are deduplicated across all matching terms.
+
+**TR-BUTE usage**: TR-BUTE builds search terms from the product's `ip_names` field (comma-separated franchise names). For each ip_name, it sends both the Russian name (matches `name_ru`) and the CineFiles-compatible transliterated slug (matches tag `slug`). The transliteration must use CineFiles' map — notably `х → kh` (not `h`).
 
 #### 4. Search Articles (Admin)
 `GET /api/search?q={query}&limit=10`
