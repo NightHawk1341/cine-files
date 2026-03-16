@@ -78,6 +78,54 @@ var CommentList = (function () {
       body.className = 'comment-body';
       body.innerHTML = Utils.sanitizeInlineHtml(comment.body || '');
       el.appendChild(body);
+
+      // Inline moderation buttons for editors/admins
+      if (Auth.isEditor()) {
+        var modActions = document.createElement('div');
+        modActions.className = 'comment-mod-actions';
+
+        var hideBtn = document.createElement('button');
+        hideBtn.className = 'comment-mod-btn';
+        hideBtn.textContent = comment.status === 'hidden' ? 'Показать' : 'Скрыть';
+        hideBtn.addEventListener('click', async function () {
+          var action = comment.status === 'hidden' ? 'show' : 'hide';
+          try {
+            await Utils.apiFetch('/api/admin/comments/' + comment.id + '/moderate', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ action: action }),
+            });
+            Toast.show(action === 'hide' ? 'Комментарий скрыт' : 'Комментарий восстановлен', 'success');
+            var container = el.closest('.comment-section').parentNode;
+            if (container) await render(container, articleId);
+          } catch (err) {
+            Toast.show('Не удалось выполнить действие', 'error');
+          }
+        });
+
+        var delBtn = document.createElement('button');
+        delBtn.className = 'comment-mod-btn comment-mod-btn--danger';
+        delBtn.textContent = 'Удалить';
+        delBtn.addEventListener('click', async function () {
+          if (!confirm('Удалить комментарий?')) return;
+          try {
+            await Utils.apiFetch('/api/admin/comments/' + comment.id + '/moderate', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ action: 'delete' }),
+            });
+            Toast.show('Комментарий удален', 'success');
+            var container = el.closest('.comment-section').parentNode;
+            if (container) await render(container, articleId);
+          } catch (err) {
+            Toast.show('Не удалось удалить', 'error');
+          }
+        });
+
+        modActions.appendChild(hideBtn);
+        modActions.appendChild(delBtn);
+        el.appendChild(modActions);
+      }
     }
 
     // Replies

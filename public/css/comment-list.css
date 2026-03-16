@@ -65,3 +65,31 @@
 
 .comment-submit:hover:not(:disabled) { background: var(--brand-hover); }
 .comment-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Inline moderation */
+.comment-mod-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.comment-mod-btn {
+  padding: 3px 10px;
+  background: none;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  color: var(--text-secondary);
+  font-size: 0.7rem;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+@media (hover: hover) {
+  .comment-mod-btn:hover { border-color: var(--border-hover); }
+}
+
+.comment-mod-btn--danger { color: var(--status-error); border-color: var(--status-error); }
+
+@media (hover: hover) {
+  .comment-mod-btn--danger:hover { background: var(--status-error-bg); }
+}
