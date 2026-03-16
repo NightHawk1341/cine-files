@@ -74,4 +74,4 @@ Configured in `next.config.js` for all responses:
 ## Domain
 
 - **Production**: `cinefiles.ru`
-- **Vercel fallback**: `cinefiles.vercel.app`
+- **Vercel fallback**: `cine-files.vercel.app`
