@@ -209,3 +209,13 @@ CREATE TABLE "collection_articles" (
 
     PRIMARY KEY ("collection_id", "article_id")
 );
+
+-- ============================================================
+-- USER FAVORITES
+-- ============================================================
+
+CREATE TABLE "user_favorites" (
+    "user_id"     INTEGER PRIMARY KEY REFERENCES "users"("id") ON DELETE CASCADE,
+    "article_ids" INTEGER[] NOT NULL DEFAULT '{}',
+    "updated_at"  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);

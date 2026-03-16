@@ -24,6 +24,7 @@ function setupRoutes(app, deps) {
   const authTelegram = require('../../api/auth-telegram');
   const authMe = require('../../api/auth-me');
   const authLogout = require('../../api/auth-logout');
+  const userMe = require('../../api/user-me');
   const cronTokenCleanup = require('../../api/cron-token-cleanup');
   const cronTmdbSync = require('../../api/cron-tmdb-sync');
   const cronTmdbCleanup = require('../../api/cron-tmdb-cleanup');
@@ -48,6 +49,16 @@ function setupRoutes(app, deps) {
   // ============================================================
   app.get('/api/auth/me', authMe.me(deps));
   app.post('/api/auth/logout', authLogout.logout(deps));
+
+  // ============================================================
+  // User self-service
+  // ============================================================
+  app.get('/api/users/me/comments', requireAuth, userMe.comments(deps));
+  app.get('/api/users/me/articles', requireEditor, userMe.articles(deps));
+  app.get('/api/users/me/favorites', requireAuth, userMe.favorites(deps));
+  app.put('/api/users/me/favorites', requireAuth, userMe.updateFavorites(deps));
+  app.put('/api/users/me', requireAuth, userMe.update(deps));
+  app.delete('/api/users/me', requireAuth, userMe.remove(deps));
   app.get('/api/auth/yandex', authYandex.redirect());
   app.get('/api/auth/yandex/callback', authYandex.callback(deps));
   app.get('/api/auth/telegram', authTelegram.redirect());

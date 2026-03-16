@@ -1,0 +1,428 @@
+/* ===== PROFILE / LOGIN PAGE ===== */
+
+.profile-page {
+  max-width: 680px;
+  margin: 0 auto;
+  padding-bottom: 80px;
+}
+
+/* --- Logged-out: login section --- */
+
+.profile-login-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 60px 20px 40px;
+  text-align: center;
+}
+
+.profile-login-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.profile-login-hint {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+}
+
+.profile-login-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 320px;
+}
+
+.auth-login-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.auth-login-btn--yandex {
+  background-color: #fc3f1d;
+}
+
+.auth-login-btn--telegram {
+  background-color: #26a5e4;
+}
+
+@media (hover: hover) {
+  .auth-login-btn:hover { opacity: 0.85; }
+}
+
+.profile-theme-guest {
+  margin-top: 32px;
+}
+
+.profile-theme-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+@media (hover: hover) {
+  .profile-theme-btn:hover { border-color: var(--border-hover); }
+}
+
+/* --- Logged-in: header --- */
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 24px 0 20px;
+}
+
+.profile-avatar-wrap {
+  flex-shrink: 0;
+}
+
+.profile-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profile-avatar-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--brand-muted);
+  color: var(--brand-primary);
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.profile-info {
+  min-width: 0;
+}
+
+.profile-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.profile-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.profile-login-method {
+  display: flex;
+  align-items: center;
+}
+
+/* --- Tabs --- */
+
+.profile-tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 16px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.profile-tab {
+  padding: 10px 16px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.profile-tab.active {
+  color: var(--brand-primary);
+  border-bottom-color: var(--brand-primary);
+}
+
+@media (hover: hover) {
+  .profile-tab:hover { color: var(--text-primary); }
+  .profile-tab.active:hover { color: var(--brand-primary); }
+}
+
+.profile-tab-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 6px;
+  padding: 1px 6px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  border-radius: 10px;
+  background: var(--tab-counter-bg);
+  color: var(--text-secondary);
+}
+
+/* --- Tab content --- */
+
+.profile-tab-content {
+  min-height: 120px;
+}
+
+.profile-loading {
+  text-align: center;
+  padding: 32px;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.profile-empty {
+  text-align: center;
+  padding: 32px;
+  color: var(--text-tertiary);
+  font-size: 0.9rem;
+}
+
+/* --- Saved articles grid --- */
+
+.profile-articles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.profile-article-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  overflow: hidden;
+  text-decoration: none;
+  transition: border-color 0.2s;
+}
+
+@media (hover: hover) {
+  .profile-article-card:hover { border-color: var(--card-border-hover); }
+}
+
+.profile-article-img {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  background: var(--bg-tertiary);
+}
+
+.profile-article-img--empty {
+  background: var(--bg-tertiary);
+}
+
+.profile-article-info {
+  padding: 10px 12px;
+}
+
+.profile-article-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.profile-article-meta {
+  margin-top: 4px;
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+}
+
+/* --- My comments --- */
+
+.profile-comment-item {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--divider);
+}
+
+.profile-comment-item:last-child {
+  border-bottom: none;
+}
+
+.profile-comment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.profile-comment-article {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--link-color);
+  text-decoration: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (hover: hover) {
+  .profile-comment-article:hover { color: var(--link-hover); }
+}
+
+.profile-comment-date {
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+}
+
+.profile-comment-text {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.profile-comment-delete {
+  margin-top: 6px;
+  padding: 4px 10px;
+  background: none;
+  border: 1px solid var(--status-error);
+  border-radius: 4px;
+  color: var(--status-error);
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+@media (hover: hover) {
+  .profile-comment-delete:hover {
+    background: var(--status-error-bg);
+  }
+}
+
+/* --- My articles (editors) --- */
+
+.profile-my-articles {
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-my-article {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--divider);
+}
+
+.profile-my-article:last-child {
+  border-bottom: none;
+}
+
+.profile-my-article-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+@media (hover: hover) {
+  .profile-my-article-title:hover { color: var(--link-color); }
+}
+
+.profile-my-article-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+}
+
+/* Status badges */
+.profile-status {
+  padding: 2px 8px;
+  border-radius: 40px;
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+
+.profile-status--draft { background: var(--status-info-bg); color: var(--status-info); }
+.profile-status--review { background: var(--status-warning-bg); color: var(--status-warning); }
+.profile-status--published { background: var(--status-success-bg); color: var(--status-success); }
+.profile-status--archived { background: var(--tab-inactive-bg); color: var(--text-tertiary); }
+
+/* --- Actions --- */
+
+.profile-actions {
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid var(--divider);
+  display: flex;
+  gap: 12px;
+}
+
+.profile-action-btn {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  transition: border-color 0.2s;
+}
+
+@media (hover: hover) {
+  .profile-action-btn:hover { border-color: var(--border-hover); }
+}
+
+.profile-action-btn--danger {
+  color: var(--status-error);
+  border-color: var(--status-error);
+}
+
+@media (hover: hover) {
+  .profile-action-btn--danger:hover {
+    background: var(--status-error-bg);
+    border-color: var(--status-error);
+  }
+}
+
+/* --- Mobile --- */
+
+@media (max-width: 768px) {
+  .profile-header { padding: 16px 0 12px; }
+  .profile-avatar { width: 44px; height: 44px; }
+  .profile-articles-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+  .profile-actions { flex-direction: column; }
+}
