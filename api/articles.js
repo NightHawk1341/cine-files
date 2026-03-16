@@ -92,7 +92,40 @@ function list({ pool }) {
       }
     }
 
-    const articles = articlesResult.rows.map(formatArticle(tagsByArticle));
+    let articles = articlesResult.rows.map(formatArticle(tagsByArticle));
+
+    // When featured=true returns no results, fall back to recent published articles
+    // so cross-site editorial strips always have content to display
+    if (featured === 'true' && articles.length === 0 && page === 1) {
+      const fallbackResult = await pool.query(
+        `SELECT a.*, c.slug AS category_slug, c.name_ru AS category_name_ru, c.name_en AS category_name_en,
+                u.id AS author_id_val, u.display_name AS author_display_name, u.avatar_url AS author_avatar_url
+         FROM articles a
+         JOIN categories c ON a.category_id = c.id
+         JOIN users u ON a.author_id = u.id
+         WHERE a.status = 'published'
+         ORDER BY a.published_at DESC NULLS LAST
+         LIMIT $1`,
+        [limit]
+      );
+      const fallbackIds = fallbackResult.rows.map(a => a.id);
+      let fallbackTags = {};
+      if (fallbackIds.length > 0) {
+        const fbTagsResult = await pool.query(
+          `SELECT at.article_id, at.is_primary, t.slug, t.name_ru, t.tag_type
+           FROM article_tags at JOIN tags t ON at.tag_id = t.id
+           WHERE at.article_id = ANY($1)`,
+          [fallbackIds]
+        );
+        for (const row of fbTagsResult.rows) {
+          if (!fallbackTags[row.article_id]) fallbackTags[row.article_id] = [];
+          fallbackTags[row.article_id].push({
+            slug: row.slug, nameRu: row.name_ru, tagType: row.tag_type, isPrimary: row.is_primary,
+          });
+        }
+      }
+      articles = fallbackResult.rows.map(formatArticle(fallbackTags));
+    }
 
     res.json({
       articles,
