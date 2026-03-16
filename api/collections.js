@@ -30,6 +30,7 @@ function list({ pool }) {
       var countResult = await pool.query('SELECT COUNT(*) FROM collections');
       var total = Number(countResult.rows[0].count);
 
+      res.set('Cache-Control', 'public, max-age=300, s-maxage=3600, stale-while-revalidate=3600');
       res.json({
         collections: rows.map(function (c) {
           return {
@@ -119,6 +120,7 @@ function get({ pool }) {
         [Number(collection.id)]
       );
 
+      res.set('Cache-Control', 'public, max-age=300, s-maxage=3600, stale-while-revalidate=3600');
       res.json({
         collection: {
           id: Number(collection.id),

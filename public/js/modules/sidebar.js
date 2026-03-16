@@ -123,6 +123,11 @@ var Sidebar = (function () {
 
     rightEl.appendChild(tagsWidget);
 
+    // Integration slot (sidebar placement)
+    if (typeof IntegrationSlot !== 'undefined') {
+      IntegrationSlot.render(rightEl, 'sidebar');
+    }
+
     // Load content
     loadRightContent();
   }

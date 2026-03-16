@@ -163,6 +163,13 @@ Router.registerPage('/:category/:slug', {
     productsSection.className = 'article-products-section';
     container.appendChild(productsSection);
 
+    // Integration slot (article footer)
+    if (typeof IntegrationSlot !== 'undefined') {
+      var integrationFooter = document.createElement('div');
+      container.appendChild(integrationFooter);
+      IntegrationSlot.render(integrationFooter, 'footer');
+    }
+
     // Comments
     var commentsContainer = document.createElement('div');
     commentsContainer.className = 'article-comments';

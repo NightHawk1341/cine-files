@@ -1,0 +1,64 @@
+/* Integration slot — partner placement rendering */
+
+.integration-slot {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.integration-slot-item {
+  display: block;
+  border-radius: 8px;
+  overflow: hidden;
+  text-decoration: none;
+  color: var(--text-primary);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  transition: border-color 0.2s;
+}
+
+@media (hover: hover) {
+  .integration-slot-item:hover {
+    border-color: var(--card-border-hover);
+  }
+}
+
+.integration-slot-image {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.integration-slot-label {
+  display: block;
+  padding: 8px 12px;
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+}
+
+/* Sidebar placement */
+.integration-slot-sidebar {
+  margin-top: 16px;
+}
+
+.integration-slot-sidebar .integration-slot-image {
+  border-radius: 8px;
+}
+
+/* Between articles placement */
+.integration-slot-between {
+  margin: 8px 0;
+}
+
+/* Article footer placement */
+.integration-slot-footer {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid var(--divider);
+}
+
+/* HTML-type integration (raw HTML content) */
+.integration-slot-html {
+  background: transparent;
+  border: none;
+}

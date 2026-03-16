@@ -102,6 +102,10 @@ Router.registerPage('/', {
       articles.forEach(function (a) {
         feed.appendChild(ArticleCard.build(a));
       });
+      // Inject integration placements between articles
+      if (typeof IntegrationSlot !== 'undefined') {
+        IntegrationSlot.injectBetween(feed, 4);
+      }
     }
 
     // Toolbar click handler

@@ -75,6 +75,7 @@ function search({ pool }) {
       articleCount: Number(r.article_count),
     }));
 
+    res.set('Cache-Control', 'public, max-age=30, s-maxage=60, stale-while-revalidate=300');
     res.json({
       articles,
       tags,
