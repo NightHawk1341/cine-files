@@ -79,7 +79,7 @@ function list({ pool }) {
     let tagsByArticle = {};
     if (articleIds.length > 0) {
       const tagsResult = await pool.query(
-        `SELECT at.article_id, at.is_primary, t.slug, t.name_ru, t.tag_type
+        `SELECT at.article_id, at.is_primary, t.slug, t.name_ru, t.name_en, t.tag_type
          FROM article_tags at
          JOIN tags t ON at.tag_id = t.id
          WHERE at.article_id = ANY($1)`,
@@ -88,7 +88,7 @@ function list({ pool }) {
       for (const row of tagsResult.rows) {
         if (!tagsByArticle[row.article_id]) tagsByArticle[row.article_id] = [];
         tagsByArticle[row.article_id].push({
-          slug: row.slug, nameRu: row.name_ru, tagType: row.tag_type, isPrimary: row.is_primary,
+          slug: row.slug, nameRu: row.name_ru, nameEn: row.name_en, tagType: row.tag_type, isPrimary: row.is_primary,
         });
       }
     }
@@ -121,7 +121,7 @@ function list({ pool }) {
         for (const row of fbTagsResult.rows) {
           if (!fallbackTags[row.article_id]) fallbackTags[row.article_id] = [];
           fallbackTags[row.article_id].push({
-            slug: row.slug, nameRu: row.name_ru, tagType: row.tag_type, isPrimary: row.is_primary,
+            slug: row.slug, nameRu: row.name_ru, nameEn: row.name_en, tagType: row.tag_type, isPrimary: row.is_primary,
           });
         }
       }
