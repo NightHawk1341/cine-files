@@ -2,88 +2,101 @@ name: Deploy to Yandex Cloud
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
   workflow_dispatch:
 
 env:
-  REGISTRY: cr.yandex/${{ secrets.YC_REGISTRY_ID }}
-  IMAGE_NAME: cinefiles
-  CONTAINER_NAME: cinefiles-app
+  REGISTRY: cr.yandex
+  IMAGE_NAME: cinefiles-app
 
 jobs:
-  build-and-push:
-    name: Build & Push Docker Image
+  build-and-deploy:
+    name: Build and Deploy to Yandex Cloud
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Login to Yandex Container Registry
-        run: echo "${{ secrets.YC_SA_JSON_KEY }}" | docker login --username json_key --password-stdin cr.yandex
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-      - name: Build Docker image
-        run: |
-          docker build \
-            -f docker/Dockerfile \
-            -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
-            -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest \
-            .
-
-      - name: Push Docker image
-        run: |
-          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
-          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-
-  deploy:
-    name: Deploy to Server
-    needs: build-and-push
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1
+      - name: Log in to Yandex Container Registry
+        uses: docker/login-action@v3
         with:
-          host: ${{ secrets.DEPLOY_HOST }}
-          username: ${{ secrets.DEPLOY_USER }}
-          key: ${{ secrets.DEPLOY_SSH_KEY }}
-          script: |
-            echo "${{ secrets.YC_SA_JSON_KEY }}" | docker login --username json_key --password-stdin cr.yandex
+          registry: ${{ env.REGISTRY }}
+          username: json_key
+          password: ${{ secrets.YC_SA_JSON_KEY }}
 
-            docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+      - name: Extract metadata for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ secrets.YC_REGISTRY_ID }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=latest
 
-            docker stop ${{ env.CONTAINER_NAME }} 2>/dev/null || true
-            docker rm ${{ env.CONTAINER_NAME }} 2>/dev/null || true
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: docker/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/amd64
 
-            docker run -d \
-              --name ${{ env.CONTAINER_NAME }} \
-              --restart unless-stopped \
-              -p 3000:3000 \
-              -e NODE_ENV=production \
-              -e DATABASE_URL="${{ secrets.DATABASE_URL }}" \
-              -e JWT_SECRET="${{ secrets.JWT_SECRET }}" \
-              -e SESSION_SECRET="${{ secrets.SESSION_SECRET }}" \
-              -e CRON_SECRET="${{ secrets.CRON_SECRET }}" \
-              -e APP_URL="${{ secrets.APP_URL }}" \
-              -e YANDEX_CLIENT_ID="${{ secrets.YANDEX_CLIENT_ID }}" \
-              -e YANDEX_CLIENT_SECRET="${{ secrets.YANDEX_CLIENT_SECRET }}" \
-              -e VK_CLIENT_ID="${{ secrets.VK_CLIENT_ID }}" \
-              -e VK_CLIENT_SECRET="${{ secrets.VK_CLIENT_SECRET }}" \
-              -e TELEGRAM_BOT_TOKEN="${{ secrets.TELEGRAM_BOT_TOKEN }}" \
-              -e YANDEX_S3_ENDPOINT="${{ secrets.YANDEX_S3_ENDPOINT }}" \
-              -e YANDEX_S3_REGION="${{ secrets.YANDEX_S3_REGION }}" \
-              -e YANDEX_S3_BUCKET="${{ secrets.YANDEX_S3_BUCKET }}" \
-              -e YANDEX_S3_ACCESS_KEY="${{ secrets.YANDEX_S3_ACCESS_KEY }}" \
-              -e YANDEX_S3_SECRET_KEY="${{ secrets.YANDEX_S3_SECRET_KEY }}" \
-              -e TMDB_API_KEY="${{ secrets.TMDB_API_KEY }}" \
-              -e TMDB_PROXY_URL="${{ secrets.TMDB_PROXY_URL }}" \
-              -e TMDB_PROXY_SECRET="${{ secrets.TMDB_PROXY_SECRET }}" \
-              -e TRIBUTE_API_URL="${{ secrets.TRIBUTE_API_URL }}" \
-              ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+      - name: Install Yandex Cloud CLI
+        run: |
+          curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash
+          echo "$HOME/yandex-cloud/bin" >> $GITHUB_PATH
 
-            # Wait for container to be healthy
-            sleep 5
-            docker ps | grep ${{ env.CONTAINER_NAME }}
+      - name: Configure Yandex Cloud CLI
+        run: |
+          echo '${{ secrets.YC_SA_JSON_KEY }}' > key.json
+          yc config profile create github-actions
+          yc config set service-account-key key.json
+          rm key.json
 
-            # Clean up old images
-            docker image prune -f
+      - name: Deploy to Yandex Cloud Container
+        run: |
+          IMAGE_URL="${{ env.REGISTRY }}/${{ secrets.YC_REGISTRY_ID }}/${{ env.IMAGE_NAME }}:latest"
+
+          yc serverless container revision deploy \
+            --container-id ${{ secrets.YC_CONTAINER_ID }} \
+            --image $IMAGE_URL \
+            --cores 1 \
+            --memory 512MB \
+            --concurrency 16 \
+            --execution-timeout 60s \
+            --service-account-id ${{ secrets.YC_SERVICE_ACCOUNT_ID }} \
+            --environment NODE_ENV=production \
+            --environment APP_URL=${{ secrets.APP_URL }} \
+            --environment DATABASE_URL=${{ secrets.DATABASE_URL }} \
+            --environment JWT_SECRET=${{ secrets.JWT_SECRET }} \
+            --environment SESSION_SECRET=${{ secrets.SESSION_SECRET }} \
+            --environment CRON_SECRET=${{ secrets.CRON_SECRET }} \
+            --environment YANDEX_CLIENT_ID=${{ secrets.YANDEX_CLIENT_ID }} \
+            --environment YANDEX_CLIENT_SECRET=${{ secrets.YANDEX_CLIENT_SECRET }} \
+            --environment VK_CLIENT_ID=${{ secrets.VK_CLIENT_ID }} \
+            --environment VK_CLIENT_SECRET=${{ secrets.VK_CLIENT_SECRET }} \
+            --environment TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }} \
+            --environment TELEGRAM_BOT_ID=${{ secrets.TELEGRAM_BOT_ID }} \
+            --environment YANDEX_S3_ENDPOINT=${{ secrets.YANDEX_S3_ENDPOINT }} \
+            --environment YANDEX_S3_REGION=${{ secrets.YANDEX_S3_REGION }} \
+            --environment YANDEX_S3_BUCKET=${{ secrets.YANDEX_S3_BUCKET }} \
+            --environment YANDEX_S3_ACCESS_KEY=${{ secrets.YANDEX_S3_ACCESS_KEY }} \
+            --environment YANDEX_S3_SECRET_KEY=${{ secrets.YANDEX_S3_SECRET_KEY }} \
+            --environment TMDB_API_KEY=${{ secrets.TMDB_API_KEY }} \
+            --environment TMDB_PROXY_URL=${{ secrets.TMDB_PROXY_URL }} \
+            --environment TMDB_PROXY_SECRET=${{ secrets.TMDB_PROXY_SECRET }} \
+            --environment TRIBUTE_API_URL=${{ secrets.TRIBUTE_API_URL }}
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "Deployment failed. Check the logs above for details."
+          exit 1

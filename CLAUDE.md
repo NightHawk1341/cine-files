@@ -13,7 +13,7 @@ Before making changes, read these docs in order:
 
 ## Project Overview
 CineFiles is a cinema/entertainment news and review site. Russian-language primary, i18n-ready.
-Sister project to [TR-BUTE](https://buy-tribute.com) (e-commerce). They share CSS variable naming and cross-link via APIs.
+Sister project to [TR-BUTE](https://buy-tribute.com) (e-commerce, [repo](https://github.com/NightHawk1341/TR-BUTE)). They share CSS variable naming and cross-link via APIs.
 
 ## Tech Stack
 - **Backend**: Express.js (Node.js), plain JavaScript (CommonJS)
@@ -22,7 +22,7 @@ Sister project to [TR-BUTE](https://buy-tribute.com) (e-commerce). They share CS
 - **Styling**: CSS Variables + page-specific CSS (same variable names as TR-BUTE)
 - **Auth**: Yandex OAuth (primary), Telegram OIDC — shared with TR-BUTE
 - **Storage**: Yandex S3 for images (AWS4-HMAC-SHA256 signing)
-- **Deployment**: Yandex Cloud (Docker) primary, Vercel fallback
+- **Deployment**: Yandex Cloud (Serverless Containers) primary, Vercel fallback
 
 ## Commands
 - `npm start` — production server
@@ -100,7 +100,8 @@ cine-files/
     validate-router-selectors.js  # Content selector validation
     validate-page-scripts.js   # Script inclusion validation
     validate-spa-styles.js     # CSS file existence validation
-  Dockerfile                   # Production Docker image (Yandex Cloud)
+  docker/
+    Dockerfile                 # Production Docker image (Yandex Cloud)
   locales/                     # i18n (ru.json primary, en.json fallback)
   SQL_SCHEMA.sql               # Schema reference (12 tables)
   docs/                        # Project documentation
@@ -202,7 +203,7 @@ TMDB blocks some Russian IPs. The `/api/tmdb/*` proxy runs on Vercel (US region)
 `index.html` includes an inline `<script>` that reads `localStorage('cinefiles-theme')` and sets `data-theme` before paint. CSP allows inline scripts for this reason.
 
 ### 4. Docker build
-Dockerfile in `docker/Dockerfile` copies server files and serves via `node server.js`.
+Dockerfile in `docker/Dockerfile` copies server files and serves via `node server.js`. Deployed as a Yandex Cloud Serverless Container (not a VM).
 
 ### 5. Cron jobs need bearer auth and respect platform limits
 All `/api/cron/*` endpoints require `Authorization: Bearer {CRON_SECRET}`. Vercel passes this automatically for configured crons. Vercel Hobby plan only allows daily (or less frequent) cron schedules — expressions running more than once per day fail deployment. When adding cron jobs: register the schedule in `vercel.json` `crons` array and the route in `server/routes/index.js`.
@@ -226,7 +227,7 @@ Pages register via `Router.registerPage()`. The router handles CSS injection/cle
 The database is never seeded automatically. All data (articles, tags, categories, etc.) is inserted manually by the owner. Do not rely on seed scripts or placeholder/fake content as a substitute for real data. If the database is empty, the site should show an empty state, not fake content.
 
 ### 12. New env vars must be added to deploy workflow
-Yandex Cloud deploys via Docker through GitHub Actions. Env vars are passed as `-e` flags in `.github/workflows/deploy-yandex.yml`. When adding a new env var, add `-e VAR_NAME="${{ secrets.VAR_NAME }}"` to the `docker run` command. Missing vars cause silent failures — the app starts but the feature doesn't work. Vercel reads env vars from its project settings automatically.
+Yandex Cloud deploys via Serverless Containers through GitHub Actions. Env vars are passed as `--environment` flags in `.github/workflows/deploy-yandex.yml`. When adding a new env var, add `--environment VAR_NAME=${{ secrets.VAR_NAME }}` to the `yc serverless container revision deploy` command. Missing vars cause silent failures — the app starts but the feature doesn't work. Vercel reads env vars from its project settings automatically.
 
 ### 13. MutationObserver/ResizeObserver must not modify their own target
 If a `MutationObserver` callback inserts or removes elements inside the observed subtree, it triggers itself infinitely. Similarly, if a `ResizeObserver` callback changes styles that affect the observed element's size, it loops. Fix: disconnect the observer before making DOM changes and reconnect after. The `mutating` flag pattern does NOT work because observer callbacks are async microtasks.
