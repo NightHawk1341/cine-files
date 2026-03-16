@@ -61,6 +61,7 @@ GitHub Actions secrets mirror these for the CI/CD deploy workflow.
 
 | Variable | Description | Default |
 |----------|-------------|---------|
+| `MEDIA_CDN_URL` | CDN base URL for media files (e.g. `https://cdn.cinefiles-txt.com`) | Falls back to direct S3 URL |
 | `REDIS_URL` | Redis connection (optional caching layer) | Not set |
 
 ## Security Notes
