@@ -1,303 +1,342 @@
 # Admin & Editor CMS UI — Implementation Plan
 
-## Current State
+## Architecture Overview
 
-The backend is fully built (auth endpoints, CRUD APIs, middleware). The admin panel has 9 basic pages with functional but minimal UI. **Key gaps:**
+Following TR-BUTE patterns: profile page doubles as login, most editor/admin work happens inline on the main site, heavy admin tasks live in a separate admin miniapp.
 
-- **No login UI** — OAuth endpoints exist but no way to trigger them from the frontend
-- **No profile page** — no user-facing account management
-- **No user indicator in header** — no avatar, login button, or user menu
-- **Raw JSON article editor** — textarea for content blocks, no visual editor
-- **No media upload form** — API stub exists but no multer middleware and no upload UI
-- **No ad management** — nothing exists
-- **No tag CRUD UI** — read-only list
-- **No article deletion** — no delete button in articles list or editor
-- **No draft management UX** — no status filters, no "my drafts" view for editors
-- **No frontend auth guards** — admin pages render even when not logged in
+**Main site** handles: login/profile, article editor (modal), saved articles, inline comment moderation (for editors on article pages).
+
+**Admin miniapp** handles: user management, ad management, site settings, media library, collections, categories, tag management, word filter/auto-moderation, analytics dashboard.
 
 ---
 
-## Implementation Plan (ordered by dependency)
+## Phase 1: Auth Foundation
 
-### Phase 1: Auth UI Foundation
+### 1.1 — Auth module (`public/js/modules/auth.js`)
+Shared auth state, like TR-BUTE's `core/auth.js`:
+- `Auth.getUser()` — returns cached user or fetches `/api/auth/me`
+- `Auth.isLoggedIn()` — boolean check
+- `Auth.isEditor()` / `Auth.isAdmin()` — role checks
+- `Auth.logout()` — calls logout endpoint, clears state
+- Caches user in memory; invalidated on logout or 401 response
 
-**1.1 — Login page** (`/login`)
-- New file: `public/js/pages/login.js`
-- New file: `public/css/login.css`
-- Two OAuth buttons: "Войти через Яндекс" and "Войти через Telegram"
-- Each button is an `<a>` linking to `/api/auth/yandex` and `/api/auth/telegram`
-- Centered card layout matching admin styling
-- Redirect away if already authenticated (check via `/api/auth/me` — needs new endpoint)
-- Add `<script>` tag to `index.html`
+### 1.2 — API endpoints
+- **`GET /api/auth/me`** — new file `api/auth-me.js`. Returns `{ id, display_name, avatar_url, role, email, login_method, created_at }` or 401
+- **`POST /api/auth/logout`** — new file `api/auth-logout.js`. Clears cookies, deletes refresh token from DB
+- **`GET /api/users/me/comments`** — user's own comments with article titles
+- **`PUT /api/users/me`** — update display_name, preferences
+- **`DELETE /api/auth/account`** — delete own account (with cascade)
+- Register all in `server/routes/index.js`
 
-**1.2 — Auth status API endpoint** (`GET /api/auth/me`)
-- New file: `api/auth-me.js`
-- Returns current user (id, display_name, avatar_url, role) if authenticated, or 401
-- Uses `authenticateToken` middleware (not `requireAuth` — needs optional mode)
-- Register in `server/routes/index.js`
+### 1.3 — Header changes
+Modify `public/js/modules/header.js` and header HTML in `index.html`:
+- **Left of profile button**: "New article" button (visible to editors/admins only) — SVG pen/plus icon, opens article editor modal from anywhere
+- **Profile button**: avatar circle if logged in (links to `/profile`), generic person icon if not (links to `/profile` which shows login)
+- Like TR-BUTE: notification counter on profile icon for editors (pending review articles, new comments on own articles)
+- Update `public/css/header.css`
 
-**1.3 — Logout endpoint** (`POST /api/auth/logout`)
-- New file: `api/auth-logout.js`
-- Clears `access_token` and `refresh_token` cookies
-- Deletes refresh token from DB
-- Register in `server/routes/index.js`
+### 1.4 — Bottom nav (mobile)
+Modify `public/js/modules/bottom-nav.js` and bottom nav HTML in `index.html`:
+- Add profile icon as 5th item (or replace one)
+- Links to `/profile`
+- Notification badge for editors
 
-**1.4 — Header user menu**
-- Modify `public/js/modules/header.js`
-- On init: fetch `/api/auth/me` to check auth state
-- If logged in: show avatar + display name (dropdown with: profile link, admin link if editor+, logout)
-- If not logged in: show "Войти" button linking to `/login`
-- Add user menu HTML to header in `index.html`
-- Add styles to `public/css/header.css`
+---
 
-**1.5 — Frontend auth guards for admin pages**
-- Create `public/js/modules/auth.js` — shared auth state module
-  - `Auth.getUser()` returns cached user or fetches `/api/auth/me`
-  - `Auth.requireRole(role)` — redirects to `/login` if not authenticated or insufficient role
-- Each admin page calls `Auth.requireRole('editor')` or `Auth.requireRole('admin')` in `init()`
+## Phase 2: Profile Page (login + profile, like TR-BUTE)
 
-### Phase 2: Profile Page
+### 2.1 — Profile page (`/profile`)
+New files: `public/js/pages/profile.js`, `public/css/profile.css`
 
-**2.1 — Profile page** (`/profile`)
-- New file: `public/js/pages/profile.js`
-- New file: `public/css/profile.css`
-- Sections (adapted from TR-BUTE for a content site):
-  - **Account info**: avatar, display name, email, login method icon, member since
-  - **My activity** (tabbed):
-    - My comments (with delete option)
-    - My articles (if editor+ — link to admin editor)
-  - **Settings**: theme toggle, notification preferences
-  - **Logout button**
-  - **Delete account** (with confirmation modal)
-- Add `<script>` tag to `index.html`
+**Logged-out state** (two containers toggled via display, TR-BUTE pattern):
+- Login prompt text
+- OAuth buttons: "Войти через Яндекс", "Войти через Telegram" (each styled with provider color like TR-BUTE)
+- Guest theme toggle
 
-**2.2 — Profile API endpoints**
-- `GET /api/users/me/comments` — user's own comments (new handler)
-- `DELETE /api/auth/account` — delete own account (new handler)
-- `PUT /api/users/me` — update display name / preferences (new handler)
+**Logged-in state**:
+- **Header section**: avatar (with fallback initials like TR-BUTE), display name, login method icon, member since date
+- **Saved articles**: grid of bookmarked article cards (like TR-BUTE favorites)
+- **My comments**: list with article links, delete own comments
+- **My articles**: visible for editors — list with status badges, click to edit (opens editor modal)
+- **Settings**: theme toggle, display name edit
+- **Logout button**
+- **Delete account** (confirmation modal)
 
-### Phase 3: Article Editor Upgrade
+### 2.2 — Saved articles system (like TR-BUTE favorites)
+New file: `public/js/core/favorites.js`
+- `Favorites.toggle(articleId)` — add/remove
+- `Favorites.has(articleId)` — check
+- `Favorites.getAll()` — list
+- localStorage-based (`cinefiles-favorites`, Set of article IDs)
+- Server sync when authenticated (fire-and-forget, like TR-BUTE)
+- Bookmark button on every article card and article page
+- Counter badge in profile
+- New API: `GET /api/users/me/favorites`, `PUT /api/users/me/favorites` (sync endpoint)
+- New DB: `user_favorites` table (user_id, article_id, created_at) or JSONB in users.preferences
+- Migration file for favorites storage
 
-**3.1 — Visual block editor**
-- Major rewrite of `public/js/pages/admin/article-editor.js`
-- Replace raw JSON textarea with visual block editor:
-  - "Add block" button with block type selector (dropdown/popover)
-  - Each block renders as an editable card with type-specific UI:
-    - **paragraph**: contenteditable div or textarea
-    - **heading**: input with level selector (h2/h3/h4)
-    - **image**: URL input + preview + alt text + credit fields + media library picker
-    - **quote**: textarea + attribution input
-    - **list**: dynamic item inputs + ordered/unordered toggle
-    - **embed**: URL input with auto-detect (YouTube/VK/RuTube) + preview
-    - **divider**: just a visual separator line, no input
-    - **spoiler**: title input + content textarea
-    - **infobox**: type selector (info/warning) + content textarea
-    - **movie_card**: TMDB search integration (uses existing `/api/tmdb/search`)
-    - **tribute_products**: product ID inputs
-  - Drag-and-drop reordering (use native HTML5 drag API)
-  - Delete block button on each block
-  - Duplicate block button
-- New file: `public/css/block-editor.css`
+### 2.3 — Update header/bottom-nav favorites counter
+Like TR-BUTE updates cart/favorites counts across tabs via `storage` event listener.
 
-**3.2 — Article editor improvements**
-- Add fields missing from current editor:
-  - Cover image alt text + credit
-  - SEO fields: meta title, meta description, canonical URL
-  - Tags selector (multi-select with search, uses `/api/tags` + create inline)
+---
+
+## Phase 3: Article Editor Modal
+
+### 3.1 — Editor modal component
+New files: `public/js/components/article-editor-modal.js`, `public/css/article-editor-modal.css`
+
+Full-screen modal (like the screenshot reference). Opens from:
+- "New article" button in header
+- "Edit" button on article pages (visible to author/admin)
+- "Edit" link in profile "My articles" section
+
+**Top section**:
+- Author info (avatar + name, auto-filled)
+- Topic/category selector dropdown
+
+**Title area**:
+- Inline editable title field (large text)
+- Subtitle field below (optional, smaller)
+
+**Block content area**:
+Each block has a grip handle (6-dot icon) that opens a context menu:
+- Convert to H2 / H3 (for paragraph blocks)
+- Convert to paragraph (for heading blocks)
+- Anchor (set anchor ID for deep linking)
+- Hide content (spoiler wrapper)
+- Move up / Move down
+- Duplicate block
+- Delete block
+
+Block types with their editing UI:
+
+| Block | Editor UI |
+|-------|-----------|
+| **paragraph** | Contenteditable div with inline formatting (bold, italic, link) |
+| **heading** | Inline editable, level shown in context menu |
+| **image** | Media picker button + URL input, preview, alt text, credit, caption |
+| **gallery** | Multiple image slots, grid preview, captions per image |
+| **quote** | Styled textarea + attribution input |
+| **list** | Dynamic items with +/- buttons, ordered/unordered toggle |
+| **embed** | URL paste field, auto-detect platform (YouTube/VK/RuTube), live preview iframe |
+| **divider** | One-click insert, style selector (line/dots/space) |
+| **spoiler** | Title input + nested content area |
+| **infobox** | Type selector (info/warning/tip/error) + content area |
+| **movie_card** | TMDB search field (uses `/api/tmdb/search`), preview card |
+| **tribute_products** | Product ID input, fetches preview from TR-BUTE API |
+| **comparison** | Two-column layout, before/after labels, images or text |
+| **rating** | Score input (1-10), optional label |
+| **table** | Row/column controls, cell editing |
+| **audio** | URL input for external audio embeds |
+| **code** | Monospace textarea with optional language label |
+
+"Add block" button between blocks (+ icon that appears on hover/focus, shows block type picker).
+
+**Bottom toolbar** (fixed at bottom of modal):
+- **"Опубликовать"** / **"Сохранить черновик"** button (primary action depends on current status)
+- **Comment icon** — toggle allow_comments
+- **"..."** overflow menu:
+  - Preview (renders article using existing `ArticleBody` component in read-only modal)
+  - Mark 18+
+  - SEO settings (meta title, meta description, canonical URL — sub-panel)
+  - Tags (multi-select with search + inline create)
   - Featured / Pinned toggles
-  - Allow comments toggle
-  - TR-BUTE product IDs
-- Status workflow buttons: Save Draft / Submit for Review / Publish / Archive
-- Delete article button (with confirmation modal)
-- Article preview (render blocks using `ArticleBody` component in a modal/side panel)
-- Auto-save to localStorage every 30s (restore on page load if newer than server version)
+  - Cover image (media picker)
+  - Version history (future)
+  - Delete article (confirmation modal)
+- **Auto-save indicator**: "Сохранено" with checkmark, or "Сохранение..." during save
+- Auto-save to server every 30s for drafts; localStorage backup
 
-**3.3 — Media library picker (reusable component)**
-- New file: `public/js/components/media-picker.js`
-- Modal that shows media grid from `/api/media`
-- Click to select → returns URL
-- Upload button within picker (requires Phase 4)
-- Used by: article editor cover image, image blocks
+### 3.2 — Inline formatting toolbar
+Floating toolbar appears on text selection within paragraph/heading blocks:
+- Bold, Italic, Strikethrough
+- Link (URL input popup)
+- Inline code
+- Clear formatting
 
-### Phase 4: Media Upload
+### 3.3 — Article body renderer updates
+Update `public/js/components/article-body.js` to support new block types: gallery, comparison, rating, table, audio, code.
 
-**4.1 — Backend: add multer middleware**
-- Install `multer` package
-- Configure in `server/app.js` (memory storage, 5MB limit, image mimetypes)
-- Wire up `POST /api/media/upload` route with multer middleware in `server/routes/index.js`
+### 3.4 — Remove old admin article editor
+Delete or repurpose `public/js/pages/admin/article-editor.js` and `public/js/pages/admin/articles.js` — article management now happens via the modal + profile page "My articles" section.
 
-**4.2 — Media upload UI**
-- Add upload zone to `public/js/pages/admin/media.js`:
-  - Drag-and-drop area + file input button
-  - Upload progress indicator
-  - Alt text + credit inputs before upload
-  - After upload: add to grid immediately
+---
 
-### Phase 5: Admin Improvements
+## Phase 4: Media Upload
 
-**5.1 — Articles list improvements**
-- Status filter tabs: All / Drafts / Review / Published / Archived
-- "My articles" filter for editors (show only own articles)
-- Search/filter by title
-- Delete button per row (with confirmation)
-- Bulk status change (select multiple → change status)
-- Sort by date, views, comments
+### 4.1 — Backend
+- Install `multer` (memory storage, 5MB limit, image mimetypes)
+- Configure in `server/app.js`
+- Wire `POST /api/media/upload` with multer in `server/routes/index.js`
 
-**5.2 — Tag management CRUD**
-- Enhance `public/js/pages/admin/tags.js`:
-  - "New tag" button → form (name_ru, name_en, tag_type selector, TMDB search)
-  - Edit button per tag → inline edit or modal
-  - Delete button per tag (with article count warning)
-  - Filter by tag_type
+### 4.2 — Media picker component
+New file: `public/js/components/media-picker.js`
+- Modal grid of existing media from `/api/media`
+- Drag-and-drop upload zone at top
+- Upload progress indicator
+- Alt text + credit inputs on upload
+- Click image to select → returns URL
+- Used by: article editor (cover image, image blocks, gallery blocks)
 
-**5.3 — Comments management improvements**
-- Filter by status: All / Visible / Hidden / Deleted
-- Search by text or author
-- Bulk moderation (select multiple → hide/show/delete)
-- Link to the article each comment belongs to
+---
 
-**5.4 — Collections article management**
-- Add article picker to collection editor form
-- Show current articles with drag-and-drop reordering
-- Search/select articles to add
-- Remove articles from collection
+## Phase 5: Inline Comment Moderation
 
-**5.5 — Admin dashboard upgrade**
-- Show real stats: total articles (by status), total comments, total users, total media
-- Recent activity feed (latest articles, comments)
-- Quick actions: new article, moderate comments count
+For editors/admins viewing articles on the public site:
+- Modify `public/js/components/comment-list.js`
+- Each comment shows hide/delete action buttons for users with editor+ role
+- Uses existing `POST /api/admin/comments/:id/moderate` endpoint
+- Removes comment from view on action (with toast confirmation)
+- No separate admin page needed for basic moderation
 
-### Phase 6: Ad Management (New Feature)
+---
 
-**6.1 — Database schema**
-- New table: `ads`
-  - id, title, ad_type (banner/sidebar/inline/interstitial), placement (header/sidebar/between-articles/footer)
-  - content (HTML or image URL + link), alt_text
+## Phase 6: Admin Miniapp
+
+Separate lightweight app, similar to TR-BUTE's `admin-miniapp/`. Could be a Telegram Mini App or standalone web panel at `/admin`.
+
+### 6.1 — Structure
+- Keep existing `/admin` route prefix
+- Existing admin pages become the miniapp sections
+- Auth: same JWT cookies, `requireAdmin` / `requireEditor` middleware
+- Navigation: sidebar or top tabs (like TR-BUTE miniapp nav)
+
+### 6.2 — Sections
+
+**Dashboard** (`/admin`)
+- Stats cards: articles by status, total comments, total users, media count
+- Attention alerts: pending review articles, recent comments needing moderation
+- Quick links to all sections
+
+**User Management** (`/admin/users`)
+- Keep existing: user list with inline role selector
+- Add: search/filter, registration date sort, last login sort
+
+**Ad Management** (`/admin/ads`) — NEW
+- Database: new `ads` table
+  - id, title, ad_type (banner/sidebar/inline), placement (header/sidebar/between-articles/article-footer)
+  - image_url, destination_url, alt_text (or raw HTML for custom ads)
   - start_date, end_date, is_active
-  - priority (sort order), max_impressions, current_impressions, click_count
-  - target_categories (integer[] — limit to specific categories, null = all)
+  - priority, max_impressions, current_impressions, click_count
+  - target_categories (integer[], null = all)
   - created_at, updated_at
-- Migration file: `migrations/XXX_create_ads_table.sql`
-- Update `SQL_SCHEMA.sql`
+- API: `api/ads.js` — full CRUD + impression/click tracking endpoints
+- Admin UI: list with status/dates/stats, editor form with all fields
+- Public rendering: `public/js/components/ad-slot.js`
+  - Sidebar ads, between-article ads, article footer ads
+  - Impression tracking on render, click tracking on click
+- Migration: `migrations/XXX_create_ads_table.sql`
 
-**6.2 — Ad API endpoints**
-- New file: `api/ads.js`
-  - `GET /api/ads` — list ads (admin: all, public: active + within date range)
-  - `POST /api/ads` — create ad (requireAdmin)
-  - `GET /api/ads/:id` — get ad by ID
-  - `PUT /api/ads/:id` — update ad (requireAdmin)
-  - `DELETE /api/ads/:id` — delete ad (requireAdmin)
-  - `POST /api/ads/:id/impression` — increment impression count (public, rate-limited)
-  - `POST /api/ads/:id/click` — increment click count (public, rate-limited)
-- Register in `server/routes/index.js`
+**Media Library** (`/admin/media`)
+- Keep existing grid view
+- Add: upload zone (drag-and-drop), bulk delete, search/filter
+- Like TR-BUTE: orphan detection (S3 files not in DB)
 
-**6.3 — Ad management admin page**
-- New file: `public/js/pages/admin/ads.js`
-- Route: `/admin/ads`
-- List view: table with title, type, placement, status, dates, impressions, clicks, CTR
-- Editor form:
-  - Title, ad type selector, placement selector
-  - Content: image upload (via media picker) + destination URL, or raw HTML
-  - Date range picker (start/end)
-  - Active toggle
-  - Priority number
-  - Max impressions (0 = unlimited)
-  - Target categories multi-select
-- Dashboard link in admin nav
+**Collections** (`/admin/collections`)
+- Keep existing CRUD
+- Add: article picker with drag-and-drop reordering within collection
 
-**6.4 — Ad rendering on public site**
-- New file: `public/js/components/ad-slot.js`
-- `AdSlot.render(placement)` — fetches active ads for placement, renders one (by priority/random)
-- Placements:
-  - **Sidebar**: rendered in `sidebar-right`
-  - **Between articles**: injected every N articles in feed pages
-  - **Article footer**: after article body, before comments
-  - **Header banner**: below site header (dismissible)
-- Tracks impressions on render, clicks on click
-- Respects `max_impressions` limit
-
-### Phase 7: Additional Features (from TR-BUTE patterns)
-
-**7.1 — Activity feed** (admin)
-- New file: `public/js/pages/admin/feed.js`
-- Route: `/admin/feed`
-- Unified view of: new comments, new articles submitted for review, new user registrations
-- Date-grouped, filterable by type
-- Quick actions: approve/reject articles, moderate comments
-
-**7.2 — Bottom nav user slot** (mobile)
-- Replace one bottom nav item (or add 5th) with user icon
-- Links to `/profile` if logged in, `/login` if not
-- Shows notification badge for editors (pending review count)
-
-**7.3 — Category management** (admin)
-- New file: `public/js/pages/admin/categories.js`
-- Route: `/admin/categories`
+**Categories** (`/admin/categories`) — NEW
 - CRUD for categories: name_ru, name_en, slug, description, sort_order
-- Currently categories are DB-only with no admin UI
-- New API endpoints: `POST /api/categories`, `PUT /api/categories/:id`, `DELETE /api/categories/:id`
+- New API endpoints: POST/PUT/DELETE `/api/categories/:id`
+
+**Tags** (`/admin/tags`)
+- Upgrade from read-only to full CRUD
+- Create/edit: name_ru, name_en, tag_type, TMDB link
+- Delete with article count warning
+- Filter by tag_type
+
+**Word Filter / Auto-Moderation** (`/admin/moderation`) — NEW
+Copied from TR-BUTE pattern:
+- Database: new `moderation_words` table (id, word, category, is_active, created_at, updated_at)
+- API: `api/admin-moderation.js`
+  - GET `/api/admin/moderation/words` — list with filters (category, active status, search)
+  - POST — create/bulk insert (normalize lowercase, skip duplicates via ON CONFLICT)
+  - PUT — update word/category/active status
+  - DELETE — remove by ID
+  - POST `/api/admin/moderation/test` — test text against filters, returns pass/fail + triggered words
+- Cache: in-memory word list, invalidated on changes
+- Admin UI:
+  - Word list table with search, category filter, active/inactive toggle
+  - Bulk import (textarea, one word per line)
+  - Test panel: paste text, see which words trigger
+- Integration: comments API checks against word filter before saving; auto-hide if triggered
+- Migration: `migrations/XXX_create_moderation_words_table.sql`
+
+**Settings** (`/admin/settings`)
+- Keep existing key/value CRUD
+
+**Comment Moderation** (`/admin/comments`)
+- Keep existing but add: status filter tabs, bulk actions, article links, search
+
+---
+
+## Phase 7: Public Site Ad Rendering
+
+### 7.1 — Ad slot component
+New file: `public/js/components/ad-slot.js`
+- `AdSlot.render(placement, container)` — fetches active ads for given placement, renders into container
+- Respects date range, active status, max impressions, category targeting
+- Tracks impressions (POST on render, debounced)
+- Tracks clicks (POST on click)
+
+### 7.2 — Ad placements
+- Sidebar: rendered in `#sidebar-right` by `public/js/modules/sidebar.js`
+- Between articles: injected by feed pages (home, category) every N cards
+- Article footer: rendered by `public/js/pages/article.js` after body, before comments
 
 ---
 
 ## New Files Summary
 
-### JavaScript
 | File | Purpose |
 |------|---------|
-| `public/js/pages/login.js` | Login page with OAuth buttons |
-| `public/js/pages/profile.js` | User profile page |
-| `public/js/modules/auth.js` | Shared auth state management |
-| `public/js/components/media-picker.js` | Reusable media selector modal |
-| `public/js/components/ad-slot.js` | Ad rendering component |
-| `public/js/pages/admin/ads.js` | Ad management admin page |
-| `public/js/pages/admin/feed.js` | Activity feed admin page |
-| `public/js/pages/admin/categories.js` | Category management admin page |
+| `public/js/modules/auth.js` | Shared auth state (like TR-BUTE core/auth) |
+| `public/js/core/favorites.js` | Saved articles (like TR-BUTE core/favorites) |
+| `public/js/pages/profile.js` | Profile + login page |
+| `public/css/profile.css` | Profile styles |
+| `public/js/components/article-editor-modal.js` | Full-screen article editor modal |
+| `public/css/article-editor-modal.css` | Editor modal styles |
+| `public/js/components/media-picker.js` | Media selection modal |
+| `public/js/components/ad-slot.js` | Public ad rendering |
+| `public/js/pages/admin/ads.js` | Ad management page |
+| `public/js/pages/admin/categories.js` | Category management page |
+| `public/js/pages/admin/moderation.js` | Word filter management page |
 | `api/auth-me.js` | Auth status endpoint |
 | `api/auth-logout.js` | Logout endpoint |
-| `api/ads.js` | Ads CRUD + impression/click tracking |
+| `api/user-me.js` | User self-service (comments, update, favorites) |
+| `api/ads.js` | Ads CRUD + tracking |
+| `api/admin-moderation.js` | Word filter CRUD + test |
+| `migrations/XXX_create_ads_table.sql` | Ads schema |
+| `migrations/XXX_create_moderation_words_table.sql` | Word filter schema |
+| `migrations/XXX_create_user_favorites_table.sql` | Saved articles schema |
 
-### CSS
-| File | Purpose |
-|------|---------|
-| `public/css/login.css` | Login page styles |
-| `public/css/profile.css` | Profile page styles |
-| `public/css/block-editor.css` | Visual block editor styles |
+## Modified Files
 
-### SQL
-| File | Purpose |
-|------|---------|
-| `migrations/XXX_create_ads_table.sql` | Ads table schema |
-
-### Modified Files
 | File | Changes |
 |------|---------|
-| `public/index.html` | New script tags, header user menu HTML |
-| `public/js/modules/header.js` | User menu with auth state |
-| `public/js/pages/admin/article-editor.js` | Full rewrite → visual block editor |
-| `public/js/pages/admin/articles.js` | Filters, search, delete, bulk actions |
-| `public/js/pages/admin/tags.js` | CRUD UI |
-| `public/js/pages/admin/comments.js` | Filters, bulk moderation |
-| `public/js/pages/admin/media.js` | Upload form |
+| `public/index.html` | Header buttons (new article, profile), new script tags, bottom nav profile slot |
+| `public/js/modules/header.js` | Auth state, new article button, profile button with notification badge |
+| `public/js/modules/bottom-nav.js` | Profile icon with badge |
+| `public/js/components/comment-list.js` | Inline moderation buttons for editors |
+| `public/js/components/article-body.js` | New block type renderers |
+| `public/js/pages/admin/dashboard.js` | Real stats + alerts |
+| `public/js/pages/admin/tags.js` | Full CRUD |
+| `public/js/pages/admin/comments.js` | Filters, bulk actions |
+| `public/js/pages/admin/media.js` | Upload zone |
 | `public/js/pages/admin/collections.js` | Article picker |
-| `public/js/pages/admin/dashboard.js` | Real stats + quick actions |
-| `public/css/admin.css` | New component styles |
-| `public/css/header.css` | User menu styles |
-| `server/routes/index.js` | New route registrations |
+| `public/css/admin.css` | New section styles |
+| `public/css/header.css` | Profile button, new article button |
+| `server/routes/index.js` | All new route registrations |
 | `server/app.js` | Multer middleware |
-| `SQL_SCHEMA.sql` | Ads table |
-
----
+| `SQL_SCHEMA.sql` | New tables |
 
 ## Implementation Order
 
-Strict dependency chain — each phase builds on the previous:
-
-1. **Phase 1** (Auth UI) — everything else needs login to work
-2. **Phase 2** (Profile) — depends on auth module from Phase 1
-3. **Phase 3** (Article Editor) — core CMS functionality
-4. **Phase 4** (Media Upload) — needed for editor image blocks
-5. **Phase 5** (Admin Improvements) — polish existing pages
-6. **Phase 6** (Ad Management) — new feature, independent of 3-5
-7. **Phase 7** (Additional) — nice-to-haves
-
-Phases 3-5 can be partially parallelized. Phase 6 only depends on Phase 1.
+1. **Phase 1** — Auth foundation (everything depends on this)
+2. **Phase 2** — Profile page + saved articles
+3. **Phase 3** — Article editor modal (core CMS feature)
+4. **Phase 4** — Media upload (needed for editor image blocks)
+5. **Phase 5** — Inline comment moderation
+6. **Phase 6** — Admin miniapp sections (can partially parallelize with 3-5)
+7. **Phase 7** — Public ad rendering
