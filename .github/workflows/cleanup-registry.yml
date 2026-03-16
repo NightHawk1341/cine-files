@@ -1,54 +1,143 @@
 name: Cleanup Container Registry
 
 on:
-  schedule:
-    # Run weekly on Sundays at 04:00 UTC
-    - cron: '0 4 * * 0'
   workflow_dispatch:
+    inputs:
+      keep_count:
+        description: 'Number of images to keep per repository'
+        required: true
+        default: '3'
+        type: string
+      dry_run:
+        description: 'Dry run (show what would be deleted without deleting)'
+        required: true
+        default: true
+        type: boolean
+      image_name:
+        description: 'Image name to clean (leave empty for all images)'
+        required: false
+        default: ''
+        type: string
 
 env:
-  REGISTRY_ID: ${{ secrets.YC_REGISTRY_ID }}
-  REPOSITORY_NAME: cinefiles
-  # Keep the last N images
-  KEEP_LAST: 5
+  REGISTRY: cr.yandex
 
 jobs:
   cleanup:
-    name: Remove Old Docker Images
+    name: Cleanup Old Container Images
     runs-on: ubuntu-latest
 
     steps:
       - name: Install Yandex Cloud CLI
         run: |
-          curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash -s -- -n
+          curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash
           echo "$HOME/yandex-cloud/bin" >> $GITHUB_PATH
 
-      - name: Authenticate with Yandex Cloud
+      - name: Configure Yandex Cloud CLI
         run: |
-          echo '${{ secrets.YC_SA_JSON_KEY }}' > sa-key.json
-          yc config set service-account-key sa-key.json
-          rm sa-key.json
+          echo '${{ secrets.YC_SA_JSON_KEY }}' > key.json
+          yc config profile create github-actions-cleanup
+          yc config set service-account-key key.json
+          rm key.json
 
-      - name: List and cleanup old images
+      - name: List current images
         run: |
-          echo "Fetching image list from registry..."
+          echo "Current repositories in registry:"
+          echo ""
+          REGISTRY_ID="${{ secrets.YC_REGISTRY_ID }}"
+          for REPO in $(yc container repository list --registry-id "$REGISTRY_ID" --format json | jq -r '.[].name'); do
+            COUNT=$(yc container image list --repository-name "$REGISTRY_ID/$REPO" --format json | jq 'length')
+            echo "  $REPO: $COUNT images"
+          done
 
-          # Get all image IDs sorted by creation date (oldest first)
-          IMAGE_IDS=$(yc container image list \
-            --registry-id ${{ env.REGISTRY_ID }} \
-            --repository-name ${{ env.REPOSITORY_NAME }} \
-            --format json | \
-            jq -r 'sort_by(.createdAt) | .[:-${{ env.KEEP_LAST }}] | .[].id')
+      - name: Cleanup images
+        run: |
+          KEEP_COUNT=${{ inputs.keep_count }}
+          DRY_RUN=${{ inputs.dry_run }}
+          IMAGE_FILTER="${{ inputs.image_name }}"
+          REGISTRY_ID="${{ secrets.YC_REGISTRY_ID }}"
 
-          if [ -z "$IMAGE_IDS" ]; then
-            echo "No old images to clean up."
+          echo "Container Registry Cleanup"
+          echo "=============================="
+          echo "Keep count: $KEEP_COUNT"
+          echo "Dry run: $DRY_RUN"
+          echo "Image filter: ${IMAGE_FILTER:-all images}"
+          echo ""
+
+          if [ -n "$IMAGE_FILTER" ]; then
+            REPOS="$IMAGE_FILTER"
+          else
+            REPOS=$(yc container repository list \
+              --registry-id "$REGISTRY_ID" \
+              --format json | jq -r '.[].name')
+          fi
+
+          if [ -z "$REPOS" ]; then
+            echo "No repositories found"
             exit 0
           fi
 
-          echo "Removing old images (keeping last ${{ env.KEEP_LAST }})..."
-          for IMAGE_ID in $IMAGE_IDS; do
-            echo "Deleting image: $IMAGE_ID"
-            yc container image delete --id "$IMAGE_ID" || true
+          TOTAL_DELETED=0
+
+          for REPO in $REPOS; do
+            echo ""
+            echo "Processing: $REPO"
+            echo "-------------------"
+
+            REPO_NAME="$REGISTRY_ID/$REPO"
+            IMAGES=$(yc container image list \
+              --repository-name "$REPO_NAME" \
+              --format json | \
+              jq -r 'sort_by(.createdAt) | reverse | .[].id')
+
+            if [ -z "$IMAGES" ]; then
+              echo "  No images found"
+              continue
+            fi
+
+            IMAGE_ARRAY=($IMAGES)
+            TOTAL=${#IMAGE_ARRAY[@]}
+            echo "  Total images: $TOTAL"
+
+            if [ $TOTAL -le $KEEP_COUNT ]; then
+              echo "  Nothing to delete (count <= keep threshold)"
+              continue
+            fi
+
+            DELETE_COUNT=$((TOTAL - KEEP_COUNT))
+            echo "  Images to delete: $DELETE_COUNT"
+
+            for ((i=KEEP_COUNT; i<TOTAL; i++)); do
+              IMAGE_ID=${IMAGE_ARRAY[$i]}
+
+              if [ "$DRY_RUN" = "true" ]; then
+                echo "  [DRY RUN] Would delete: $IMAGE_ID"
+              else
+                echo "  Deleting: $IMAGE_ID"
+                if yc container image delete "$IMAGE_ID" 2>/dev/null; then
+                  ((TOTAL_DELETED++))
+                else
+                  echo "  Failed to delete: $IMAGE_ID"
+                fi
+              fi
+            done
           done
 
-          echo "Cleanup complete."
+          echo ""
+          echo "=============================="
+          if [ "$DRY_RUN" = "true" ]; then
+            echo "Dry run complete - no images were deleted"
+          else
+            echo "Cleanup complete - deleted $TOTAL_DELETED images"
+          fi
+
+      - name: Show final state
+        if: ${{ inputs.dry_run == false }}
+        run: |
+          echo ""
+          echo "Remaining images:"
+          REGISTRY_ID="${{ secrets.YC_REGISTRY_ID }}"
+          for REPO in $(yc container repository list --registry-id "$REGISTRY_ID" --format json | jq -r '.[].name'); do
+            COUNT=$(yc container image list --repository-name "$REGISTRY_ID/$REPO" --format json | jq 'length')
+            echo "  $REPO: $COUNT images"
+          done

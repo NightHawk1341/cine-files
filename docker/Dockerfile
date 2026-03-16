@@ -36,7 +36,6 @@ COPY --chown=nodejs:nodejs . .
 # Switch to non-root user
 USER nodejs
 
-# Expose port 8080 (Yandex Cloud standard)
 EXPOSE 8080
 
 # Health check
