@@ -15,7 +15,7 @@ function get({ pool }) {
         `SELECT a.id, a.tribute_product_ids,
                 COALESCE(
                   json_agg(
-                    json_build_object('slug', t.slug, 'nameRu', t.name_ru, 'tagType', t.tag_type)
+                    json_build_object('slug', t.slug, 'nameRu', t.name_ru, 'nameEn', t.name_en, 'tagType', t.tag_type)
                   ) FILTER (WHERE t.id IS NOT NULL),
                   '[]'
                 ) AS tags

@@ -37,7 +37,13 @@ function list({ pool }) {
            JOIN categories c ON a.category_id = c.id
            JOIN article_tags at ON at.article_id = a.id
            JOIN tags t ON at.tag_id = t.id
-           WHERE a.status = 'published' AND (t.slug = $1 OR t.name_ru ILIKE $1 OR t.name_en ILIKE $1)
+           WHERE a.status = 'published' AND (
+             t.slug = $1
+             OR t.name_ru ILIKE '%' || $1 || '%'
+             OR t.name_en ILIKE '%' || $1 || '%'
+             OR $1 ILIKE '%' || t.name_ru || '%'
+             OR $1 ILIKE '%' || t.name_en || '%'
+           )
            ORDER BY a.published_at DESC
            LIMIT $2`,
           [tagSlug, limit]
