@@ -97,6 +97,20 @@ Also sets `data-theme` attribute on `html` and updates `meta[name="theme-color"]
 | `page-loading` | `html` | Inline script (before paint) | Init script (after Router.init) |
 | `page-ready` | `html` | Init script (after Router.init) | — |
 
+## Article Editor Modal (`public/js/components/article-editor-modal.js`)
+
+| Class | Element | When Added | When Removed |
+|-------|---------|------------|-------------|
+| `modal-open` | `body` | Editor opens | Editor closes |
+| `editor-block--dragging` | `.editor-block` | Drag starts | Drag ends |
+| `editor-block--dragover` | `.editor-block` | Drag over block | Drag leave / drop |
+| `editor-inline-toolbar--visible` | `.editor-inline-toolbar` | Text selected in contenteditable | Selection cleared / collapsed |
+| `editor-inline-toolbar--link-mode` | `.editor-inline-toolbar` | Link button clicked | Link applied / cancelled |
+| `editor-tag-chip--selected` | `.editor-tag-chip` | Tag selected in panel | Tag deselected |
+| `editor-char-count--over` | `.editor-char-count` | Character count exceeds threshold | Count drops below threshold |
+
+Creates `.editor-modal`, `.editor-panel-overlay`, `.editor-preview-overlay` appended to `body`. All removed on close.
+
 ## Known Inline Style Usage
 
 These are acceptable exceptions where inline styles are used:
@@ -107,5 +121,6 @@ These are acceptable exceptions where inline styles are used:
 | `router.js` | `body` | `position`, `top`, `width`, `overflow` | Body lock cleanup (removeProperty) |
 | `bottom-sheet.js` | Sheet panel | `transform` | Swipe gesture tracking |
 | `skeleton.js` | Skeleton elements | `width`, `height` | Dynamic sizing |
+| `article-editor-modal.js` | `.editor-inline-toolbar` | `top`, `left` | Positioned relative to text selection |
 
 When adding new JS-driven visibility changes, add an entry to this document.

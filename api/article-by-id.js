@@ -24,7 +24,7 @@ function get({ pool }) {
 
       // Fetch tags
       const tagsResult = await pool.query(
-        `SELECT at.is_primary, t.slug, t.name_ru, t.name_en, t.tag_type
+        `SELECT t.id, at.is_primary, t.slug, t.name_ru, t.name_en, t.tag_type
          FROM article_tags at JOIN tags t ON at.tag_id = t.id
          WHERE at.article_id = $1`,
         [rows[0].id]
@@ -124,7 +124,7 @@ function update({ pool }) {
 
       // Fetch updated tags
       const tagsResult = await pool.query(
-        `SELECT at.is_primary, t.slug, t.name_ru, t.name_en, t.tag_type
+        `SELECT t.id, at.is_primary, t.slug, t.name_ru, t.name_en, t.tag_type
          FROM article_tags at JOIN tags t ON at.tag_id = t.id
          WHERE at.article_id = $1`,
         [articleId]
@@ -199,8 +199,9 @@ function formatRow(row, tags) {
       displayName: row.author_display_name,
       avatarUrl: row.author_avatar_url,
     },
+    categoryId: row.category_id,
     tags: (tags || []).map(t => ({
-      slug: t.slug, nameRu: t.name_ru, nameEn: t.name_en,
+      id: t.id, slug: t.slug, nameRu: t.name_ru, nameEn: t.name_en,
       tagType: t.tag_type, isPrimary: t.is_primary,
     })),
   };
