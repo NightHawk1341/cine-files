@@ -97,7 +97,7 @@
   border: 1px solid var(--border-color);
 }
 .modal-btn-cancel { background: var(--bg-tertiary); color: var(--text-primary); }
-.modal-btn-confirm { background: var(--brand-primary); color: #fff; border-color: var(--brand-primary); }
+.modal-btn-confirm { background: var(--brand-primary); color: var(--text-inverse); border-color: var(--brand-primary); }
 .modal-btn-danger { background: var(--status-error); border-color: var(--status-error); }
 
 /* ===== SCROLL TO TOP ===== */

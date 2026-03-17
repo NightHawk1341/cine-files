@@ -1,3 +1,19 @@
+/*
+ * ===== Z-INDEX MAP (shared with TR-BUTE) =====
+ *
+ *  1           grain-overlay
+ *  999-1000    header
+ *  998         mobile nav overlay
+ *  1001        bottom-nav
+ *  2000        editor-modal
+ *  2100        editor-preview-overlay
+ *  2200        media-picker-overlay
+ *  10000       bottom-sheet
+ *  10002       modal-overlay, image-zoom-overlay
+ *  10003       toast-container
+ *  99999       progress-bar
+ */
+
 /* ===== Font Faces — Montserrat (locally hosted) ===== */
 @font-face {
   font-family: 'Montserrat';
@@ -182,10 +198,23 @@ html.theme-transition-disable *::after {
   --telegram-color: #0088cc;
   --yandex-color: #FC3F1D;
 
+  /* Deep background (matches TR-BUTE --bg-body for grain/gradient fades) */
+  --bg-body: #000000;
+  --bg-body-t: rgba(0, 0, 0, 0);
+
   /* Brand aliases */
   --icon-color: var(--brand-primary);
   --primary: var(--brand-secondary);
   --primary-hover: var(--brand-hover);
+
+  /* Neutral button states (shared with TR-BUTE for search/input focus) */
+  --neutral-btn-hover-bg: var(--bg-tertiary);
+  --neutral-btn-hover-border: var(--border-hover);
+  --neutral-btn-hover-color: var(--border-hover);
+  --neutral-btn-active-bg: #313131;
+  --neutral-btn-active-border: #848484;
+  --neutral-btn-active-color: #c8c8c8;
+  --neutral-btn-glow: #666;
 
   /* Shadows */
   --shadow-color: rgba(0, 0, 0, 0.3);
@@ -292,6 +321,15 @@ body[data-theme="light"] {
   --tab-counter-color: #1a6fa3;
   --tab-counter-active-bg: rgba(26, 111, 163, 0.2);
   --tab-counter-active-color: #0d4f78;
+  --bg-body: #f9f5ed;
+  --bg-body-t: rgba(249, 245, 237, 0);
+  --neutral-btn-hover-bg: var(--bg-tertiary);
+  --neutral-btn-hover-border: var(--border-hover);
+  --neutral-btn-hover-color: var(--border-hover);
+  --neutral-btn-active-bg: #d5cfc4;
+  --neutral-btn-active-border: #7a7060;
+  --neutral-btn-active-color: #4a4035;
+  --neutral-btn-glow: rgba(80, 60, 30, 0.25);
 }
 
 /* ===== Skeleton Animation ===== */

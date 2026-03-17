@@ -95,7 +95,10 @@
   color: var(--text-primary);
   font-size: 0.8rem;
   cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
 }
+
+.editor-category-select:focus { border-color: var(--brand-primary); box-shadow: 0 0 0.2rem var(--neutral-btn-glow); }
 
 /* --- Editor body --- */
 
@@ -217,10 +220,10 @@
   font-size: 0.85rem;
   margin-bottom: 6px;
   outline: none;
-  transition: border-color 0.15s;
+  transition: border-color 0.15s, box-shadow 0.15s;
 }
 
-.editor-input:focus { border-color: var(--brand-primary); }
+.editor-input:focus { border-color: var(--brand-primary); box-shadow: 0 0 0.2rem var(--neutral-btn-glow); }
 .editor-input-sm { font-size: 0.8rem; padding: 4px 8px; }
 
 .editor-textarea {
@@ -237,9 +240,10 @@
   min-height: 60px;
   margin-bottom: 6px;
   outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
 }
 
-.editor-textarea:focus { border-color: var(--brand-primary); }
+.editor-textarea:focus { border-color: var(--brand-primary); box-shadow: 0 0 0.2rem var(--neutral-btn-glow); }
 .editor-textarea-mono { font-family: monospace; }
 
 .editor-select {
@@ -250,7 +254,10 @@
   color: var(--text-primary);
   font-size: 0.8rem;
   margin-bottom: 6px;
+  transition: border-color 0.15s, box-shadow 0.15s;
 }
+
+.editor-select:focus { border-color: var(--brand-primary); box-shadow: 0 0 0.2rem var(--neutral-btn-glow); }
 
 /* Image preview */
 .editor-image-preview {
@@ -467,11 +474,11 @@
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background-color 0.2s, transform 0.2s, filter 0.2s;
 }
 
 @media (hover: hover) {
-  .editor-toolbar-publish:hover { background: var(--brand-hover); }
+  .editor-toolbar-publish:hover { background: var(--brand-hover); transform: translateY(-1px); filter: brightness(1.1); }
 }
 
 .editor-toolbar-btn {

@@ -24,11 +24,11 @@
   font-size: 15px;
   font-weight: 500;
   text-decoration: none;
-  transition: background-color 200ms, border-color 200ms;
+  transition: background-color 200ms, border-color 200ms, box-shadow 200ms;
 }
 
 @media (hover: hover) {
-  .admin-nav-card:hover { background: var(--card-bg-hover); border-color: var(--card-border-hover); }
+  .admin-nav-card:hover { background: var(--card-bg-hover); border-color: var(--card-border-hover); box-shadow: var(--shadow-sm); }
 }
 
 /* Table */
@@ -92,11 +92,18 @@
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
   border-radius: 10px;
+  transition: border-color 200ms, box-shadow 200ms;
+}
+
+@media (hover: hover) {
+  .admin-input:hover,
+  .admin-textarea:hover,
+  .admin-select:hover { border-color: var(--border-hover); }
 }
 
 .admin-input:focus,
 .admin-textarea:focus,
-.admin-select:focus { border-color: var(--border-active); }
+.admin-select:focus { border-color: var(--border-active); box-shadow: 0 0 0.2rem var(--neutral-btn-glow); }
 
 .admin-textarea { resize: vertical; min-height: 80px; }
 .admin-textarea-lg { min-height: 300px; font-family: 'Courier New', monospace; font-size: 13px; }
@@ -116,8 +123,11 @@
   border-radius: 8px;
   cursor: pointer;
   text-decoration: none;
+  transition: background 200ms, transform 200ms, filter 200ms;
 }
-.admin-btn-primary:hover { background: var(--brand-hover); color: #fff; }
+@media (hover: hover) {
+  .admin-btn-primary:hover { background: var(--brand-hover); color: var(--text-inverse); transform: translateY(-1px); filter: brightness(1.1); }
+}
 
 .admin-btn-secondary {
   display: inline-flex;
@@ -131,6 +141,11 @@
   border-radius: 8px;
   cursor: pointer;
   text-decoration: none;
+  transition: background-color 200ms, border-color 200ms;
+}
+
+@media (hover: hover) {
+  .admin-btn-secondary:hover { background: var(--bg-quaternary); border-color: var(--border-hover); }
 }
 
 .admin-btn-sm {
@@ -142,6 +157,11 @@
   border: 1px solid var(--border-color);
   border-radius: 6px;
   cursor: pointer;
+  transition: background-color 200ms, border-color 200ms;
+}
+
+@media (hover: hover) {
+  .admin-btn-sm:hover { background: var(--bg-quaternary); border-color: var(--border-hover); }
 }
 
 .admin-btn-danger { color: var(--status-error); border-color: var(--status-error); }
@@ -176,7 +196,14 @@
   border: 1px solid var(--border-color);
   border-radius: 6px;
   cursor: pointer;
+  transition: border-color 200ms, box-shadow 200ms;
 }
+
+@media (hover: hover) {
+  .admin-role-select:hover { border-color: var(--border-hover); }
+}
+
+.admin-role-select:focus { border-color: var(--border-active); box-shadow: 0 0 0.2rem var(--neutral-btn-glow); }
 
 /* Media grid */
 .admin-media-grid {
