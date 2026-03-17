@@ -46,9 +46,14 @@
   border-radius: 12px;
   resize: vertical;
   min-height: 80px;
+  transition: border-color 200ms, box-shadow 200ms;
 }
 
-.comment-textarea:focus { border-color: var(--border-active); }
+@media (hover: hover) {
+  .comment-textarea:hover { border-color: var(--border-hover); }
+}
+
+.comment-textarea:focus { border-color: var(--border-active); box-shadow: 0 0 0.2rem var(--neutral-btn-glow); }
 .comment-textarea::placeholder { color: var(--text-tertiary); }
 
 .comment-submit {
@@ -61,9 +66,12 @@
   border: none;
   border-radius: 8px;
   cursor: pointer;
+  transition: background 200ms, transform 200ms, filter 200ms;
 }
 
-.comment-submit:hover:not(:disabled) { background: var(--brand-hover); }
+@media (hover: hover) {
+  .comment-submit:hover:not(:disabled) { background: var(--brand-hover); transform: translateY(-1px); filter: brightness(1.1); }
+}
 .comment-submit:disabled { opacity: 0.5; cursor: not-allowed; }
 
 /* Inline moderation */

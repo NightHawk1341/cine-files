@@ -4,11 +4,11 @@
   border: 1px solid var(--card-border);
   border-radius: 12px;
   overflow: hidden;
-  transition: background-color 200ms, border-color 200ms;
+  transition: background-color 200ms, border-color 200ms, box-shadow 200ms;
 }
 
 @media (hover: hover) {
-  .article-card:hover { background: var(--card-bg-hover); border-color: var(--card-border-hover); }
+  .article-card:hover { background: var(--card-bg-hover); border-color: var(--card-border-hover); box-shadow: var(--shadow-sm); }
 }
 
 .article-card-link { display: block; text-decoration: none; color: inherit; }
