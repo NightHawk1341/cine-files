@@ -4,7 +4,7 @@
 
 Before making changes, read these docs in order:
 1. This file (CLAUDE.md) — project rules and conventions
-2. `DEVELOPMENT_CHECKLIST.md` — common mistakes to avoid
+2. `.claude/DEVELOPMENT_CHECKLIST.md` — common mistakes to avoid
 3. `.claude/README.md` — implementation protocols and validation commands
 4. `docs/SPA_LIFECYCLE.md` — how the SPA router manages content, styles, and DOM elements across navigations
 5. `docs/CONDITIONAL_VISIBILITY.md` — all JS-driven conditional visibility and styling across the public site
