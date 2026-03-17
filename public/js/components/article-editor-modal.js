@@ -1,7 +1,8 @@
 /**
  * Article Editor Modal — full-screen modal for creating/editing articles.
  * Opens from header "new article" button, edit buttons on articles, profile page.
- * Block-based editor with context menus, bottom toolbar, auto-save.
+ * Block-based editor with inline formatting, slash commands, context menus,
+ * cover/tags/SEO panels, auto-save.
  */
 
 var ArticleEditorModal = (function () {
@@ -11,19 +12,29 @@ var ArticleEditorModal = (function () {
   var isDirty = false;
   var autoSaveTimer = null;
   var categories = [];
+  var articleTags = [];
+  var coverData = { url: '', alt: '', credit: '' };
+  var seoData = { metaTitle: '', metaDescription: '' };
+  var inlineToolbar = null;
+  var selectionHandler = null;
+  var slashMenu = null;
+  var savedRange = null;
+  var touchDrag = null; // { startIndex, currentOverIndex, startY, blockEl }
 
-  /**
-   * Open editor for new article or existing article ID.
-   * @param {number|null} articleId
-   */
+  // ============================================================
+  // Open / Close
+  // ============================================================
+
   async function open(articleId) {
     if (overlay) close();
 
     article = null;
     blocks = [];
     isDirty = false;
+    articleTags = [];
+    coverData = { url: '', alt: '', credit: '' };
+    seoData = { metaTitle: '', metaDescription: '' };
 
-    // Load categories
     try {
       var catData = await Utils.apiFetch('/api/categories');
       categories = catData.categories || [];
@@ -31,11 +42,21 @@ var ArticleEditorModal = (function () {
       categories = [];
     }
 
-    // Load article if editing
     if (articleId) {
       try {
-        article = await Utils.apiFetch('/api/articles/' + articleId);
-        blocks = article.content_blocks || [];
+        var data = await Utils.apiFetch('/api/articles/' + articleId);
+        article = data.article || data;
+        blocks = article.body || [];
+        articleTags = (article.tags || []).map(function (t) { return t.id; });
+        coverData = {
+          url: article.coverImageUrl || '',
+          alt: article.coverImageAlt || '',
+          credit: article.coverImageCredit || '',
+        };
+        seoData = {
+          metaTitle: article.metaTitle || '',
+          metaDescription: article.metaDescription || '',
+        };
       } catch (err) {
         Toast.show('Не удалось загрузить статью', 'error');
         return;
@@ -49,16 +70,23 @@ var ArticleEditorModal = (function () {
     createModal();
     renderBlocks();
     startAutoSave();
+    setupInlineToolbar();
 
     document.body.classList.add('modal-open');
   }
 
   function close() {
     stopAutoSave();
+    teardownInlineToolbar();
+    hideSlashMenu();
     if (overlay && overlay.parentNode) {
       overlay.parentNode.removeChild(overlay);
     }
     overlay = null;
+    article = null;
+    articleTags = [];
+    coverData = { url: '', alt: '', credit: '' };
+    seoData = { metaTitle: '', metaDescription: '' };
     document.body.classList.remove('modal-open');
   }
 
@@ -72,13 +100,12 @@ var ArticleEditorModal = (function () {
 
     var catOptions = '<option value="">Без темы</option>';
     categories.forEach(function (cat) {
-      var selected = article && Number(article.category_id) === cat.id ? ' selected' : '';
+      var selected = article && Number(article.categoryId) === cat.id ? ' selected' : '';
       catOptions += '<option value="' + cat.id + '"' + selected + '>' + Utils.escapeHtml(cat.name_ru) + '</option>';
     });
 
     overlay.innerHTML =
       '<div class="editor-modal-content">' +
-        // Top bar
         '<div class="editor-topbar">' +
           '<div class="editor-topbar-left">' +
             '<button class="editor-close-btn" id="editor-close" aria-label="Закрыть">' +
@@ -90,13 +117,17 @@ var ArticleEditorModal = (function () {
             '<select class="editor-category-select" id="editor-category">' + catOptions + '</select>' +
           '</div>' +
         '</div>' +
-        // Content area
         '<div class="editor-body" id="editor-body">' +
+          (coverData.url
+            ? '<div class="editor-cover-banner" id="editor-cover-banner">' +
+                '<img src="' + Utils.escapeHtml(coverData.url) + '" class="editor-cover-banner-img">' +
+                '<button class="editor-cover-banner-change" id="editor-cover-change">Изменить обложку</button>' +
+              '</div>'
+            : '<button class="editor-cover-add" id="editor-cover-add">+ Обложка</button>') +
           '<input class="editor-title-input" id="editor-title" type="text" placeholder="Заголовок" value="' + Utils.escapeHtml((article && article.title) || '') + '">' +
           '<input class="editor-subtitle-input" id="editor-subtitle" type="text" placeholder="Подзаголовок (необязательно)" value="' + Utils.escapeHtml((article && article.subtitle) || '') + '">' +
           '<div class="editor-blocks" id="editor-blocks"></div>' +
         '</div>' +
-        // Bottom toolbar
         '<div class="editor-toolbar">' +
           '<button class="editor-toolbar-publish" id="editor-publish">' +
             (article && article.status === 'published' ? 'Обновить' : 'Опубликовать') +
@@ -142,10 +173,225 @@ var ArticleEditorModal = (function () {
       showOverflowMenu(e.currentTarget);
     });
 
+    // Cover buttons
+    var coverAddBtn = document.getElementById('editor-cover-add');
+    if (coverAddBtn) {
+      coverAddBtn.addEventListener('click', function () { showCoverPanel(); });
+    }
+    var coverChangeBtn = document.getElementById('editor-cover-change');
+    if (coverChangeBtn) {
+      coverChangeBtn.addEventListener('click', function () { showCoverPanel(); });
+    }
+
     // Mark dirty on changes
     document.getElementById('editor-title').addEventListener('input', function () { isDirty = true; });
     document.getElementById('editor-subtitle').addEventListener('input', function () { isDirty = true; });
     document.getElementById('editor-category').addEventListener('change', function () { isDirty = true; });
+  }
+
+  // ============================================================
+  // Inline formatting toolbar
+  // ============================================================
+
+  function setupInlineToolbar() {
+    inlineToolbar = document.createElement('div');
+    inlineToolbar.className = 'editor-inline-toolbar';
+    inlineToolbar.innerHTML = getToolbarHtml();
+
+    var editorBody = document.getElementById('editor-body');
+    if (editorBody) editorBody.appendChild(inlineToolbar);
+
+    setupToolbarButtons();
+
+    selectionHandler = function () {
+      positionInlineToolbar();
+    };
+    document.addEventListener('selectionchange', selectionHandler);
+  }
+
+  function teardownInlineToolbar() {
+    if (selectionHandler) {
+      document.removeEventListener('selectionchange', selectionHandler);
+      selectionHandler = null;
+    }
+    if (inlineToolbar && inlineToolbar.parentNode) {
+      inlineToolbar.parentNode.removeChild(inlineToolbar);
+    }
+    inlineToolbar = null;
+    savedRange = null;
+  }
+
+  function getToolbarHtml() {
+    return '<button class="editor-inline-btn" data-cmd="bold" title="Ctrl+B"><strong>B</strong></button>' +
+      '<button class="editor-inline-btn" data-cmd="italic" title="Ctrl+I"><em>I</em></button>' +
+      '<button class="editor-inline-btn" data-cmd="strikethrough" title="Ctrl+Shift+S"><s>S</s></button>' +
+      '<button class="editor-inline-btn editor-inline-btn--code" data-cmd="code" title="Ctrl+E">&lt;/&gt;</button>' +
+      '<span class="editor-inline-sep"></span>' +
+      '<button class="editor-inline-btn editor-inline-btn--link" data-cmd="link" title="Ctrl+K">' +
+        '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">' +
+          '<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>' +
+          '<path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>' +
+        '</svg>' +
+      '</button>';
+  }
+
+  function setupToolbarButtons() {
+    if (!inlineToolbar) return;
+    inlineToolbar.querySelectorAll('.editor-inline-btn').forEach(function (btn) {
+      btn.addEventListener('mousedown', function (e) {
+        e.preventDefault();
+        var cmd = btn.getAttribute('data-cmd');
+        if (cmd === 'link') {
+          showLinkInput();
+        } else if (cmd === 'code') {
+          applyInlineCode();
+        } else {
+          restoreSelection();
+          document.execCommand(cmd, false, null);
+          isDirty = true;
+        }
+      });
+    });
+  }
+
+  function positionInlineToolbar() {
+    if (!inlineToolbar || !overlay) return;
+    if (inlineToolbar.classList.contains('editor-inline-toolbar--link-mode')) return;
+
+    var sel = window.getSelection();
+    if (!sel.rangeCount || sel.isCollapsed) {
+      inlineToolbar.classList.remove('editor-inline-toolbar--visible');
+      return;
+    }
+
+    var anchorEl = sel.anchorNode;
+    if (!anchorEl) { inlineToolbar.classList.remove('editor-inline-toolbar--visible'); return; }
+    var el = anchorEl.nodeType === 1 ? anchorEl : anchorEl.parentElement;
+    if (!el) { inlineToolbar.classList.remove('editor-inline-toolbar--visible'); return; }
+    var ce = el.closest && el.closest('[contenteditable="true"]');
+    if (!ce || !overlay.contains(ce)) {
+      inlineToolbar.classList.remove('editor-inline-toolbar--visible');
+      return;
+    }
+
+    savedRange = sel.getRangeAt(0).cloneRange();
+
+    var range = sel.getRangeAt(0);
+    var rect = range.getBoundingClientRect();
+    var editorBody = document.getElementById('editor-body');
+    if (!editorBody) return;
+    var bodyRect = editorBody.getBoundingClientRect();
+
+    var toolbarWidth = inlineToolbar.offsetWidth || 180;
+    var toolbarHeight = inlineToolbar.offsetHeight || 40;
+    var top = rect.top - bodyRect.top + editorBody.scrollTop - toolbarHeight - 6;
+    // If toolbar would go above visible area, show below selection instead
+    if (rect.top - toolbarHeight - 6 < bodyRect.top) {
+      top = rect.bottom - bodyRect.top + editorBody.scrollTop + 6;
+    }
+    var left = rect.left + rect.width / 2 - bodyRect.left - toolbarWidth / 2;
+    left = Math.max(4, Math.min(left, bodyRect.width - toolbarWidth - 4));
+
+    inlineToolbar.style.top = top + 'px';
+    inlineToolbar.style.left = left + 'px';
+    inlineToolbar.classList.add('editor-inline-toolbar--visible');
+  }
+
+  function restoreSelection() {
+    if (savedRange) {
+      var sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(savedRange);
+    }
+  }
+
+  function applyInlineCode() {
+    restoreSelection();
+    var sel = window.getSelection();
+    if (!sel.rangeCount || sel.isCollapsed) return;
+    var range = sel.getRangeAt(0);
+
+    var ancestor = range.commonAncestorContainer;
+    var codeParent = ancestor.nodeType === 1
+      ? ancestor.closest('code')
+      : (ancestor.parentElement && ancestor.parentElement.closest('code'));
+    if (codeParent) {
+      var text = codeParent.textContent;
+      var textNode = document.createTextNode(text);
+      codeParent.parentNode.replaceChild(textNode, codeParent);
+    } else {
+      var code = document.createElement('code');
+      range.surroundContents(code);
+    }
+    isDirty = true;
+  }
+
+  function showLinkInput() {
+    if (!inlineToolbar) return;
+    savedRange = window.getSelection().getRangeAt(0).cloneRange();
+    inlineToolbar.classList.add('editor-inline-toolbar--link-mode');
+    inlineToolbar.innerHTML =
+      '<input class="editor-inline-link-input" type="url" placeholder="https://">' +
+      '<button class="editor-inline-btn editor-inline-btn--apply" title="Применить">' +
+        '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>' +
+      '</button>' +
+      '<button class="editor-inline-btn editor-inline-btn--cancel" title="Отмена">' +
+        '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' +
+      '</button>';
+
+    var input = inlineToolbar.querySelector('.editor-inline-link-input');
+    var applyBtn = inlineToolbar.querySelector('.editor-inline-btn--apply');
+    var cancelBtn = inlineToolbar.querySelector('.editor-inline-btn--cancel');
+
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        applyLink(input.value);
+      } else if (e.key === 'Escape') {
+        restoreToolbarFromLink();
+      }
+    });
+
+    applyBtn.addEventListener('mousedown', function (e) {
+      e.preventDefault();
+      applyLink(input.value);
+    });
+
+    cancelBtn.addEventListener('mousedown', function (e) {
+      e.preventDefault();
+      restoreToolbarFromLink();
+    });
+
+    setTimeout(function () { input.focus(); }, 0);
+  }
+
+  function applyLink(url) {
+    if (!url) { restoreToolbarFromLink(); return; }
+    restoreSelection();
+    document.execCommand('createLink', false, url);
+
+    var sel = window.getSelection();
+    if (sel.anchorNode) {
+      var container = sel.anchorNode.nodeType === 1 ? sel.anchorNode : sel.anchorNode.parentElement;
+      if (container) {
+        var links = container.querySelectorAll('a[href="' + CSS.escape(url) + '"]');
+        links.forEach(function (a) {
+          a.setAttribute('target', '_blank');
+          a.setAttribute('rel', 'noopener');
+        });
+      }
+    }
+
+    isDirty = true;
+    restoreToolbarFromLink();
+  }
+
+  function restoreToolbarFromLink() {
+    if (!inlineToolbar) return;
+    inlineToolbar.classList.remove('editor-inline-toolbar--link-mode');
+    inlineToolbar.classList.remove('editor-inline-toolbar--visible');
+    inlineToolbar.innerHTML = getToolbarHtml();
+    setupToolbarButtons();
   }
 
   // ============================================================
@@ -158,11 +404,20 @@ var ArticleEditorModal = (function () {
     container.innerHTML = '';
 
     blocks.forEach(function (block, index) {
+      // Plus button before each block (except first)
+      if (index > 0) {
+        container.appendChild(createPlusButton(index));
+      }
+
       var el = renderBlockEditor(block, index);
       container.appendChild(el);
     });
 
-    // Add block button at end
+    // Plus button + add block button at end
+    if (blocks.length > 0) {
+      container.appendChild(createPlusButton(blocks.length));
+    }
+
     var addBtn = document.createElement('button');
     addBtn.className = 'editor-add-block';
     addBtn.innerHTML =
@@ -174,10 +429,24 @@ var ArticleEditorModal = (function () {
     container.appendChild(addBtn);
   }
 
+  function createPlusButton(insertIndex) {
+    var wrap = document.createElement('div');
+    wrap.className = 'editor-block-plus-wrap';
+    var btn = document.createElement('button');
+    btn.className = 'editor-block-plus';
+    btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 64 64"><use href="#icon-plus"/></svg>';
+    btn.addEventListener('click', function () {
+      showBlockTypePicker(insertIndex);
+    });
+    wrap.appendChild(btn);
+    return wrap;
+  }
+
   function renderBlockEditor(block, index) {
     var wrapper = document.createElement('div');
     wrapper.className = 'editor-block';
     wrapper.setAttribute('data-index', index);
+    wrapper.setAttribute('data-type', block.type);
     wrapper.setAttribute('draggable', 'true');
 
     // Drag handle + context menu trigger
@@ -193,7 +462,7 @@ var ArticleEditorModal = (function () {
 
     switch (block.type) {
       case 'paragraph':
-        content.innerHTML = '<div class="editor-block-text" contenteditable="true" data-placeholder="Текст...">' + Utils.sanitizeInlineHtml(block.text || '') + '</div>';
+        content.innerHTML = '<div class="editor-block-text" contenteditable="true" data-placeholder="Введите текст или / для выбора блока">' + Utils.sanitizeInlineHtml(block.text || '') + '</div>';
         break;
       case 'heading':
         var lvl = block.level || 2;
@@ -202,8 +471,13 @@ var ArticleEditorModal = (function () {
       case 'image':
         content.innerHTML =
           '<div class="editor-image-block">' +
-            '<input class="editor-input" type="text" placeholder="URL изображения" value="' + Utils.escapeHtml(block.url || '') + '" data-field="url">' +
-            (block.url ? '<img src="' + Utils.escapeHtml(block.url) + '" class="editor-image-preview">' : '') +
+            (block.url
+              ? '<img src="' + Utils.escapeHtml(block.url) + '" class="editor-image-preview">'
+              : '') +
+            '<div class="editor-image-actions">' +
+              '<button class="editor-image-upload-btn" data-action="upload">Выбрать изображение</button>' +
+              '<input class="editor-input editor-input-sm" type="text" placeholder="или вставьте URL" value="' + Utils.escapeHtml(block.url || '') + '" data-field="url">' +
+            '</div>' +
             '<input class="editor-input editor-input-sm" type="text" placeholder="Alt текст" value="' + Utils.escapeHtml(block.alt || '') + '" data-field="alt">' +
             '<input class="editor-input editor-input-sm" type="text" placeholder="Подпись" value="' + Utils.escapeHtml(block.caption || '') + '" data-field="caption">' +
             '<input class="editor-input editor-input-sm" type="text" placeholder="Источник" value="' + Utils.escapeHtml(block.credit || '') + '" data-field="credit">' +
@@ -326,12 +600,32 @@ var ArticleEditorModal = (function () {
     content.addEventListener('input', function () { isDirty = true; });
     content.addEventListener('change', function () { isDirty = true; });
 
+    // Contenteditable keyboard handling (Enter, Backspace, slash, shortcuts)
+    if (block.type === 'paragraph' || block.type === 'heading') {
+      var editableEl = content.querySelector('[contenteditable]');
+      if (editableEl) {
+        editableEl.addEventListener('keydown', function (e) {
+          handleContentEditableKeydown(e, index, block.type);
+        });
+        if (block.type === 'paragraph') {
+          editableEl.addEventListener('input', function () {
+            handleSlashInput(editableEl, wrapper, index);
+          });
+        }
+      }
+    }
+
     // List block interactions
     if (block.type === 'list') {
       setupListBlock(content, index);
     }
 
-    // Drag events
+    // Image block: upload button + URL change preview
+    if (block.type === 'image') {
+      setupImageBlock(content, index);
+    }
+
+    // Drag events (desktop)
     wrapper.addEventListener('dragstart', function (e) {
       e.dataTransfer.setData('text/plain', String(index));
       wrapper.classList.add('editor-block--dragging');
@@ -356,8 +650,274 @@ var ArticleEditorModal = (function () {
       }
     });
 
+    // Touch drag events (mobile) — on handle only
+    handle.addEventListener('touchstart', function (e) {
+      e.preventDefault();
+      touchDrag = { startIndex: index, currentOverIndex: index, startY: e.touches[0].clientY, blockEl: wrapper };
+      wrapper.classList.add('editor-block--touch-dragging');
+    }, { passive: false });
+
+    handle.addEventListener('touchmove', function (e) {
+      if (!touchDrag) return;
+      e.preventDefault();
+      var touch = e.touches[0];
+      var container = document.getElementById('editor-blocks');
+      if (!container) return;
+      var blockEls = container.querySelectorAll('.editor-block');
+
+      // Clear previous dragover
+      blockEls.forEach(function (el) { el.classList.remove('editor-block--touch-dragover'); });
+
+      // Find which block the touch is over
+      for (var i = 0; i < blockEls.length; i++) {
+        var rect = blockEls[i].getBoundingClientRect();
+        if (touch.clientY >= rect.top && touch.clientY <= rect.bottom) {
+          if (i !== touchDrag.startIndex) {
+            blockEls[i].classList.add('editor-block--touch-dragover');
+          }
+          touchDrag.currentOverIndex = i;
+          break;
+        }
+      }
+    }, { passive: false });
+
+    handle.addEventListener('touchend', function () {
+      if (!touchDrag) return;
+      var from = touchDrag.startIndex;
+      var to = touchDrag.currentOverIndex;
+      var container = document.getElementById('editor-blocks');
+      if (container) {
+        container.querySelectorAll('.editor-block').forEach(function (el) {
+          el.classList.remove('editor-block--touch-dragging', 'editor-block--touch-dragover');
+        });
+      }
+      touchDrag = null;
+      if (from !== to) {
+        moveBlock(from, to);
+      }
+    });
+
+    handle.addEventListener('touchcancel', function () {
+      if (!touchDrag) return;
+      var container = document.getElementById('editor-blocks');
+      if (container) {
+        container.querySelectorAll('.editor-block').forEach(function (el) {
+          el.classList.remove('editor-block--touch-dragging', 'editor-block--touch-dragover');
+        });
+      }
+      touchDrag = null;
+    });
+
     return wrapper;
   }
+
+  // ============================================================
+  // Contenteditable keyboard handling
+  // ============================================================
+
+  function handleContentEditableKeydown(e, index, blockType) {
+    var el = e.target;
+
+    // Enter: create new paragraph below
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      collectBlocks();
+
+      var sel = window.getSelection();
+      if (!sel.rangeCount) return;
+
+      var range = sel.getRangeAt(0);
+      range.deleteContents();
+
+      // Extract content after cursor
+      var afterRange = document.createRange();
+      afterRange.setStart(range.endContainer, range.endOffset);
+      afterRange.setEndAfter(el.lastChild || el);
+      var afterFrag = afterRange.extractContents();
+      var temp = document.createElement('div');
+      temp.appendChild(afterFrag);
+      var afterHtml = temp.innerHTML;
+
+      // Update current block
+      blocks[index].text = el.innerHTML;
+
+      // Insert new paragraph with remaining content
+      blocks.splice(index + 1, 0, { type: 'paragraph', text: afterHtml });
+      isDirty = true;
+      renderBlocks();
+      focusBlock(index + 1, false);
+      return;
+    }
+
+    // Backspace on empty block: delete it and focus previous
+    if (e.key === 'Backspace' && el.textContent.trim() === '' && blocks.length > 1) {
+      e.preventDefault();
+      collectBlocks();
+      blocks.splice(index, 1);
+      isDirty = true;
+      renderBlocks();
+      focusBlock(Math.max(0, index - 1), true);
+      return;
+    }
+
+    // Keyboard shortcuts for formatting (paragraph only)
+    if (blockType === 'paragraph') {
+      var isMac = navigator.platform.indexOf('Mac') > -1;
+      var mod = isMac ? e.metaKey : e.ctrlKey;
+      if (mod && e.key === 'b') {
+        e.preventDefault();
+        document.execCommand('bold', false, null);
+        isDirty = true;
+      } else if (mod && e.key === 'i') {
+        e.preventDefault();
+        document.execCommand('italic', false, null);
+        isDirty = true;
+      } else if (mod && e.key === 'k') {
+        e.preventDefault();
+        showLinkInput();
+      } else if (mod && e.key === 'e') {
+        e.preventDefault();
+        applyInlineCode();
+      }
+    }
+  }
+
+  function focusBlock(index, atEnd) {
+    requestAnimationFrame(function () {
+      var container = document.getElementById('editor-blocks');
+      if (!container) return;
+      var blockEls = container.querySelectorAll('.editor-block');
+      if (!blockEls[index]) return;
+      var editable = blockEls[index].querySelector('[contenteditable]');
+      if (!editable) {
+        var input = blockEls[index].querySelector('input, textarea');
+        if (input) input.focus();
+        return;
+      }
+      editable.focus();
+      if (atEnd && editable.childNodes.length > 0) {
+        var range = document.createRange();
+        range.selectNodeContents(editable);
+        range.collapse(false);
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+      }
+    });
+  }
+
+  // ============================================================
+  // Slash commands
+  // ============================================================
+
+  function handleSlashInput(editableEl, wrapper, index) {
+    var text = editableEl.textContent;
+    if (text.startsWith('/')) {
+      showSlashMenu(wrapper, index, text.slice(1));
+    } else {
+      hideSlashMenu();
+    }
+  }
+
+  function showSlashMenu(blockWrapper, index, filterText) {
+    hideSlashMenu();
+
+    var types = [
+      { type: 'paragraph', label: 'Текст', keywords: 'текст text paragraph параграф' },
+      { type: 'heading', label: 'Заголовок', keywords: 'заголовок heading h2 h3' },
+      { type: 'image', label: 'Изображение', keywords: 'изображение image фото photo картинка img' },
+      { type: 'gallery', label: 'Галерея', keywords: 'галерея gallery' },
+      { type: 'quote', label: 'Цитата', keywords: 'цитата quote' },
+      { type: 'list', label: 'Список', keywords: 'список list ul ol' },
+      { type: 'embed', label: 'Видео', keywords: 'видео video embed youtube vk rutube' },
+      { type: 'divider', label: 'Разделитель', keywords: 'разделитель divider hr линия' },
+      { type: 'spoiler', label: 'Спойлер', keywords: 'спойлер spoiler скрытый' },
+      { type: 'infobox', label: 'Инфоблок', keywords: 'инфоблок infobox info подсказка' },
+      { type: 'movie_card', label: 'Карточка фильма', keywords: 'фильм movie tmdb кино сериал' },
+      { type: 'tribute_products', label: 'TR-BUTE товары', keywords: 'товары products tribute магазин' },
+      { type: 'comparison', label: 'Сравнение', keywords: 'сравнение comparison' },
+      { type: 'rating', label: 'Оценка', keywords: 'оценка rating рейтинг' },
+      { type: 'table', label: 'Таблица', keywords: 'таблица table' },
+      { type: 'code', label: 'Код', keywords: 'код code программа' },
+      { type: 'audio', label: 'Аудио', keywords: 'аудио audio звук музыка' },
+    ];
+
+    if (filterText) {
+      var lower = filterText.toLowerCase();
+      types = types.filter(function (t) {
+        return t.label.toLowerCase().indexOf(lower) !== -1 || t.keywords.indexOf(lower) !== -1;
+      });
+    }
+
+    if (types.length === 0) return;
+
+    slashMenu = document.createElement('div');
+    slashMenu.className = 'editor-slash-menu';
+
+    types.forEach(function (t) {
+      var btn = document.createElement('button');
+      btn.className = 'editor-slash-item';
+      btn.textContent = t.label;
+      btn.addEventListener('mousedown', function (e) {
+        e.preventDefault();
+        hideSlashMenu();
+        blocks[index] = createEmptyBlock(t.type);
+        isDirty = true;
+        renderBlocks();
+        focusBlock(index, false);
+      });
+      slashMenu.appendChild(btn);
+    });
+
+    var contentEl = blockWrapper.querySelector('.editor-block-content');
+    if (contentEl) contentEl.appendChild(slashMenu);
+  }
+
+  function hideSlashMenu() {
+    if (slashMenu && slashMenu.parentNode) {
+      slashMenu.parentNode.removeChild(slashMenu);
+    }
+    slashMenu = null;
+  }
+
+  // ============================================================
+  // Image block setup
+  // ============================================================
+
+  function setupImageBlock(content, blockIndex) {
+    var uploadBtn = content.querySelector('[data-action="upload"]');
+    if (uploadBtn) {
+      uploadBtn.addEventListener('click', function () {
+        MediaPicker.open(function (url) {
+          blocks[blockIndex].url = url;
+          isDirty = true;
+          renderBlocks();
+        });
+      });
+    }
+
+    var urlInput = content.querySelector('[data-field="url"]');
+    if (urlInput) {
+      urlInput.addEventListener('change', function () {
+        var url = urlInput.value.trim();
+        blocks[blockIndex].url = url;
+        isDirty = true;
+        var preview = content.querySelector('.editor-image-preview');
+        if (url && !preview) {
+          var img = document.createElement('img');
+          img.className = 'editor-image-preview';
+          img.src = url;
+          content.querySelector('.editor-image-block').insertBefore(img, content.querySelector('.editor-image-actions'));
+        } else if (preview) {
+          preview.src = url;
+        }
+      });
+    }
+  }
+
+  // ============================================================
+  // List block setup
+  // ============================================================
 
   function setupListBlock(content, blockIndex) {
     content.addEventListener('click', function (e) {
@@ -399,17 +959,17 @@ var ArticleEditorModal = (function () {
     var items = [];
 
     if (block.type === 'paragraph') {
-      items.push({ label: 'H2 Сделать H2', action: function () { convertBlock(index, 'heading', 2); } });
-      items.push({ label: 'H3 Сделать H3', action: function () { convertBlock(index, 'heading', 3); } });
+      items.push({ label: 'H2', action: function () { convertBlock(index, 'heading', 2); } });
+      items.push({ label: 'H3', action: function () { convertBlock(index, 'heading', 3); } });
     }
     if (block.type === 'heading') {
-      items.push({ label: 'Сделать текст', action: function () { convertBlock(index, 'paragraph'); } });
+      items.push({ label: 'Текст', action: function () { convertBlock(index, 'paragraph'); } });
     }
 
-    items.push({ label: 'Переместить вверх', action: function () { moveBlock(index, index - 1); }, disabled: index === 0 });
-    items.push({ label: 'Переместить вниз', action: function () { moveBlock(index, index + 1); }, disabled: index >= blocks.length - 1 });
+    items.push({ label: 'Вверх', action: function () { moveBlock(index, index - 1); }, disabled: index === 0 });
+    items.push({ label: 'Вниз', action: function () { moveBlock(index, index + 1); }, disabled: index >= blocks.length - 1 });
     items.push({ label: 'Дублировать', action: function () { duplicateBlock(index); } });
-    items.push({ label: 'Удалить блок', action: function () { deleteBlock(index); }, danger: true });
+    items.push({ label: 'Удалить', action: function () { deleteBlock(index); }, danger: true });
 
     items.forEach(function (item) {
       var btn = document.createElement('button');
@@ -425,12 +985,10 @@ var ArticleEditorModal = (function () {
 
     anchor.parentNode.appendChild(menu);
 
-    // Position relative to handle
     var rect = anchor.getBoundingClientRect();
     menu.style.top = (anchor.offsetTop + anchor.offsetHeight + 4) + 'px';
     menu.style.left = anchor.offsetLeft + 'px';
 
-    // Close on outside click
     setTimeout(function () {
       document.addEventListener('click', closeAllMenus, { once: true });
     }, 0);
@@ -518,6 +1076,7 @@ var ArticleEditorModal = (function () {
     blocks.splice(atIndex, 0, block);
     isDirty = true;
     renderBlocks();
+    focusBlock(atIndex, false);
   }
 
   function deleteBlock(index) {
@@ -539,6 +1098,7 @@ var ArticleEditorModal = (function () {
 
   function moveBlock(from, to) {
     if (to < 0 || to >= blocks.length) return;
+    collectBlocks();
     var block = blocks.splice(from, 1)[0];
     blocks.splice(to, 0, block);
     isDirty = true;
@@ -546,6 +1106,7 @@ var ArticleEditorModal = (function () {
   }
 
   function convertBlock(index, newType, level) {
+    collectBlocks();
     var block = blocks[index];
     var text = block.text || '';
     if (newType === 'heading') {
@@ -680,6 +1241,25 @@ var ArticleEditorModal = (function () {
   // Save
   // ============================================================
 
+  function buildSaveBody(status) {
+    var titleEl = document.getElementById('editor-title');
+    var title = titleEl ? titleEl.value.trim() : '';
+
+    return {
+      title: title,
+      subtitle: (document.getElementById('editor-subtitle').value || '').trim() || null,
+      categoryId: Number(document.getElementById('editor-category').value) || null,
+      body: blocks,
+      status: status,
+      coverImageUrl: coverData.url || null,
+      coverImageAlt: coverData.alt || null,
+      coverImageCredit: coverData.credit || null,
+      metaTitle: seoData.metaTitle || null,
+      metaDescription: seoData.metaDescription || null,
+      tagIds: articleTags.length > 0 ? articleTags : undefined,
+    };
+  }
+
   async function save(status) {
     collectBlocks();
 
@@ -690,40 +1270,35 @@ var ArticleEditorModal = (function () {
       return;
     }
 
-    var body = {
-      title: title,
-      subtitle: (document.getElementById('editor-subtitle').value || '').trim() || null,
-      category_id: Number(document.getElementById('editor-category').value) || null,
-      content_blocks: blocks,
-      status: status,
-    };
-
+    var payload = buildSaveBody(status);
     setSaveStatus('Сохранение...');
 
     try {
       if (article && article.id) {
-        await Utils.apiFetch('/api/articles/' + article.id, {
+        var updated = await Utils.apiFetch('/api/articles/' + article.id, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(body),
+          body: JSON.stringify(payload),
         });
+        article = updated.article || updated;
         article.status = status;
         isDirty = false;
         setSaveStatus('Сохранено');
         Toast.show(status === 'published' ? 'Опубликовано' : 'Черновик сохранен', 'success');
-        // Update publish button text
         var pubBtn = document.getElementById('editor-publish');
         if (pubBtn) pubBtn.textContent = status === 'published' ? 'Обновить' : 'Опубликовать';
       } else {
         var result = await Utils.apiFetch('/api/articles', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(body),
+          body: JSON.stringify(payload),
         });
-        article = result;
+        article = result.article || result;
         isDirty = false;
         setSaveStatus('Сохранено');
         Toast.show('Статья создана', 'success');
+        var pubBtn2 = document.getElementById('editor-publish');
+        if (pubBtn2) pubBtn2.textContent = article.status === 'published' ? 'Обновить' : 'Опубликовать';
       }
     } catch (err) {
       setSaveStatus('Ошибка');
@@ -742,18 +1317,14 @@ var ArticleEditorModal = (function () {
         var titleEl = document.getElementById('editor-title');
         if (!titleEl || !titleEl.value.trim()) return;
 
-        var body = {
-          title: titleEl.value.trim(),
-          subtitle: (document.getElementById('editor-subtitle').value || '').trim() || null,
-          category_id: Number(document.getElementById('editor-category').value) || null,
-          content_blocks: blocks,
-        };
+        var payload = buildSaveBody(undefined);
+        delete payload.status;
 
         setSaveStatus('Сохранение...');
         Utils.apiFetch('/api/articles/' + article.id, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(body),
+          body: JSON.stringify(payload),
         }).then(function () {
           isDirty = false;
           setSaveStatus('Сохранено');
@@ -770,6 +1341,274 @@ var ArticleEditorModal = (function () {
   }
 
   // ============================================================
+  // Cover panel
+  // ============================================================
+
+  function showCoverPanel() {
+    closeAllMenus();
+
+    var panelOverlay = document.createElement('div');
+    panelOverlay.className = 'editor-panel-overlay';
+    panelOverlay.innerHTML =
+      '<div class="editor-panel">' +
+        '<div class="editor-panel-header">' +
+          '<span>Обложка</span>' +
+          '<button class="editor-panel-close">&times;</button>' +
+        '</div>' +
+        '<div class="editor-panel-body">' +
+          (coverData.url
+            ? '<img src="' + Utils.escapeHtml(coverData.url) + '" class="editor-cover-preview">'
+            : '<div class="editor-cover-empty">Нет обложки</div>') +
+          '<button class="editor-cover-select-btn" id="panel-cover-select">Выбрать изображение</button>' +
+          '<input class="editor-input" type="text" placeholder="Alt текст" value="' + Utils.escapeHtml(coverData.alt) + '" id="panel-cover-alt">' +
+          '<input class="editor-input" type="text" placeholder="Источник" value="' + Utils.escapeHtml(coverData.credit) + '" id="panel-cover-credit">' +
+          (coverData.url ? '<button class="editor-cover-remove-btn" id="panel-cover-remove">Удалить обложку</button>' : '') +
+        '</div>' +
+      '</div>';
+
+    panelOverlay.querySelector('.editor-panel-close').addEventListener('click', function () {
+      saveCoverFromPanel(panelOverlay);
+      panelOverlay.remove();
+    });
+    panelOverlay.addEventListener('click', function (e) {
+      if (e.target === panelOverlay) {
+        saveCoverFromPanel(panelOverlay);
+        panelOverlay.remove();
+      }
+    });
+
+    panelOverlay.querySelector('#panel-cover-select').addEventListener('click', function () {
+      MediaPicker.open(function (url) {
+        coverData.url = url;
+        isDirty = true;
+        // Refresh panel
+        panelOverlay.remove();
+        showCoverPanel();
+        updateCoverBanner();
+      });
+    });
+
+    var removeBtn = panelOverlay.querySelector('#panel-cover-remove');
+    if (removeBtn) {
+      removeBtn.addEventListener('click', function () {
+        coverData = { url: '', alt: '', credit: '' };
+        isDirty = true;
+        panelOverlay.remove();
+        updateCoverBanner();
+      });
+    }
+
+    document.body.appendChild(panelOverlay);
+  }
+
+  function saveCoverFromPanel(panelOverlay) {
+    var altEl = panelOverlay.querySelector('#panel-cover-alt');
+    var creditEl = panelOverlay.querySelector('#panel-cover-credit');
+    if (altEl) coverData.alt = altEl.value.trim();
+    if (creditEl) coverData.credit = creditEl.value.trim();
+    isDirty = true;
+    updateCoverBanner();
+  }
+
+  function updateCoverBanner() {
+    var body = document.getElementById('editor-body');
+    if (!body) return;
+
+    var existing = body.querySelector('.editor-cover-banner, .editor-cover-add');
+    if (existing) existing.remove();
+
+    var titleInput = body.querySelector('.editor-title-input');
+    if (!titleInput) return;
+
+    if (coverData.url) {
+      var banner = document.createElement('div');
+      banner.className = 'editor-cover-banner';
+      banner.id = 'editor-cover-banner';
+      banner.innerHTML =
+        '<img src="' + Utils.escapeHtml(coverData.url) + '" class="editor-cover-banner-img">' +
+        '<button class="editor-cover-banner-change" id="editor-cover-change">Изменить обложку</button>';
+      banner.querySelector('#editor-cover-change').addEventListener('click', function () { showCoverPanel(); });
+      body.insertBefore(banner, titleInput);
+    } else {
+      var addBtn = document.createElement('button');
+      addBtn.className = 'editor-cover-add';
+      addBtn.id = 'editor-cover-add';
+      addBtn.textContent = '+ Обложка';
+      addBtn.addEventListener('click', function () { showCoverPanel(); });
+      body.insertBefore(addBtn, titleInput);
+    }
+  }
+
+  // ============================================================
+  // Tags panel
+  // ============================================================
+
+  function showTagsPanel() {
+    closeAllMenus();
+
+    var panelOverlay = document.createElement('div');
+    panelOverlay.className = 'editor-panel-overlay';
+    panelOverlay.innerHTML =
+      '<div class="editor-panel">' +
+        '<div class="editor-panel-header">' +
+          '<span>Теги</span>' +
+          '<button class="editor-panel-close">&times;</button>' +
+        '</div>' +
+        '<div class="editor-panel-body">' +
+          '<input class="editor-input" type="text" placeholder="Поиск тегов..." id="panel-tag-search">' +
+          '<div class="editor-tags-selected" id="panel-tags-selected"></div>' +
+          '<div class="editor-tags-list" id="panel-tags-list">Загрузка...</div>' +
+        '</div>' +
+      '</div>';
+
+    panelOverlay.querySelector('.editor-panel-close').addEventListener('click', function () {
+      panelOverlay.remove();
+    });
+    panelOverlay.addEventListener('click', function (e) {
+      if (e.target === panelOverlay) panelOverlay.remove();
+    });
+
+    document.body.appendChild(panelOverlay);
+
+    // Load tags
+    loadTagsForPanel(panelOverlay);
+  }
+
+  async function loadTagsForPanel(panelOverlay) {
+    var listEl = panelOverlay.querySelector('#panel-tags-list');
+    var searchEl = panelOverlay.querySelector('#panel-tag-search');
+    var selectedEl = panelOverlay.querySelector('#panel-tags-selected');
+
+    try {
+      var data = await Utils.apiFetch('/api/tags?limit=200');
+      var allTags = data.tags || [];
+
+      function renderTagsList(filter) {
+        var filtered = allTags;
+        if (filter) {
+          var lower = filter.toLowerCase();
+          filtered = allTags.filter(function (t) {
+            return (t.nameRu || '').toLowerCase().indexOf(lower) !== -1 ||
+              (t.nameEn || '').toLowerCase().indexOf(lower) !== -1;
+          });
+        }
+
+        listEl.innerHTML = '';
+        if (filtered.length === 0) {
+          listEl.innerHTML = '<span class="editor-tags-empty">Ничего не найдено</span>';
+          return;
+        }
+
+        filtered.forEach(function (tag) {
+          var isSelected = articleTags.indexOf(tag.id) !== -1;
+          var chip = document.createElement('button');
+          chip.className = 'editor-tag-chip' + (isSelected ? ' editor-tag-chip--selected' : '');
+          chip.textContent = tag.nameRu || tag.nameEn || tag.slug;
+          chip.addEventListener('click', function () {
+            var idx = articleTags.indexOf(tag.id);
+            if (idx !== -1) {
+              articleTags.splice(idx, 1);
+            } else {
+              articleTags.push(tag.id);
+            }
+            isDirty = true;
+            renderTagsList(searchEl.value);
+            renderSelectedTags(allTags);
+          });
+          listEl.appendChild(chip);
+        });
+      }
+
+      function renderSelectedTags(tags) {
+        selectedEl.innerHTML = '';
+        if (articleTags.length === 0) return;
+        articleTags.forEach(function (tagId) {
+          var tag = tags.find(function (t) { return t.id === tagId; });
+          if (!tag) return;
+          var chip = document.createElement('span');
+          chip.className = 'editor-tag-selected';
+          chip.innerHTML = Utils.escapeHtml(tag.nameRu || tag.slug) +
+            '<button class="editor-tag-remove">&times;</button>';
+          chip.querySelector('.editor-tag-remove').addEventListener('click', function () {
+            var idx = articleTags.indexOf(tagId);
+            if (idx !== -1) articleTags.splice(idx, 1);
+            isDirty = true;
+            renderTagsList(searchEl.value);
+            renderSelectedTags(tags);
+          });
+          selectedEl.appendChild(chip);
+        });
+      }
+
+      renderSelectedTags(allTags);
+      renderTagsList('');
+
+      searchEl.addEventListener('input', Utils.debounce(function () {
+        renderTagsList(searchEl.value);
+      }, 150));
+
+    } catch (err) {
+      listEl.innerHTML = '<span class="editor-tags-empty">Не удалось загрузить теги</span>';
+    }
+  }
+
+  // ============================================================
+  // SEO panel
+  // ============================================================
+
+  function showSeoPanel() {
+    closeAllMenus();
+
+    var panelOverlay = document.createElement('div');
+    panelOverlay.className = 'editor-panel-overlay';
+    panelOverlay.innerHTML =
+      '<div class="editor-panel">' +
+        '<div class="editor-panel-header">' +
+          '<span>SEO</span>' +
+          '<button class="editor-panel-close">&times;</button>' +
+        '</div>' +
+        '<div class="editor-panel-body">' +
+          '<label class="editor-panel-label">Meta Title <span class="editor-char-count" id="seo-title-count">' + (seoData.metaTitle || '').length + '/70</span></label>' +
+          '<input class="editor-input" type="text" maxlength="70" value="' + Utils.escapeHtml(seoData.metaTitle) + '" id="panel-seo-title" placeholder="Заголовок для поисковиков">' +
+          '<label class="editor-panel-label">Meta Description <span class="editor-char-count" id="seo-desc-count">' + (seoData.metaDescription || '').length + '/160</span></label>' +
+          '<textarea class="editor-textarea" maxlength="160" id="panel-seo-desc" placeholder="Описание для поисковиков">' + Utils.escapeHtml(seoData.metaDescription) + '</textarea>' +
+        '</div>' +
+      '</div>';
+
+    var closePanel = function () {
+      var titleEl = panelOverlay.querySelector('#panel-seo-title');
+      var descEl = panelOverlay.querySelector('#panel-seo-desc');
+      seoData.metaTitle = titleEl ? titleEl.value.trim() : '';
+      seoData.metaDescription = descEl ? descEl.value.trim() : '';
+      isDirty = true;
+      panelOverlay.remove();
+    };
+
+    panelOverlay.querySelector('.editor-panel-close').addEventListener('click', closePanel);
+    panelOverlay.addEventListener('click', function (e) {
+      if (e.target === panelOverlay) closePanel();
+    });
+
+    // Character counters
+    var titleInput = panelOverlay.querySelector('#panel-seo-title');
+    var descInput = panelOverlay.querySelector('#panel-seo-desc');
+    var titleCount = panelOverlay.querySelector('#seo-title-count');
+    var descCount = panelOverlay.querySelector('#seo-desc-count');
+
+    titleInput.addEventListener('input', function () {
+      titleCount.textContent = titleInput.value.length + '/70';
+      titleCount.classList.toggle('editor-char-count--over', titleInput.value.length > 60);
+    });
+    descInput.addEventListener('input', function () {
+      descCount.textContent = descInput.value.length + '/160';
+      descCount.classList.toggle('editor-char-count--over', descInput.value.length > 150);
+    });
+
+    document.body.appendChild(panelOverlay);
+    titleInput.focus();
+  }
+
+  // ============================================================
   // Overflow menu
   // ============================================================
 
@@ -781,9 +1620,9 @@ var ArticleEditorModal = (function () {
 
     var items = [
       { label: 'Предпросмотр', action: showPreview },
-      { label: 'SEO настройки', action: showSeoPanel },
-      { label: 'Теги', action: showTagsPanel },
       { label: 'Обложка', action: showCoverPanel },
+      { label: 'Теги', action: showTagsPanel },
+      { label: 'SEO настройки', action: showSeoPanel },
     ];
 
     if (article && article.id) {
@@ -825,6 +1664,21 @@ var ArticleEditorModal = (function () {
       '</div>';
 
     var contentEl = previewOverlay.querySelector('.editor-preview-content');
+
+    // Show cover in preview
+    if (coverData.url) {
+      var coverFig = document.createElement('figure');
+      coverFig.className = 'article-figure';
+      coverFig.style.marginBottom = '20px';
+      var coverImg = document.createElement('img');
+      coverImg.src = coverData.url;
+      coverImg.alt = coverData.alt || '';
+      coverImg.style.width = '100%';
+      coverImg.style.borderRadius = '8px';
+      coverFig.appendChild(coverImg);
+      contentEl.appendChild(coverFig);
+    }
+
     ArticleBody.render(contentEl, blocks);
 
     previewOverlay.querySelector('.editor-preview-close').addEventListener('click', function () {
@@ -835,18 +1689,6 @@ var ArticleEditorModal = (function () {
     });
 
     document.body.appendChild(previewOverlay);
-  }
-
-  function showSeoPanel() {
-    Toast.show('SEO настройки: в разработке', 'info');
-  }
-
-  function showTagsPanel() {
-    Toast.show('Теги: в разработке', 'info');
-  }
-
-  function showCoverPanel() {
-    Toast.show('Обложка: в разработке', 'info');
   }
 
   async function deleteArticle() {
@@ -867,6 +1709,7 @@ var ArticleEditorModal = (function () {
   // ============================================================
 
   function closeAllMenus() {
+    hideSlashMenu();
     document.querySelectorAll('.editor-context-menu, .editor-overflow-menu, .editor-block-picker').forEach(function (m) {
       m.remove();
     });
