@@ -92,7 +92,10 @@
   font-size: 0.8rem;
   flex: 1;
   min-width: 120px;
+  transition: border-color 0.15s, box-shadow 0.15s;
 }
+
+.media-picker-input:focus { border-color: var(--border-active); box-shadow: 0 0 0.2rem var(--neutral-btn-glow); }
 
 .media-picker-upload-btn {
   padding: 6px 16px;

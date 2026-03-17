@@ -1,3 +1,19 @@
+/*
+ * ===== Z-INDEX MAP (shared with TR-BUTE) =====
+ *
+ *  1           grain-overlay
+ *  999-1000    header
+ *  998         mobile nav overlay
+ *  1001        bottom-nav
+ *  2000        editor-modal
+ *  2100        editor-preview-overlay
+ *  2200        media-picker-overlay
+ *  10000       bottom-sheet
+ *  10002       modal-overlay, image-zoom-overlay
+ *  10003       toast-container
+ *  99999       progress-bar
+ */
+
 /* ===== Font Faces — Montserrat (locally hosted) ===== */
 @font-face {
   font-family: 'Montserrat';

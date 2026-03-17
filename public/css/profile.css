@@ -47,7 +47,7 @@
   font-size: 0.95rem;
   font-weight: 600;
   text-decoration: none;
-  color: #fff;
+  color: var(--text-inverse);
   border: none;
   cursor: pointer;
   transition: opacity 0.2s;
@@ -227,11 +227,11 @@
   border-radius: 8px;
   overflow: hidden;
   text-decoration: none;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 @media (hover: hover) {
-  .profile-article-card:hover { border-color: var(--card-border-hover); }
+  .profile-article-card:hover { border-color: var(--card-border-hover); box-shadow: var(--shadow-sm); }
 }
 
 .profile-article-img {

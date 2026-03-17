@@ -17,11 +17,11 @@
   overflow: hidden;
   text-decoration: none;
   color: inherit;
-  transition: background-color 200ms, border-color 200ms;
+  transition: background-color 200ms, border-color 200ms, box-shadow 200ms;
 }
 
 @media (hover: hover) {
-  .collection-card:hover { background: var(--card-bg-hover); border-color: var(--card-border-hover); }
+  .collection-card:hover { background: var(--card-bg-hover); border-color: var(--card-border-hover); box-shadow: var(--shadow-sm); }
 }
 
 @media (max-width: 768px) {
