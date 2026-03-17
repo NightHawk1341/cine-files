@@ -19,6 +19,7 @@ var ArticleEditorModal = (function () {
   var selectionHandler = null;
   var slashMenu = null;
   var savedRange = null;
+  var touchDrag = null; // { startIndex, currentOverIndex, startY, blockEl }
 
   // ============================================================
   // Open / Close
@@ -281,9 +282,15 @@ var ArticleEditorModal = (function () {
     if (!editorBody) return;
     var bodyRect = editorBody.getBoundingClientRect();
 
-    var top = rect.top - bodyRect.top + editorBody.scrollTop - 44;
-    var left = rect.left + rect.width / 2 - bodyRect.left - 90;
-    left = Math.max(0, Math.min(left, bodyRect.width - 180));
+    var toolbarWidth = inlineToolbar.offsetWidth || 180;
+    var toolbarHeight = inlineToolbar.offsetHeight || 40;
+    var top = rect.top - bodyRect.top + editorBody.scrollTop - toolbarHeight - 6;
+    // If toolbar would go above visible area, show below selection instead
+    if (rect.top - toolbarHeight - 6 < bodyRect.top) {
+      top = rect.bottom - bodyRect.top + editorBody.scrollTop + 6;
+    }
+    var left = rect.left + rect.width / 2 - bodyRect.left - toolbarWidth / 2;
+    left = Math.max(4, Math.min(left, bodyRect.width - toolbarWidth - 4));
 
     inlineToolbar.style.top = top + 'px';
     inlineToolbar.style.left = left + 'px';
@@ -618,7 +625,7 @@ var ArticleEditorModal = (function () {
       setupImageBlock(content, index);
     }
 
-    // Drag events
+    // Drag events (desktop)
     wrapper.addEventListener('dragstart', function (e) {
       e.dataTransfer.setData('text/plain', String(index));
       wrapper.classList.add('editor-block--dragging');
@@ -641,6 +648,64 @@ var ArticleEditorModal = (function () {
       if (fromIndex !== toIndex) {
         moveBlock(fromIndex, toIndex);
       }
+    });
+
+    // Touch drag events (mobile) — on handle only
+    handle.addEventListener('touchstart', function (e) {
+      e.preventDefault();
+      touchDrag = { startIndex: index, currentOverIndex: index, startY: e.touches[0].clientY, blockEl: wrapper };
+      wrapper.classList.add('editor-block--touch-dragging');
+    }, { passive: false });
+
+    handle.addEventListener('touchmove', function (e) {
+      if (!touchDrag) return;
+      e.preventDefault();
+      var touch = e.touches[0];
+      var container = document.getElementById('editor-blocks');
+      if (!container) return;
+      var blockEls = container.querySelectorAll('.editor-block');
+
+      // Clear previous dragover
+      blockEls.forEach(function (el) { el.classList.remove('editor-block--touch-dragover'); });
+
+      // Find which block the touch is over
+      for (var i = 0; i < blockEls.length; i++) {
+        var rect = blockEls[i].getBoundingClientRect();
+        if (touch.clientY >= rect.top && touch.clientY <= rect.bottom) {
+          if (i !== touchDrag.startIndex) {
+            blockEls[i].classList.add('editor-block--touch-dragover');
+          }
+          touchDrag.currentOverIndex = i;
+          break;
+        }
+      }
+    }, { passive: false });
+
+    handle.addEventListener('touchend', function () {
+      if (!touchDrag) return;
+      var from = touchDrag.startIndex;
+      var to = touchDrag.currentOverIndex;
+      var container = document.getElementById('editor-blocks');
+      if (container) {
+        container.querySelectorAll('.editor-block').forEach(function (el) {
+          el.classList.remove('editor-block--touch-dragging', 'editor-block--touch-dragover');
+        });
+      }
+      touchDrag = null;
+      if (from !== to) {
+        moveBlock(from, to);
+      }
+    });
+
+    handle.addEventListener('touchcancel', function () {
+      if (!touchDrag) return;
+      var container = document.getElementById('editor-blocks');
+      if (container) {
+        container.querySelectorAll('.editor-block').forEach(function (el) {
+          el.classList.remove('editor-block--touch-dragging', 'editor-block--touch-dragover');
+        });
+      }
+      touchDrag = null;
     });
 
     return wrapper;
