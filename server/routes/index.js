@@ -158,6 +158,10 @@ function setupRoutes(app, deps) {
   app.post('/api/integrations/:id/view', integrations.view(deps));
   app.post('/api/integrations/:id/click', integrations.click(deps));
 
+  // Admin — integration reporting (ОРД compliance)
+  app.get('/api/admin/integrations/report', requireAdmin, integrations.report(deps));
+  app.post('/api/admin/integrations/:id/mark-reported', requireAdmin, integrations.markReported(deps));
+
   // ============================================================
   // Admin — word filter / auto-moderation
   // ============================================================

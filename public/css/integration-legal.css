@@ -1,0 +1,79 @@
+/* Legal label for paid integrations (38-FZ compliance) */
+
+.integration-slot-item-wrap {
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--card-border);
+  background: var(--card-bg);
+  transition: border-color 0.2s;
+}
+
+@media (hover: hover) {
+  .integration-slot-item-wrap:hover {
+    border-color: var(--card-border-hover);
+  }
+}
+
+.integration-slot-item-wrap .integration-slot-item {
+  border: none;
+  border-radius: 0;
+}
+
+.integration-slot-legal {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  font-size: 11px;
+  line-height: 1.2;
+  color: var(--text-tertiary);
+  background: var(--bg-tertiary);
+  border-top: 1px solid var(--border-color);
+}
+
+.integration-slot-reklama {
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.integration-slot-advertiser {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+a.integration-slot-advertiser {
+  color: var(--link-color);
+  text-decoration: none;
+}
+
+@media (hover: hover) {
+  a.integration-slot-advertiser:hover {
+    text-decoration: underline;
+  }
+}
+
+.integration-slot-erid {
+  margin-left: auto;
+  white-space: nowrap;
+  font-family: monospace;
+  font-size: 10px;
+  color: var(--text-tertiary);
+  opacity: 0.7;
+}
+
+/* Mobile: stack vertically */
+@media (max-width: 480px) {
+  .integration-slot-legal {
+    flex-wrap: wrap;
+    gap: 2px 8px;
+  }
+
+  .integration-slot-erid {
+    margin-left: 0;
+    width: 100%;
+  }
+}
