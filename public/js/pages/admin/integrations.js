@@ -83,6 +83,35 @@ Router.registerPage('/admin/integrations', {
         '<label class="admin-label">HTML-контент</label>' +
         '<textarea class="admin-textarea" id="intg-html" rows="4"></textarea>' +
       '</div>' +
+      '<details class="admin-form-section" style="margin-top:12px">' +
+        '<summary style="cursor:pointer;font-weight:600;color:var(--text-primary);padding:8px 0">Юридические данные</summary>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;padding-top:12px">' +
+          '<div class="admin-form-group">' +
+            '<label class="admin-label">ERID</label>' +
+            '<input class="admin-input" id="intg-erid" placeholder="Токен из ОРД">' +
+          '</div>' +
+          '<div class="admin-form-group">' +
+            '<label class="admin-label">Рекламодатель</label>' +
+            '<input class="admin-input" id="intg-advertiser-name" placeholder="Юр. название">' +
+          '</div>' +
+          '<div class="admin-form-group">' +
+            '<label class="admin-label">Сайт рекламодателя</label>' +
+            '<input class="admin-input" id="intg-advertiser-url" placeholder="https://">' +
+          '</div>' +
+          '<div class="admin-form-group">' +
+            '<label class="admin-label">Номер договора</label>' +
+            '<input class="admin-input" id="intg-contract-number">' +
+          '</div>' +
+          '<div class="admin-form-group">' +
+            '<label class="admin-label">Дата договора</label>' +
+            '<input class="admin-input" id="intg-contract-date" type="date">' +
+          '</div>' +
+          '<div class="admin-form-group">' +
+            '<label class="admin-label">Сумма (RUB)</label>' +
+            '<input class="admin-input" id="intg-revenue" type="number" step="0.01" value="0">' +
+          '</div>' +
+        '</div>' +
+      '</details>' +
       '<div class="admin-form-actions">' +
         '<button type="submit" class="admin-btn-primary">Сохранить</button>' +
         '<button type="button" class="admin-btn-secondary" id="intg-cancel">Отмена</button>' +
@@ -120,7 +149,7 @@ Router.registerPage('/admin/integrations', {
         table.innerHTML =
           '<thead><tr>' +
           '<th>Название</th><th>Тип</th><th>Размещение</th><th>Активна</th>' +
-          '<th>Показы</th><th>Клики</th><th>Период</th><th></th>' +
+          '<th>ОРД</th><th>Показы</th><th>Клики</th><th>Период</th><th></th>' +
           '</tr></thead>';
 
         var tbody = document.createElement('tbody');
@@ -130,12 +159,24 @@ Router.registerPage('/admin/integrations', {
           var endStr = item.end_date ? Utils.formatDateShort(item.end_date) : '—';
           var maxLabel = item.max_views > 0 ? ' / ' + item.max_views : '';
 
+          var ordBadge = '';
+          if (!item.erid) {
+            ordBadge = '<span style="color:var(--text-tertiary)">—</span>';
+          } else if (!item.advertiser_name) {
+            ordBadge = '<span class="admin-status admin-status-rejected" title="Нет рекламодателя">!</span>';
+          } else if (item.is_active && !item.ord_reported_at) {
+            ordBadge = '<span class="admin-status admin-status-pending" title="Нужен отчёт в ОРД">Отчёт</span>';
+          } else {
+            ordBadge = '<span class="admin-status admin-status-visible" title="Соответствует">ОРД</span>';
+          }
+
           tr.innerHTML =
             '<td>' + Utils.escapeHtml(item.title) + '</td>' +
             '<td>' + Utils.escapeHtml(item.integration_type || item.promo_type || '') + '</td>' +
             '<td>' + Utils.escapeHtml(item.placement) + '</td>' +
             '<td><span class="admin-status admin-status-' + (item.is_active ? 'visible' : 'hidden') + '">' +
               (item.is_active ? 'Да' : 'Нет') + '</span></td>' +
+            '<td>' + ordBadge + '</td>' +
             '<td>' + Number(item.current_views || 0) + maxLabel + '</td>' +
             '<td>' + Number(item.click_count || 0) + '</td>' +
             '<td>' + startStr + ' — ' + endStr + '</td>' +
@@ -168,6 +209,12 @@ Router.registerPage('/admin/integrations', {
       document.getElementById('intg-start').value = '';
       document.getElementById('intg-end').value = '';
       document.getElementById('intg-html').value = '';
+      document.getElementById('intg-erid').value = '';
+      document.getElementById('intg-advertiser-name').value = '';
+      document.getElementById('intg-advertiser-url').value = '';
+      document.getElementById('intg-contract-number').value = '';
+      document.getElementById('intg-contract-date').value = '';
+      document.getElementById('intg-revenue').value = '0';
       formWrap.style.display = 'none';
     }
 
@@ -185,6 +232,12 @@ Router.registerPage('/admin/integrations', {
       document.getElementById('intg-start').value = item.start_date ? item.start_date.slice(0, 16) : '';
       document.getElementById('intg-end').value = item.end_date ? item.end_date.slice(0, 16) : '';
       document.getElementById('intg-html').value = item.html_content || '';
+      document.getElementById('intg-erid').value = item.erid || '';
+      document.getElementById('intg-advertiser-name').value = item.advertiser_name || '';
+      document.getElementById('intg-advertiser-url').value = item.advertiser_url || '';
+      document.getElementById('intg-contract-number').value = item.contract_number || '';
+      document.getElementById('intg-contract-date').value = item.contract_date ? item.contract_date.slice(0, 10) : '';
+      document.getElementById('intg-revenue').value = Number(item.revenue_amount || 0);
       formWrap.style.display = '';
     }
 
@@ -213,6 +266,12 @@ Router.registerPage('/admin/integrations', {
         start_date: document.getElementById('intg-start').value || null,
         end_date: document.getElementById('intg-end').value || null,
         html_content: document.getElementById('intg-html').value.trim() || null,
+        erid: document.getElementById('intg-erid').value.trim() || null,
+        advertiser_name: document.getElementById('intg-advertiser-name').value.trim() || null,
+        advertiser_url: document.getElementById('intg-advertiser-url').value.trim() || null,
+        contract_number: document.getElementById('intg-contract-number').value.trim() || null,
+        contract_date: document.getElementById('intg-contract-date').value || null,
+        revenue_amount: Number(document.getElementById('intg-revenue').value) || 0,
       };
 
       try {

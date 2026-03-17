@@ -93,7 +93,7 @@ The existing `integrations` table needs new columns for legal compliance. **No n
 
 ### 2.1. Migration SQL
 
-File: `migrations/XXX_integrations_legal_fields.sql`
+File: `migrations/005_integrations_legal_fields.sql`
 
 ```sql
 -- Add legal compliance fields to integrations table
@@ -123,7 +123,7 @@ Add the new columns to the `integrations` table definition in `SQL_SCHEMA.sql`.
 
 ## 3. Backend Changes
 
-### 3.1. API Changes (`api/promos.js` or integration handler)
+### 3.1. API Changes (`api/promos.js`)
 
 Update the integration CRUD to accept and return the new fields:
 
@@ -368,7 +368,15 @@ Placements optimized for film company campaigns. The existing `placement` field 
 | `between` | Between article cards in feed | Native-style promos |
 | `footer` | Below content | Secondary campaigns |
 
-### 6.2. New Placement: `in-article`
+### 6.2. Current Page Usage
+
+| Page | File | Placement | Method |
+|------|------|-----------|--------|
+| Home | `public/js/pages/home.js` | `between` | `injectBetween()` after article feed |
+| Category | `public/js/pages/category.js` | `between` | `injectBetween()` after article grid |
+| Article | `public/js/pages/article.js` | `footer` | `render()` below article body |
+
+### 6.3. New Placement: `in-article`
 
 Film companies often want placement inside review/news articles about their films. Add a new placement type that inserts between article body blocks.
 
@@ -376,7 +384,7 @@ Implementation in `article-body.js`: after rendering the 3rd-4th block, check fo
 
 This leverages the existing `target_categories` filter -- a distributor promoting a horror film can target only the "horror" or "reviews" category.
 
-### 6.3. Pricing Model Suggestions
+### 6.4. Pricing Model Suggestions
 
 For the commercial offer to film companies:
 
@@ -487,15 +495,15 @@ MONTHLY (by the 30th)
 ### Database
 | Change | File |
 |--------|------|
-| Migration SQL | `migrations/XXX_integrations_legal_fields.sql` |
+| Migration SQL | `migrations/005_integrations_legal_fields.sql` |
 | Schema reference | `SQL_SCHEMA.sql` (update integrations table) |
 
 ### Backend
 | Change | File |
 |--------|------|
-| Add legal fields to CRUD | `api/promos.js` (or integration handler) |
-| Reporting endpoint | New file in `api/` or add to existing |
-| Mark-reported endpoint | Same file as reporting |
+| Add legal fields to CRUD | `api/promos.js` |
+| Reporting endpoint | `api/promos.js` (add `report()` handler) |
+| Mark-reported endpoint | `api/promos.js` (add `markReported()` handler) |
 | Register routes | `server/routes/index.js` |
 | ads.txt | `public/ads.txt` |
 

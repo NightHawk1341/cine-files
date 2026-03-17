@@ -53,12 +53,52 @@ var IntegrationSlot = (function () {
       wrapper.className = 'integration-slot-item integration-slot-html';
       wrapper.innerHTML = item.html_content;
       trackView(item.id);
+
+      if (item.erid) {
+        var htmlContainer = document.createElement('div');
+        htmlContainer.className = 'integration-slot-item-wrap';
+        htmlContainer.appendChild(wrapper);
+
+        var htmlLegal = document.createElement('div');
+        htmlLegal.className = 'integration-slot-legal';
+
+        var htmlReklama = document.createElement('span');
+        htmlReklama.className = 'integration-slot-reklama';
+        htmlReklama.textContent = 'Реклама';
+        htmlLegal.appendChild(htmlReklama);
+
+        if (item.advertiser_name) {
+          var htmlAdv = document.createElement('span');
+          htmlAdv.className = 'integration-slot-advertiser';
+          htmlAdv.textContent = item.advertiser_name;
+          htmlLegal.appendChild(htmlAdv);
+        }
+
+        var htmlErid = document.createElement('span');
+        htmlErid.className = 'integration-slot-erid';
+        htmlErid.textContent = 'erid: ' + item.erid;
+        htmlLegal.appendChild(htmlErid);
+
+        htmlContainer.appendChild(htmlLegal);
+        return htmlContainer;
+      }
+
       return wrapper;
     }
 
     var el = document.createElement('a');
     el.className = 'integration-slot-item';
-    el.href = item.destination_url || '#';
+    if (item.destination_url && item.erid) {
+      try {
+        var destUrl = new URL(item.destination_url);
+        destUrl.searchParams.set('erid', item.erid);
+        el.href = destUrl.toString();
+      } catch (e) {
+        el.href = item.destination_url;
+      }
+    } else {
+      el.href = item.destination_url || '#';
+    }
     if (item.destination_url) {
       el.target = '_blank';
       el.rel = 'noopener noreferrer sponsored';
@@ -85,7 +125,43 @@ var IntegrationSlot = (function () {
     });
 
     trackView(item.id);
-    return el;
+
+    if (!item.erid) return el;
+
+    var container = document.createElement('div');
+    container.className = 'integration-slot-item-wrap';
+    container.appendChild(el);
+
+    var legal = document.createElement('div');
+    legal.className = 'integration-slot-legal';
+
+    var reklama = document.createElement('span');
+    reklama.className = 'integration-slot-reklama';
+    reklama.textContent = 'Реклама';
+    legal.appendChild(reklama);
+
+    if (item.advertiser_url) {
+      var advLink = document.createElement('a');
+      advLink.className = 'integration-slot-advertiser';
+      advLink.href = item.advertiser_url;
+      advLink.target = '_blank';
+      advLink.rel = 'noopener noreferrer sponsored';
+      advLink.textContent = item.advertiser_name;
+      legal.appendChild(advLink);
+    } else if (item.advertiser_name) {
+      var advSpan = document.createElement('span');
+      advSpan.className = 'integration-slot-advertiser';
+      advSpan.textContent = item.advertiser_name;
+      legal.appendChild(advSpan);
+    }
+
+    var eridEl = document.createElement('span');
+    eridEl.className = 'integration-slot-erid';
+    eridEl.textContent = 'erid: ' + item.erid;
+    legal.appendChild(eridEl);
+
+    container.appendChild(legal);
+    return container;
   }
 
   /**

@@ -241,12 +241,21 @@ CREATE TABLE "integrations" (
     "current_views"       INTEGER NOT NULL DEFAULT 0,
     "click_count"         INTEGER NOT NULL DEFAULT 0,
     "target_categories"   INTEGER[],
+    "erid"                VARCHAR(50),
+    "advertiser_name"     VARCHAR(300),
+    "advertiser_url"      TEXT,
+    "contract_number"     VARCHAR(100),
+    "contract_date"       DATE,
+    "revenue_amount"      NUMERIC(12, 2) DEFAULT 0,
+    "revenue_currency"    VARCHAR(3) DEFAULT 'RUB',
+    "ord_reported_at"     TIMESTAMPTZ,
     "created_at"          TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     "updated_at"          TIMESTAMPTZ
 );
 
 CREATE INDEX "integrations_is_active_idx" ON "integrations"("is_active");
 CREATE INDEX "integrations_placement_idx" ON "integrations"("placement");
+CREATE INDEX "integrations_ord_reported_at_idx" ON "integrations"("ord_reported_at");
 
 -- ============================================================
 -- MODERATION WORDS (auto-moderation)
