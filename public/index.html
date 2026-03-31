@@ -8,7 +8,7 @@
   <meta name="theme-color" content="#121212">
 
   <!-- FOUC prevention: set theme before paint -->
-  <script>
+  <script nonce="%%CSP_NONCE%%">
     (function() {
       var theme = localStorage.getItem('cinefiles-theme');
       if (theme !== 'light' && theme !== 'dark') {
@@ -30,20 +30,20 @@
   <link rel="preload" href="/fonts/Montserrat-VariableFont_wght.woff2" as="font" type="font/woff2" crossorigin>
 
   <!-- Global CSS -->
-  <link rel="stylesheet" href="/css/global.css">
-  <link rel="stylesheet" href="/css/grain.css">
-  <link rel="stylesheet" href="/css/header.css">
-  <link rel="stylesheet" href="/css/footer.css">
-  <link rel="stylesheet" href="/css/bottom-nav.css">
-  <link rel="stylesheet" href="/css/sidebar.css">
-  <link rel="stylesheet" href="/css/page-layouts.css">
-  <link rel="stylesheet" href="/css/article-card.css">
-  <link rel="stylesheet" href="/css/article-body.css">
-  <link rel="stylesheet" href="/css/comment-list.css">
-  <link rel="stylesheet" href="/css/article-editor-modal.css">
-  <link rel="stylesheet" href="/css/media-picker.css">
-  <link rel="stylesheet" href="/css/integration-slot.css">
-  <link rel="stylesheet" href="/css/integration-legal.css">
+  <link rel="stylesheet" href="/css/global.css?v=%%GIT_HASH%%">
+  <link rel="stylesheet" href="/css/grain.css?v=%%GIT_HASH%%">
+  <link rel="stylesheet" href="/css/header.css?v=%%GIT_HASH%%">
+  <link rel="stylesheet" href="/css/footer.css?v=%%GIT_HASH%%">
+  <link rel="stylesheet" href="/css/bottom-nav.css?v=%%GIT_HASH%%">
+  <link rel="stylesheet" href="/css/sidebar.css?v=%%GIT_HASH%%">
+  <link rel="stylesheet" href="/css/page-layouts.css?v=%%GIT_HASH%%">
+  <link rel="stylesheet" href="/css/article-card.css?v=%%GIT_HASH%%">
+  <link rel="stylesheet" href="/css/article-body.css?v=%%GIT_HASH%%">
+  <link rel="stylesheet" href="/css/comment-list.css?v=%%GIT_HASH%%">
+  <link rel="stylesheet" href="/css/article-editor-modal.css?v=%%GIT_HASH%%">
+  <link rel="stylesheet" href="/css/media-picker.css?v=%%GIT_HASH%%">
+  <link rel="stylesheet" href="/css/integration-slot.css?v=%%GIT_HASH%%">
+  <link rel="stylesheet" href="/css/integration-legal.css?v=%%GIT_HASH%%">
 
   <!-- RSS -->
   <link rel="alternate" type="application/rss+xml" title="CineFiles RSS" href="/feed/rss.xml">
@@ -242,66 +242,72 @@
     <svg width="20" height="20" viewBox="0 0 64 64"><use href="#icon-arrow-up"/></svg>
   </button>
 
+  <!-- SPA-5: Preload core scripts -->
+  <link rel="preload" href="/js/utils.js?v=%%GIT_HASH%%" as="script">
+  <link rel="preload" href="/js/core/router.js?v=%%GIT_HASH%%" as="script">
+  <link rel="preload" href="/js/core/media.js?v=%%GIT_HASH%%" as="script">
+  <link rel="preload" href="/js/modules/auth.js?v=%%GIT_HASH%%" as="script">
+
   <!-- Global: core scripts (always loaded, no UI) -->
-  <script src="/js/utils.js"></script>
-  <script src="/js/core/router.js"></script>
-  <script src="/js/core/media.js"></script>
-  <script src="/js/core/favorites.js"></script>
+  <script src="/js/utils.js?v=%%GIT_HASH%%"></script>
+  <script src="/js/core/router.js?v=%%GIT_HASH%%"></script>
+  <script src="/js/core/media.js?v=%%GIT_HASH%%"></script>
+  <script src="/js/core/favorites.js?v=%%GIT_HASH%%"></script>
 
   <!-- Modules: persistent UI (survive all navigations) -->
-  <script src="/js/modules/auth.js"></script>
-  <script src="/js/modules/toast.js"></script>
-  <script src="/js/modules/bottom-sheet.js"></script>
-  <script src="/js/modules/modal.js"></script>
-  <script src="/js/modules/skeleton.js"></script>
-  <script src="/js/modules/scroll-to-top.js"></script>
-  <script src="/js/modules/image-zoom.js"></script>
-  <script src="/js/modules/theme-toggle.js"></script>
-  <script src="/js/modules/header.js"></script>
-  <script src="/js/modules/footer.js"></script>
-  <script src="/js/modules/bottom-nav.js"></script>
-  <script src="/js/modules/sidebar.js"></script>
+  <script src="/js/modules/auth.js?v=%%GIT_HASH%%"></script>
+  <script src="/js/modules/toast.js?v=%%GIT_HASH%%"></script>
+  <script src="/js/modules/bottom-sheet.js?v=%%GIT_HASH%%"></script>
+  <script src="/js/modules/modal.js?v=%%GIT_HASH%%"></script>
+  <script src="/js/modules/skeleton.js?v=%%GIT_HASH%%"></script>
+  <script src="/js/modules/scroll-to-top.js?v=%%GIT_HASH%%"></script>
+  <script src="/js/modules/image-zoom.js?v=%%GIT_HASH%%"></script>
+  <script src="/js/modules/theme-toggle.js?v=%%GIT_HASH%%"></script>
+  <script src="/js/modules/header.js?v=%%GIT_HASH%%"></script>
+  <script src="/js/modules/footer.js?v=%%GIT_HASH%%"></script>
+  <script src="/js/modules/bottom-nav.js?v=%%GIT_HASH%%"></script>
+  <script src="/js/modules/sidebar.js?v=%%GIT_HASH%%"></script>
 
   <!-- Components: content renderers (used by pages) -->
-  <script src="/js/components/media-picker.js"></script>
-  <script src="/js/components/article-editor-modal.js"></script>
-  <script src="/js/components/integration-slot.js"></script>
-  <script src="/js/components/article-card.js"></script>
-  <script src="/js/components/article-body.js"></script>
-  <script src="/js/components/comment-list.js"></script>
+  <script src="/js/components/media-picker.js?v=%%GIT_HASH%%"></script>
+  <script src="/js/components/article-editor-modal.js?v=%%GIT_HASH%%"></script>
+  <script src="/js/components/integration-slot.js?v=%%GIT_HASH%%"></script>
+  <script src="/js/components/article-card.js?v=%%GIT_HASH%%"></script>
+  <script src="/js/components/article-body.js?v=%%GIT_HASH%%"></script>
+  <script src="/js/components/comment-list.js?v=%%GIT_HASH%%"></script>
 
   <!-- Page scripts (register routes) -->
-  <script src="/js/pages/home.js"></script>
-  <script src="/js/pages/search.js"></script>
-  <script src="/js/pages/tags.js"></script>
-  <script src="/js/pages/tag.js"></script>
-  <script src="/js/pages/author.js"></script>
-  <script src="/js/pages/about.js"></script>
-  <script src="/js/pages/legal.js"></script>
-  <script src="/js/pages/collections.js"></script>
-  <script src="/js/pages/collection.js"></script>
-  <script src="/js/pages/profile.js"></script>
+  <script src="/js/pages/home.js?v=%%GIT_HASH%%"></script>
+  <script src="/js/pages/search.js?v=%%GIT_HASH%%"></script>
+  <script src="/js/pages/tags.js?v=%%GIT_HASH%%"></script>
+  <script src="/js/pages/tag.js?v=%%GIT_HASH%%"></script>
+  <script src="/js/pages/author.js?v=%%GIT_HASH%%"></script>
+  <script src="/js/pages/about.js?v=%%GIT_HASH%%"></script>
+  <script src="/js/pages/legal.js?v=%%GIT_HASH%%"></script>
+  <script src="/js/pages/collections.js?v=%%GIT_HASH%%"></script>
+  <script src="/js/pages/collection.js?v=%%GIT_HASH%%"></script>
+  <script src="/js/pages/profile.js?v=%%GIT_HASH%%"></script>
 
   <!-- Admin pages -->
-  <script src="/js/pages/admin/dashboard.js"></script>
-  <script src="/js/pages/admin/articles.js"></script>
-  <script src="/js/pages/admin/article-editor.js"></script>
-  <script src="/js/pages/admin/comments.js"></script>
-  <script src="/js/pages/admin/tags.js"></script>
-  <script src="/js/pages/admin/users.js"></script>
-  <script src="/js/pages/admin/media.js"></script>
-  <script src="/js/pages/admin/collections.js"></script>
-  <script src="/js/pages/admin/categories.js"></script>
-  <script src="/js/pages/admin/integrations.js"></script>
-  <script src="/js/pages/admin/moderation.js"></script>
-  <script src="/js/pages/admin/settings.js"></script>
+  <script src="/js/pages/admin/dashboard.js?v=%%GIT_HASH%%"></script>
+  <script src="/js/pages/admin/articles.js?v=%%GIT_HASH%%"></script>
+  <script src="/js/pages/admin/article-editor.js?v=%%GIT_HASH%%"></script>
+  <script src="/js/pages/admin/comments.js?v=%%GIT_HASH%%"></script>
+  <script src="/js/pages/admin/tags.js?v=%%GIT_HASH%%"></script>
+  <script src="/js/pages/admin/users.js?v=%%GIT_HASH%%"></script>
+  <script src="/js/pages/admin/media.js?v=%%GIT_HASH%%"></script>
+  <script src="/js/pages/admin/collections.js?v=%%GIT_HASH%%"></script>
+  <script src="/js/pages/admin/categories.js?v=%%GIT_HASH%%"></script>
+  <script src="/js/pages/admin/integrations.js?v=%%GIT_HASH%%"></script>
+  <script src="/js/pages/admin/moderation.js?v=%%GIT_HASH%%"></script>
+  <script src="/js/pages/admin/settings.js?v=%%GIT_HASH%%"></script>
 
   <!-- Catch-all routes (must be last) -->
-  <script src="/js/pages/article.js"></script>
-  <script src="/js/pages/category.js"></script>
+  <script src="/js/pages/article.js?v=%%GIT_HASH%%"></script>
+  <script src="/js/pages/category.js?v=%%GIT_HASH%%"></script>
 
   <!-- Init -->
-  <script>
+  <script nonce="%%CSP_NONCE%%">
     (function() {
       Header.init();
       Footer.init();
