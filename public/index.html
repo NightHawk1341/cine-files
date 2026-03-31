@@ -45,6 +45,12 @@
   <link rel="stylesheet" href="/css/integration-slot.css?v=%%GIT_HASH%%">
   <link rel="stylesheet" href="/css/integration-legal.css?v=%%GIT_HASH%%">
 
+  <!-- PWA -->
+  <link rel="manifest" href="/manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="/icons/favicon.svg">
+
   <!-- RSS -->
   <link rel="alternate" type="application/rss+xml" title="CineFiles RSS" href="/feed/rss.xml">
 
@@ -126,7 +132,24 @@
 
     <!-- Main content -->
     <main>
-      <div id="page-content"></div>
+      <div id="page-content">
+        <!-- SPA-6: Pre-rendered skeleton (replaced by router on init) -->
+        <div class="home-page">
+          <section class="home-section home-section-toolbar container">
+            <div class="filter-toolbar">
+              <span class="skeleton" style="width:80px;height:36px;border-radius:8px;display:inline-block"></span>
+              <span class="skeleton" style="width:110px;height:36px;border-radius:8px;display:inline-block"></span>
+            </div>
+          </section>
+          <section class="home-section container">
+            <div class="article-feed">
+              <div class="skeleton-card"><div class="skeleton" style="height:200px;border-radius:12px;margin-bottom:12px"></div><div class="skeleton" style="height:20px;width:70%;margin-bottom:8px"></div><div class="skeleton" style="height:14px;width:50%"></div></div>
+              <div class="skeleton-card"><div class="skeleton" style="height:200px;border-radius:12px;margin-bottom:12px"></div><div class="skeleton" style="height:20px;width:60%;margin-bottom:8px"></div><div class="skeleton" style="height:14px;width:45%"></div></div>
+              <div class="skeleton-card"><div class="skeleton" style="height:200px;border-radius:12px;margin-bottom:12px"></div><div class="skeleton" style="height:20px;width:75%;margin-bottom:8px"></div><div class="skeleton" style="height:14px;width:55%"></div></div>
+            </div>
+          </section>
+        </div>
+      </div>
     </main>
 
     <!-- Right sidebar (desktop) -->
@@ -326,6 +349,11 @@
 
       // Start router
       Router.init();
+
+      // Register service worker (PWA)
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/service-worker.js').catch(function () {});
+      }
     })();
   </script>
 </body>

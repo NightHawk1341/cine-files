@@ -48,6 +48,7 @@ function setupRoutes(app, deps) {
   const settings = require('../../api/settings');
   const integrations = require('../../api/promos');
   const moderation = require('../../api/admin-moderation');
+  const analytics = require('../../api/analytics');
 
   // ============================================================
   // Health check
@@ -92,6 +93,7 @@ function setupRoutes(app, deps) {
   app.get('/api/articles/related', articlesRelated.list(deps));
   app.get('/api/articles', articles.list(deps));
   app.post('/api/articles', requireEditor, articles.create(deps));
+  app.post('/api/articles/:id/view', analytics.viewArticle(deps));
   app.get('/api/articles/:id/products', articleProducts.get(deps));
   app.get('/api/articles/:id', articleById.get(deps));
   app.put('/api/articles/:id', requireEditor, articleById.update(deps));
@@ -113,6 +115,11 @@ function setupRoutes(app, deps) {
   app.post('/api/comments', requireAuth, comments.create(deps));
   app.put('/api/comments/:id', requireAuth, commentById.update(deps));
   app.delete('/api/comments/:id', requireAuth, commentById.remove(deps));
+
+  // ============================================================
+  // Admin — analytics
+  // ============================================================
+  app.get('/api/admin/analytics', requireAdmin, analytics.dashboard(deps));
 
   // ============================================================
   // Admin — comment moderation
