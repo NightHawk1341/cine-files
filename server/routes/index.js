@@ -19,6 +19,15 @@ const upload = multer({
  * @param {{ pool: import('pg').Pool, config: object }} deps
  */
 function setupRoutes(app, deps) {
+  // ============================================================
+  // Admin miniapp auth routes (must be before general admin routes)
+  // ============================================================
+  const createAdminRouter = require('./admin');
+  const adminRouter = createAdminRouter(deps);
+  app.use('/api/admin', adminRouter);
+  app.get('/admin/login', createAdminRouter.loginPage(deps));
+  app.use('/admin-miniapp', createAdminRouter.protectAdminMiniapp(deps));
+
   const articles = require('../../api/articles');
   const articleById = require('../../api/article-by-id');
   const articlesRelated = require('../../api/articles-related');

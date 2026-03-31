@@ -1,0 +1,187 @@
+/* ===================================================================
+   LAYOUT
+   =================================================================== */
+
+#app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: clip;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Security: Hide UI until authenticated */
+#app:not(.authenticated) .app-header,
+#app:not(.authenticated) .bottom-nav {
+  display: none !important;
+}
+
+/* Header - Desktop Only */
+.app-header {
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+  height: var(--header-height);
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--spacing-xl);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+/* Logout Button */
+.logout-btn-text {
+  background: transparent;
+  border: 1px solid transparent;
+  padding: 6px var(--spacing-md);
+  cursor: pointer;
+  color: var(--text-tertiary);
+  transition: all var(--transition-base);
+  font-size: var(--font-sm-alt);
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  font-family: inherit;
+}
+
+.logout-btn-text:hover {
+  background: var(--error-bg);
+  color: var(--error);
+  border-color: var(--error-border-light);
+}
+
+/* Header Navigation - Desktop Only */
+.header-nav {
+  display: flex;
+  gap: var(--spacing-2xs);
+  align-items: center;
+  background: var(--bg-tertiary);
+  padding: var(--spacing-xs);
+  border-radius: var(--radius-lg);
+}
+
+.header-nav-button {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  padding: 8px var(--spacing-md);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  font-size: var(--font-sm-alt);
+  font-weight: 500;
+  position: relative;
+  white-space: nowrap;
+}
+
+.header-nav-button:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.header-nav-button.active {
+  background: var(--bg-secondary);
+  color: var(--primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.header-nav-button .nav-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+/* Content Area */
+.content-area {
+  flex: 1;
+  padding: var(--spacing-xl);
+  max-width: var(--max-width);
+  width: 100%;
+  margin: 0 auto;
+  animation: fadeIn var(--transition-slow);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Bottom Navigation - Mobile Only */
+.bottom-nav {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border-color);
+  padding: 6px var(--spacing-xs) calc(6px + env(safe-area-inset-bottom));
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+}
+
+.nav-button {
+  background: none;
+  border: none;
+  color: var(--text-tertiary);
+  padding: 6px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  border-radius: var(--radius-md);
+  position: relative;
+  min-height: 48px;
+  justify-content: center;
+}
+
+.nav-button:active {
+  transform: scale(0.92);
+}
+
+.nav-button.active {
+  color: var(--primary);
+}
+
+.nav-button .nav-icon {
+  width: 22px;
+  height: 22px;
+  transition: all var(--transition-base);
+}
+
+.nav-button.active .nav-icon {
+  transform: scale(1.08);
+  filter: drop-shadow(0 0 4px var(--primary-glow));
+}
+
+.nav-label {
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Responsive: Desktop shows header, hides bottom nav */
+@media (min-width: 769px) {
+  .app-header { display: flex; }
+  .bottom-nav { display: none; }
+  .content-area { padding-bottom: var(--spacing-xl); }
+}
+
+/* Mobile: Show bottom nav, hide header */
+@media (max-width: 768px) {
+  .app-header { display: none; }
+  .bottom-nav { display: grid; }
+  .content-area {
+    padding: var(--spacing-md);
+    padding-bottom: calc(var(--bottom-nav-height) + var(--spacing-md));
+  }
+}
