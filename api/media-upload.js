@@ -1,4 +1,4 @@
-const { uploadToS3 } = require('../lib/storage');
+const { uploadToS3, generateThumbnail } = require('../lib/storage');
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/avif', 'image/gif'];
@@ -22,13 +22,20 @@ function upload({ pool }) {
         return res.status(400).json({ error: 'File too large. Max 5MB' });
       }
 
-      const url = await uploadToS3(req.file.buffer, req.file.originalname, req.file.mimetype, 'uploads');
+      const [url, thumb] = await Promise.all([
+        uploadToS3(req.file.buffer, req.file.originalname, req.file.mimetype, 'uploads'),
+        generateThumbnail(req.file.buffer, req.file.mimetype).then(function (t) {
+          if (!t) return null;
+          var thumbName = req.file.originalname.replace(/\.[^.]+$/, '') + '_thumb.webp';
+          return uploadToS3(t.buffer, thumbName, t.mimeType, 'uploads');
+        }),
+      ]);
 
       const { rows } = await pool.query(
-        `INSERT INTO media (uploaded_by, url, filename, mime_type, file_size, alt_text, credit)
-         VALUES ($1, $2, $3, $4, $5, $6, $7)
+        `INSERT INTO media (uploaded_by, url, thumbnail_url, filename, mime_type, file_size, alt_text, credit)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
          RETURNING *`,
-        [req.user.userId, url, req.file.originalname, req.file.mimetype,
+        [req.user.userId, url, thumb || null, req.file.originalname, req.file.mimetype,
          req.file.size, req.body.alt || null, req.body.credit || null]
       );
 
@@ -36,6 +43,7 @@ function upload({ pool }) {
         media: {
           id: rows[0].id,
           url: rows[0].url,
+          thumbnailUrl: rows[0].thumbnail_url || null,
           filename: rows[0].filename,
           mimeType: rows[0].mime_type,
           fileSize: Number(rows[0].file_size),

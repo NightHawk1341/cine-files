@@ -167,6 +167,7 @@ CREATE TABLE "media" (
     "id"          SERIAL PRIMARY KEY,
     "uploaded_by" INTEGER NOT NULL REFERENCES "users"("id"),
     "url"         TEXT NOT NULL,
+    "thumbnail_url" TEXT,
     "filename"    VARCHAR(255) NOT NULL,
     "mime_type"   VARCHAR(50) NOT NULL,
     "file_size"   INTEGER,

@@ -406,6 +406,6 @@ Ordered by priority. Check off as completed.
 - [x] **SPA-6**: Pre-rendered skeleton loaders
 - [x] **FEAT-3**: FAQ page — skipped (not needed)
 - [x] **FEAT-4**: PWA support (manifest + service worker + meta tags)
-- [ ] **INFRA-3**: Migrate to AWS SDK v3 for S3
-- [ ] **INFRA-4**: Image variant generation with sharp
-- [ ] **AUTH-3**: VK OAuth support
+- [x] **INFRA-3**: Migrate to AWS SDK v3 for S3 -- skipped (custom signing works, SDK adds bloat)
+- [x] **INFRA-4**: Image variant generation with sharp
+- [x] **AUTH-3**: VK OAuth support -- skipped (requires VK app credentials from project owner)
