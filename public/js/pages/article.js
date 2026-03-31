@@ -181,6 +181,9 @@ Router.registerPage('/:category/:slug', {
     // Update page title
     document.title = article.title + ' — CineFiles';
 
+    // Increment view count (fire-and-forget)
+    fetch('/api/articles/' + article.id + '/view', { method: 'POST' }).catch(function () {});
+
     // Async: fetch and render auto-matched TR-BUTE products
     _articleProductsController = new AbortController();
     var signal = _articleProductsController.signal;

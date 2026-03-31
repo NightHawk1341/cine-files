@@ -29,8 +29,9 @@ Router.registerPage('/admin/articles', {
     content.appendChild(container);
 
     try {
-      var data = await Utils.apiFetch('/api/articles?limit=50');
-      var articles = data.articles || [];
+      var data = await Utils.apiFetch('/api/articles?limit=50&status=published');
+      var draftData = await Utils.apiFetch('/api/articles?limit=50&status=draft');
+      var articles = (data.articles || []).concat(draftData.articles || []);
 
       tableWrap.innerHTML = '';
 
@@ -43,20 +44,24 @@ Router.registerPage('/admin/articles', {
       table.className = 'admin-table';
       table.innerHTML =
         '<thead><tr>' +
-        '<th>Заголовок</th><th>Категория</th><th>Статус</th><th>Автор</th><th>Дата</th>' +
+        '<th>Заголовок</th><th>Категория</th><th>Статус</th><th>Автор</th><th>Просм.</th><th>Комм.</th><th>Дата</th>' +
         '</tr></thead>';
 
       var tbody = document.createElement('tbody');
       var statusLabels = { draft: 'Черновик', review: 'На проверке', published: 'Опубликовано', archived: 'В архиве' };
 
       articles.forEach(function (a) {
+        var catName = (a.category && a.category.nameRu) || '';
+        var authorName = (a.author && a.author.displayName) || '';
         var tr = document.createElement('tr');
         tr.innerHTML =
           '<td><a href="/admin/articles/' + a.id + '">' + Utils.escapeHtml(a.title) + '</a></td>' +
-          '<td>' + Utils.escapeHtml(a.category_name_ru || '') + '</td>' +
+          '<td>' + Utils.escapeHtml(catName) + '</td>' +
           '<td><span class="admin-status admin-status-' + a.status + '">' + (statusLabels[a.status] || a.status) + '</span></td>' +
-          '<td>' + Utils.escapeHtml(a.author_name || '') + '</td>' +
-          '<td>' + Utils.formatDateShort(a.created_at) + '</td>';
+          '<td>' + Utils.escapeHtml(authorName) + '</td>' +
+          '<td class="admin-td-num">' + (a.viewCount || 0) + '</td>' +
+          '<td class="admin-td-num">' + (a.commentCount || 0) + '</td>' +
+          '<td>' + Utils.formatDateShort(a.createdAt || a.created_at) + '</td>';
         tbody.appendChild(tr);
       });
 

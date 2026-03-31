@@ -392,7 +392,7 @@ Ordered by priority. Check off as completed.
 - [x] **SPA-1**: Link prefetching on hover/touchstart
 - [x] **SPA-2**: OG meta tag updates on SPA navigation
 - [x] **SPA-3**: Pending navigation queue (race-safe)
-- [ ] **FEAT-1**: Article/author analytics
+- [x] **FEAT-1**: Article/author analytics
 - [x] **FEAT-2**: Comment reply email notifications — skipped (not needed)
 
 ### Low
@@ -403,9 +403,9 @@ Ordered by priority. Check off as completed.
 - [x] **CSS-3**: Add dropdown/indicator variable families
 - [x] **SPA-4**: Connection warmup on tab visibility
 - [x] **SPA-5**: Module preloading in `index.html`
-- [ ] **SPA-6**: Pre-rendered skeleton loaders
+- [x] **SPA-6**: Pre-rendered skeleton loaders
 - [x] **FEAT-3**: FAQ page — skipped (not needed)
-- [ ] **FEAT-4**: PWA support evaluation
-- [ ] **INFRA-3**: Migrate to AWS SDK v3 for S3
-- [ ] **INFRA-4**: Image variant generation with sharp
-- [ ] **AUTH-3**: VK OAuth support
+- [x] **FEAT-4**: PWA support (manifest + service worker + meta tags)
+- [x] **INFRA-3**: Migrate to AWS SDK v3 for S3 -- skipped (custom signing works, SDK adds bloat)
+- [x] **INFRA-4**: Image variant generation with sharp
+- [x] **AUTH-3**: VK OAuth support -- skipped (requires VK app credentials from project owner)

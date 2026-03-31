@@ -1,0 +1,17 @@
+{
+  "name": "CineFiles",
+  "short_name": "CineFiles",
+  "description": "Кино, аниме, игры — новости, рецензии, разборы",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#121212",
+  "theme_color": "#121212",
+  "icons": [
+    {
+      "src": "/icons/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
