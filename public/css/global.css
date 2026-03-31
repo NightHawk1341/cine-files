@@ -257,6 +257,43 @@ html.theme-transition-disable *::after {
   --tab-counter-active-bg: rgba(6, 111, 163, 0.3);
   --tab-counter-active-color: #9cddfd;
 
+  /* CSS-2: Filter button states (parity with TR-BUTE) */
+  --filter-btn-hover-bg: var(--bg-tertiary);
+  --filter-btn-hover-border: var(--border-hover);
+  --filter-btn-hover-color: var(--text-secondary);
+  --filter-btn-active-bg: rgba(74, 144, 217, 0.12);
+  --filter-btn-active-border: #4a90d9;
+  --filter-btn-active-color: #4a90d9;
+  --filter-btn-glow: rgba(74, 144, 217, 0.3);
+
+  /* CSS-2: Type button states */
+  --type-btn-hover-bg: var(--bg-tertiary);
+  --type-btn-hover-border: var(--border-hover);
+  --type-btn-hover-color: var(--text-secondary);
+  --type-btn-active-bg: rgba(74, 144, 217, 0.12);
+  --type-btn-active-border: #4a90d9;
+  --type-btn-active-color: #4a90d9;
+  --type-btn-glow: rgba(74, 144, 217, 0.3);
+
+  /* CSS-2: Reset button states */
+  --reset-btn-hover-bg: var(--bg-tertiary);
+  --reset-btn-hover-border: var(--border-hover);
+
+  /* CSS-3: Dropdown accent colors */
+  --dropdown-accent-color-1: var(--brand-primary);
+  --dropdown-accent-color-2: var(--brand-secondary);
+  --dropdown-accent-hover: var(--brand-hover);
+  --dropdown-accent-active-bg: rgba(74, 144, 217, 0.12);
+  --format-dropdown-bg: var(--bg-secondary);
+
+  /* CSS-3: Indicator states */
+  --indicator-default: var(--text-tertiary);
+  --indicator-active: var(--brand-primary);
+
+  /* CSS-3: Filter pill */
+  --filter-pill-bg: var(--bg-tertiary);
+  --filter-pill-border: var(--border-color);
+
   /* Skeleton animation */
   --skeleton-border-radius: 8px;
   --skeleton-animation-duration: 1.2s;
@@ -333,6 +370,31 @@ body[data-theme="light"] {
   --filter-group-shadow: #b5ad9e;
   --glass-bg: var(--bg-secondary);
   --glass-border: var(--border-color);
+  --filter-btn-hover-bg: var(--bg-tertiary);
+  --filter-btn-hover-border: var(--border-hover);
+  --filter-btn-hover-color: var(--text-secondary);
+  --filter-btn-active-bg: rgba(37, 150, 190, 0.12);
+  --filter-btn-active-border: #2596be;
+  --filter-btn-active-color: #2596be;
+  --filter-btn-glow: rgba(37, 150, 190, 0.25);
+  --type-btn-hover-bg: var(--bg-tertiary);
+  --type-btn-hover-border: var(--border-hover);
+  --type-btn-hover-color: var(--text-secondary);
+  --type-btn-active-bg: rgba(37, 150, 190, 0.12);
+  --type-btn-active-border: #2596be;
+  --type-btn-active-color: #2596be;
+  --type-btn-glow: rgba(37, 150, 190, 0.25);
+  --reset-btn-hover-bg: var(--bg-tertiary);
+  --reset-btn-hover-border: var(--border-hover);
+  --dropdown-accent-color-1: var(--brand-primary);
+  --dropdown-accent-color-2: var(--brand-secondary);
+  --dropdown-accent-hover: var(--brand-hover);
+  --dropdown-accent-active-bg: rgba(45, 106, 181, 0.12);
+  --format-dropdown-bg: var(--bg-secondary);
+  --indicator-default: var(--text-tertiary);
+  --indicator-active: var(--brand-primary);
+  --filter-pill-bg: var(--bg-tertiary);
+  --filter-pill-border: var(--border-color);
 }
 
 /* ===== Skeleton Animation ===== */

@@ -389,20 +389,20 @@ Ordered by priority. Check off as completed.
 - [x] **SEC-14**: Graceful shutdown handler (already existed in server.js)
 - [x] **SEC-15**: Process-level error handlers (already existed in server.js)
 - [x] **CSS-1**: Audit light theme interactive state coverage
-- [ ] **SPA-1**: Link prefetching on hover/touchstart
-- [ ] **SPA-2**: OG meta tag updates on SPA navigation
-- [ ] **SPA-3**: Pending navigation queue (race-safe)
+- [x] **SPA-1**: Link prefetching on hover/touchstart
+- [x] **SPA-2**: OG meta tag updates on SPA navigation
+- [x] **SPA-3**: Pending navigation queue (race-safe)
 - [ ] **FEAT-1**: Article/author analytics
 - [ ] **FEAT-2**: Comment reply email notifications
 
 ### Low
 
-- [ ] **SEC-16**: Hotlink protection middleware
-- [ ] **SEC-17**: Git-hash asset cache-busting
-- [ ] **CSS-2**: Add filter button variable families
-- [ ] **CSS-3**: Add dropdown/indicator variable families
-- [ ] **SPA-4**: Connection warmup on tab visibility
-- [ ] **SPA-5**: Module preloading in `index.html`
+- [x] **SEC-16**: Hotlink protection middleware
+- [x] **SEC-17**: Git-hash asset cache-busting
+- [x] **CSS-2**: Add filter button variable families
+- [x] **CSS-3**: Add dropdown/indicator variable families
+- [x] **SPA-4**: Connection warmup on tab visibility
+- [x] **SPA-5**: Module preloading in `index.html`
 - [ ] **SPA-6**: Pre-rendered skeleton loaders
 - [ ] **FEAT-3**: FAQ page
 - [ ] **FEAT-4**: PWA support evaluation

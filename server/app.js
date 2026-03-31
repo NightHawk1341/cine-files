@@ -12,8 +12,20 @@ const { getPool } = require('../lib/db');
 const { setupRoutes } = require('./routes/index');
 const { authenticateToken } = require('./middleware/auth');
 const botGuard = require('./middleware/bot-guard');
+const hotlinkGuard = require('./middleware/hotlink-guard');
+const { execSync } = require('child_process');
 
 const app = express();
+
+// ============================================================
+// SEC-17: Git-hash asset cache-busting
+// ============================================================
+var gitHash = '';
+try {
+  gitHash = execSync('git rev-parse --short HEAD', { encoding: 'utf8' }).trim();
+} catch {
+  gitHash = Date.now().toString(36);
+}
 
 // Trust first proxy (Yandex Cloud LB / Vercel edge) so req.ip is correct for rate limiting
 app.set('trust proxy', 1);
@@ -162,6 +174,11 @@ app.use('/api/', generalLimiter);
 app.use(authenticateToken);
 
 // ============================================================
+// Hotlink protection (SEC-16)
+// ============================================================
+app.use(hotlinkGuard);
+
+// ============================================================
 // Static files
 // ============================================================
 app.use(express.static(path.join(__dirname, '..', 'public'), {
@@ -190,7 +207,9 @@ app.get('*', function (req, res) {
     return res.status(404).json({ error: 'Not found' });
   }
   var nonce = res.locals.nonce;
-  var html = indexHtmlTemplate.replace(/%%CSP_NONCE%%/g, nonce);
+  var html = indexHtmlTemplate
+    .replace(/%%CSP_NONCE%%/g, nonce)
+    .replace(/%%GIT_HASH%%/g, gitHash);
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.setHeader('Cache-Control', 'no-cache');
   res.send(html);
