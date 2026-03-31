@@ -8,7 +8,7 @@
   <meta name="theme-color" content="#121212">
 
   <!-- FOUC prevention: set theme before paint -->
-  <script>
+  <script nonce="%%CSP_NONCE%%">
     (function() {
       var theme = localStorage.getItem('cinefiles-theme');
       if (theme !== 'light' && theme !== 'dark') {
@@ -301,7 +301,7 @@
   <script src="/js/pages/category.js"></script>
 
   <!-- Init -->
-  <script>
+  <script nonce="%%CSP_NONCE%%">
     (function() {
       Header.init();
       Footer.init();

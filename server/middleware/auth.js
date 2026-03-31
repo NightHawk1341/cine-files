@@ -1,4 +1,19 @@
+const crypto = require('crypto');
 const { verifyAccessToken } = require('../../lib/auth');
+
+/**
+ * Timing-safe string comparison to prevent timing attacks on secret values.
+ * @param {string} a
+ * @param {string} b
+ * @returns {boolean}
+ */
+function timingSafeEqual(a, b) {
+  if (typeof a !== 'string' || typeof b !== 'string') return false;
+  var bufA = Buffer.from(a);
+  var bufB = Buffer.from(b);
+  if (bufA.length !== bufB.length) return false;
+  return crypto.timingSafeEqual(bufA, bufB);
+}
 
 /**
  * Express middleware: parse JWT from cookie, attach user to req.
@@ -54,6 +69,7 @@ function requireAdmin(req, res, next) {
 
 /**
  * Require valid CRON_SECRET bearer token.
+ * Uses timing-safe comparison to prevent timing attacks (SEC-13).
  */
 function requireCronAuth(req, res, next) {
   const cronSecret = process.env.CRON_SECRET;
@@ -62,7 +78,7 @@ function requireCronAuth(req, res, next) {
   }
 
   const authHeader = req.headers.authorization;
-  if (!authHeader || authHeader !== `Bearer ${cronSecret}`) {
+  if (!authHeader || !timingSafeEqual(authHeader, 'Bearer ' + cronSecret)) {
     return res.status(401).json({ error: 'Invalid cron authorization' });
   }
   next();

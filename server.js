@@ -1,5 +1,5 @@
 const { config, validateConfig } = require('./lib/config');
-const { closePool } = require('./lib/db');
+const { closePool, warmupPool } = require('./lib/db');
 
 validateConfig();
 
@@ -12,6 +12,10 @@ var PORT = config.port;
 
 app.listen(PORT, function () {
   console.log('CineFiles server running on port ' + PORT);
+  // INFRA-1: Warm up DB pool on startup (non-blocking)
+  warmupPool().catch(function (err) {
+    console.error('Pool warmup error:', err);
+  });
 });
 
 // ============================================================

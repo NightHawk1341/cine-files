@@ -330,6 +330,9 @@ body[data-theme="light"] {
   --neutral-btn-active-border: #7a7060;
   --neutral-btn-active-color: #4a4035;
   --neutral-btn-glow: rgba(80, 60, 30, 0.25);
+  --filter-group-shadow: #b5ad9e;
+  --glass-bg: var(--bg-secondary);
+  --glass-border: var(--border-color);
 }
 
 /* ===== Skeleton Animation ===== */

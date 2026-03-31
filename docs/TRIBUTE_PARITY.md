@@ -363,32 +363,32 @@ Ordered by priority. Check off as completed.
 
 ### Critical
 
-- [ ] **SEC-1**: Nonce-based CSP — remove `'unsafe-inline'`/`'unsafe-eval'`
-- [ ] **SEC-2**: Add `objectSrc: ["'none'"]`
-- [ ] **SEC-3**: Prototype pollution reviver on `express.json()`
+- [x] **SEC-1**: Nonce-based CSP — remove `'unsafe-inline'`/`'unsafe-eval'`
+- [x] **SEC-2**: Add `objectSrc: ["'none'"]`
+- [x] **SEC-3**: Prototype pollution reviver on `express.json()`
 
 ### High
 
-- [ ] **SEC-4**: Port bot-guard middleware from TR-BUTE
-- [ ] **SEC-5**: Lower general rate limit to 100-150/15min
-- [ ] **SEC-6**: Add sensitive operations rate limiter (10/hour)
-- [ ] **SEC-7**: Lower cross-site rate limit
-- [ ] **SEC-13**: Timing-safe comparison for secrets
-- [ ] **AUTH-1**: `crypto.timingSafeEqual` for Telegram auth
-- [ ] **AUTH-2**: Auth date validation (24hr window)
-- [ ] **INFRA-1**: DB pool warmup with exponential backoff
-- [ ] **INFRA-2**: `queryWithRetry()` for transient errors
+- [x] **SEC-4**: Port bot-guard middleware from TR-BUTE
+- [x] **SEC-5**: Lower general rate limit to 100-150/15min
+- [x] **SEC-6**: Add sensitive operations rate limiter (10/hour)
+- [x] **SEC-7**: Lower cross-site rate limit
+- [x] **SEC-13**: Timing-safe comparison for secrets
+- [x] **AUTH-1**: `crypto.timingSafeEqual` for Telegram auth
+- [x] **AUTH-2**: Auth date validation (24hr window)
+- [x] **INFRA-1**: DB pool warmup with exponential backoff
+- [x] **INFRA-2**: `queryWithRetry()` for transient errors
 
 ### Medium
 
-- [ ] **SEC-8**: Function-based CORS with blocked-origin logging
-- [ ] **SEC-9**: Explicit HSTS configuration
-- [ ] **SEC-10**: Permissions-Policy header
-- [ ] **SEC-11**: Explicit Referrer-Policy
-- [ ] **SEC-12**: Cross-Origin policies for OAuth
-- [ ] **SEC-14**: Graceful shutdown handler
-- [ ] **SEC-15**: Process-level error handlers
-- [ ] **CSS-1**: Audit light theme interactive state coverage
+- [x] **SEC-8**: Function-based CORS with blocked-origin logging
+- [x] **SEC-9**: Explicit HSTS configuration
+- [x] **SEC-10**: Permissions-Policy header
+- [x] **SEC-11**: Explicit Referrer-Policy
+- [x] **SEC-12**: Cross-Origin policies for OAuth
+- [x] **SEC-14**: Graceful shutdown handler (already existed in server.js)
+- [x] **SEC-15**: Process-level error handlers (already existed in server.js)
+- [x] **CSS-1**: Audit light theme interactive state coverage
 - [ ] **SPA-1**: Link prefetching on hover/touchstart
 - [ ] **SPA-2**: OG meta tag updates on SPA navigation
 - [ ] **SPA-3**: Pending navigation queue (race-safe)
