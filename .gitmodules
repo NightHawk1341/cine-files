@@ -1,0 +1,3 @@
+[submodule "tribute"]
+	path = tribute
+	url = https://github.com/NightHawk1341/TR-BUTE.git
