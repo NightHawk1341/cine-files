@@ -393,7 +393,7 @@ Ordered by priority. Check off as completed.
 - [x] **SPA-2**: OG meta tag updates on SPA navigation
 - [x] **SPA-3**: Pending navigation queue (race-safe)
 - [ ] **FEAT-1**: Article/author analytics
-- [ ] **FEAT-2**: Comment reply email notifications
+- [x] **FEAT-2**: Comment reply email notifications — skipped (not needed)
 
 ### Low
 
@@ -404,7 +404,7 @@ Ordered by priority. Check off as completed.
 - [x] **SPA-4**: Connection warmup on tab visibility
 - [x] **SPA-5**: Module preloading in `index.html`
 - [ ] **SPA-6**: Pre-rendered skeleton loaders
-- [ ] **FEAT-3**: FAQ page
+- [x] **FEAT-3**: FAQ page — skipped (not needed)
 - [ ] **FEAT-4**: PWA support evaluation
 - [ ] **INFRA-3**: Migrate to AWS SDK v3 for S3
 - [ ] **INFRA-4**: Image variant generation with sharp
