@@ -56,10 +56,15 @@ cine-files/
   server/
     app.js                     # Express app setup (middleware, routes, static)
     routes/index.js            # Flat route registration (all API routes)
+    routes/admin.js            # Admin router factory (auth endpoints + static + login page)
     middleware/auth.js          # authenticateToken, requireAuth/Editor/Admin
     services/tmdb.js           # TMDB sync and cache
     utils/transliterate.js     # Slug generation
   api/                         # API endpoint handlers (factory pattern)
+    admin/                     # Admin miniapp auth endpoints
+      browser-login.js         # POST /api/admin/browser-login (username/password → JWT cookie)
+      browser-verify.js        # GET /api/admin/browser-verify (cookie check → admin data)
+      logout.js                # POST /api/admin/logout (clear cookie)
     articles.js, article-by-id.js, articles-related.js
     categories.js
     tags.js, tag-by-id.js
@@ -81,15 +86,29 @@ cine-files/
     tribute-api.js             # TR-BUTE product fetch
   public/
     index.html                 # SPA entry point
+    admin-login.html           # Standalone admin login page
+    admin-miniapp/             # Standalone admin SPA (ES modules, own auth)
+      index.html               # Admin SPA entry point (separate from main SPA)
+      style.css                # Admin component styles (tables, media grid, etc.)
+      css/                     # Modular CSS partials (_variables, _layout, _forms, etc.)
+      js/
+        main.js                # Admin entry point (switchView navigation)
+        auth.js                # Browser-only admin auth (JWT cookie)
+        config.js              # API_BASE, isBrowserMode()
+        state.js               # Admin state management
+        utils.js               # SVGIcons, escapeHtml, showToast, showModal
+        theme.js               # Theme sync with main site
+        utils/                 # apiClient.js, templates.js, modalManager.js
+        views/                 # 12 view modules (dashboard, articles, comments, etc.)
     css/                       # Global + page-specific CSS (flat, no subdirs)
     js/
-      core/router.js           # SPA router (registerPage pattern)
+      core/router.js           # SPA router (registerPage pattern, redirects /admin* to miniapp)
       core/media.js            # resolveImageUrl helper
       utils.js                 # Shared utilities
       modules/                 # Persistent UI modules (survive navigations)
       components/              # Content renderers (article-card, article-body, comment-list)
       pages/                   # Page scripts (home, article, category, etc.)
-      pages/admin/             # Admin page scripts
+      pages/admin/             # Legacy admin scripts (kept as reference, not loaded)
     fonts/                     # Montserrat WOFF2
     icons/                     # SVG icons
   migrations/                   # Manual SQL migrations (run via Supabase SQL editor)
@@ -173,6 +192,17 @@ Skeleton:      --skeleton-bg-base  --skeleton-bg-highlight
 - Editors own their articles — can only edit/delete their own
 - Admin routes require `requireAdmin` middleware
 
+### Admin Panel (Standalone Miniapp)
+- **Separate SPA** at `/admin-miniapp/` — not part of the main SPA, has own `index.html`
+- **Architecture matches TR-BUTE** (`tribute/admin-miniapp/`) — ES modules, view-based navigation, modular CSS
+- **Auth**: Browser login (`/admin/login`) sets `admin_token` JWT cookie; also accepts existing `access_token` from OAuth
+- **Navigation**: `switchView()` pattern (not URL-based `Router.registerPage()`), state saved to `localStorage`
+- **12 views**: dashboard, articles, article-editor, comments, tags, users, media, collections, categories, integrations, moderation, settings
+- **SPA router redirect**: `/admin*` paths in main SPA redirect to `/admin-miniapp/` via `window.location.href`
+- **Env vars**: `ADMIN_USERNAME`, `ADMIN_PASSWORD_HASH` (added to deploy workflow)
+- **Rate limiting**: 10 login attempts per 15 minutes on `/api/admin/browser-login`
+- **Old admin scripts** in `public/js/pages/admin/` are kept as reference but no longer loaded
+
 ### Database
 - PostgreSQL hosted on Supabase — schema changes applied manually via Supabase SQL editor
 - `pg` driver — `lib/db.js` provides pool singleton
@@ -246,6 +276,7 @@ When adding JS-driven `classList` toggling or `style.*` changes that affect visi
 - `.claude/README.md` — implementation protocols and validation commands
 - `docs/SPA_LIFECYCLE.md` — persistent elements, cleanup contract, common bugs
 - `docs/CONDITIONAL_VISIBILITY.md` — all JS-driven visibility and styling changes
+- `docs/ADMIN_MINIAPP_MIGRATION.md` — admin panel migration plan, architecture, TR-BUTE reference
 - `docs/` directory — see full list below for system-specific documentation
 
 ## Progress
@@ -255,3 +286,4 @@ When adding JS-driven `classList` toggling or `style.*` changes that affect visi
 - **Phase 4: Admin Panel** — COMPLETE (dashboard, articles, comments, tags, users, media, collections, settings)
 - **Phase 5: Cleanup** — COMPLETE (removed Next.js, React, TypeScript, Prisma, CSS Modules)
 - **Phase 6: Vercel Compatibility** — COMPLETE (vercel.json, Express-on-Vercel via @vercel/node)
+- **Phase 7: Admin Miniapp Migration** — COMPLETE (standalone SPA at `/admin-miniapp/`, ES modules, own auth)
