@@ -44,6 +44,7 @@
   <link rel="stylesheet" href="/css/media-picker.css?v=%%GIT_HASH%%">
   <link rel="stylesheet" href="/css/integration-slot.css?v=%%GIT_HASH%%">
   <link rel="stylesheet" href="/css/integration-legal.css?v=%%GIT_HASH%%">
+  <link rel="stylesheet" href="/css/search-panel.css?v=%%GIT_HASH%%">
 
   <!-- PWA -->
   <link rel="manifest" href="/manifest.json">
@@ -107,9 +108,9 @@
 
       <!-- Right: search + theme + new article + profile -->
       <div class="header-right-buttons">
-        <a href="/search" class="header-button header-search-desktop" aria-label="Поиск">
+        <button class="header-button header-search-desktop" id="header-search-btn" aria-label="Поиск">
           <svg width="20" height="20" viewBox="0 0 64 64"><use href="#icon-search"/></svg>
-        </a>
+        </button>
         <button class="header-button" id="theme-toggle-btn" aria-label="Переключить тему">
           <svg width="20" height="20" viewBox="0 0 64 64"><use href="#icon-sun"/></svg>
         </button>
@@ -242,14 +243,14 @@
       </span>
       <span class="bottom-nav-label">Теги</span>
     </a>
-    <a href="/search" class="bottom-nav-button">
+    <button class="bottom-nav-button" id="bottom-nav-search-btn">
       <span class="bottom-nav-icon-wrap">
         <span class="bottom-nav-icon">
           <svg width="20" height="20" viewBox="0 0 64 64"><use href="#icon-search"/></svg>
         </span>
       </span>
       <span class="bottom-nav-label">Поиск</span>
-    </a>
+    </button>
     <a href="/profile" class="bottom-nav-button">
       <span class="bottom-nav-icon-wrap">
         <span class="bottom-nav-icon">
