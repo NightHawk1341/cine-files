@@ -153,6 +153,12 @@ const Router = (function () {
   async function navigate(path, pushState) {
     if (pushState === undefined) pushState = true;
 
+    // Admin routes redirect to standalone admin miniapp
+    if (path === '/admin' || path.startsWith('/admin/')) {
+      window.location.href = '/admin-miniapp/';
+      return;
+    }
+
     // SPA-3: Queue navigation if one is already in progress
     if (isNavigating) {
       pendingNavigation = { path: path, pushState: pushState };
