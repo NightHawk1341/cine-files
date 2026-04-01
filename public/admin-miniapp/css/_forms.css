@@ -1,0 +1,194 @@
+/* ===================================================================
+   FORMS
+   =================================================================== */
+
+.form-group {
+  margin-bottom: var(--spacing-lg);
+}
+
+.form-label {
+  display: block;
+  font-size: var(--font-sm-alt);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+select {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  font-size: var(--font-base);
+  transition: all var(--transition-base);
+  font-family: inherit;
+  cursor: pointer;
+}
+
+select:hover { border-color: var(--border-hover); }
+select:focus { outline: none; border-color: var(--primary); background: var(--bg-primary); }
+
+select option {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+  width: 100%;
+  padding: 10px var(--spacing-md);
+  border: 1px solid var(--input-border);
+  border-radius: var(--input-radius);
+  background: var(--input-bg);
+  color: var(--text-primary);
+  font-size: var(--font-base);
+  transition: all var(--transition-base);
+  font-family: inherit;
+  min-height: 40px;
+}
+
+.form-input:hover,
+.form-select:hover,
+.form-textarea:hover { border-color: var(--border-hover); }
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  background: var(--bg-primary);
+  box-shadow: var(--focus-ring);
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 100px;
+  line-height: 1.6;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding: 10px var(--spacing-md);
+  border: 1px solid transparent;
+  border-radius: var(--btn-radius);
+  font-size: var(--font-base);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
+}
+
+.btn-secondary {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+.btn-secondary:hover {
+  background: var(--bg-hover);
+  border-color: var(--border-hover);
+}
+
+.btn-danger {
+  background: var(--error);
+  color: #fff;
+  border-color: var(--error);
+}
+
+.btn-danger:hover {
+  background: #d32f2f;
+  border-color: #d32f2f;
+}
+
+.btn-sm {
+  padding: 6px 12px;
+  font-size: var(--font-sm-alt);
+}
+
+.btn-icon-only {
+  padding: 8px;
+  min-width: 36px;
+  min-height: 36px;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Status Badges */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-size: var(--font-sm);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.status-badge.draft { background: rgba(158, 158, 158, 0.15); color: #9E9E9E; }
+.status-badge.review { background: rgba(255, 193, 7, 0.15); color: #FFC107; }
+.status-badge.published { background: rgba(76, 175, 80, 0.15); color: #4CAF50; }
+.status-badge.archived { background: rgba(244, 67, 54, 0.15); color: #F44336; }
+.status-badge.visible { background: rgba(76, 175, 80, 0.15); color: #4CAF50; }
+.status-badge.hidden { background: rgba(158, 158, 158, 0.15); color: #9E9E9E; }
+.status-badge.active { background: rgba(76, 175, 80, 0.15); color: #4CAF50; }
+
+/* Role Badges */
+.role-badge { font-size: var(--font-sm); font-weight: 600; padding: 2px 8px; border-radius: var(--radius-full); }
+.role-badge.admin { background: rgba(244, 67, 54, 0.15); color: #F44336; }
+.role-badge.editor { background: rgba(33, 150, 243, 0.15); color: #2196F3; }
+.role-badge.reader { background: rgba(158, 158, 158, 0.15); color: #9E9E9E; }
+
+/* Toggle switch */
+.toggle-switch {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.toggle-switch.active {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+.toggle-switch::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  background: var(--text-primary);
+  border-radius: 50%;
+  transition: transform var(--transition-base);
+}
+
+.toggle-switch.active::after {
+  transform: translateX(20px);
+  background: #fff;
+}

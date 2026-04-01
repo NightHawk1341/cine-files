@@ -347,45 +347,45 @@ TR-BUTE has complex editor permissions (`editorPermissions` object with per-subt
 - [x] Create `docs/ADMIN_MINIAPP_MIGRATION.md` (this file)
 
 ### Phase 1: Server-side setup
-- [ ] Create `api/admin/browser-login.js` — copy from `tribute/api/admin/browser-login.js`, simplify
-- [ ] Create `api/admin/browser-verify.js` — copy from `tribute/api/admin/browser-verify.js`, add `access_token` fallback
-- [ ] Create `api/admin/logout.js` — copy from `tribute/api/admin/logout.js`
-- [ ] Create `server/routes/admin.js` — copy factory pattern from `tribute/server/routes/admin.js`, remove Telegram/MAX
-- [ ] Update `server/routes/index.js` — mount admin router, login page, protectAdminMiniapp
-- [ ] Add `ADMIN_USERNAME` / `ADMIN_PASSWORD_HASH` to `lib/config.js` and deploy workflow
-- [ ] Add rate-limiting on login endpoint
+- [x] Create `api/admin/browser-login.js` — copy from `tribute/api/admin/browser-login.js`, simplify
+- [x] Create `api/admin/browser-verify.js` — copy from `tribute/api/admin/browser-verify.js`, add `access_token` fallback
+- [x] Create `api/admin/logout.js` — copy from `tribute/api/admin/logout.js`
+- [x] Create `server/routes/admin.js` — copy factory pattern from `tribute/server/routes/admin.js`, remove Telegram/MAX
+- [x] Update `server/routes/index.js` — mount admin router, login page, protectAdminMiniapp
+- [x] Add `ADMIN_USERNAME` / `ADMIN_PASSWORD_HASH` to `lib/config.js` and deploy workflow
+- [x] Add rate-limiting on login endpoint
 
 ### Phase 2: Admin miniapp skeleton
-- [ ] Create `public/admin-miniapp/index.html` — copy from `tribute/admin-miniapp/index.html`, strip Telegram/MAX
-- [ ] Create `public/admin-miniapp/css/` partials — adapt from tribute, map to CineFiles CSS vars
-- [ ] Create `public/admin-miniapp/js/config.js` — browser-only version
-- [ ] Create `public/admin-miniapp/js/state.js` — CineFiles state shape
-- [ ] Create `public/admin-miniapp/js/auth.js` — browser-only verify + logout
-- [ ] Create `public/admin-miniapp/js/theme.js` — sync with `cinefiles-theme` localStorage key
-- [ ] Create `public/admin-miniapp/js/utils.js` — SVGIcons, escapeHtml, toast, modal
-- [ ] Create `public/admin-miniapp/js/utils/apiClient.js` — copy, remove Telegram headers
-- [ ] Create `public/admin-miniapp/js/utils/templates.js` — copy reusable builders
-- [ ] Create `public/admin-miniapp/js/main.js` — bootstrap, switchView for CineFiles views
-- [ ] Create `public/admin-login.html` — copy from `tribute/admin-login.html`, rebrand
+- [x] Create `public/admin-miniapp/index.html` — copy from `tribute/admin-miniapp/index.html`, strip Telegram/MAX
+- [x] Create `public/admin-miniapp/css/` partials — adapt from tribute, map to CineFiles CSS vars
+- [x] Create `public/admin-miniapp/js/config.js` — browser-only version
+- [x] Create `public/admin-miniapp/js/state.js` — CineFiles state shape
+- [x] Create `public/admin-miniapp/js/auth.js` — browser-only verify + logout
+- [x] Create `public/admin-miniapp/js/theme.js` — sync with `cinefiles-theme` localStorage key
+- [x] Create `public/admin-miniapp/js/utils.js` — SVGIcons, escapeHtml, toast, modal
+- [x] Create `public/admin-miniapp/js/utils/apiClient.js` — copy, remove Telegram headers
+- [x] Create `public/admin-miniapp/js/utils/templates.js` — copy reusable builders
+- [x] Create `public/admin-miniapp/js/main.js` — bootstrap, switchView for CineFiles views
+- [x] Create `public/admin-login.html` — copy from `tribute/admin-login.html`, rebrand
 
 ### Phase 3: Migrate views (one at a time)
-- [ ] `views/dashboard.js` — admin stats overview
-- [ ] `views/articles.js` — article list + status management
-- [ ] `views/article-editor.js` — article create/edit modal
-- [ ] `views/comments.js` — comment moderation
-- [ ] `views/tags.js` — tag management
-- [ ] `views/users.js` — user role management
-- [ ] `views/media.js` — media library + upload
-- [ ] `views/collections.js` — collection CRUD
-- [ ] `views/categories.js` — category CRUD
-- [ ] `views/integrations.js` — partner placement
-- [ ] `views/moderation.js` — auto-moderation word filter
-- [ ] `views/settings.js` — key-value settings
+- [x] `views/dashboard.js` — admin stats overview
+- [x] `views/articles.js` — article list + status management
+- [x] `views/article-editor.js` — article create/edit (links to main SPA block editor)
+- [x] `views/comments.js` — comment moderation
+- [x] `views/tags.js` — tag management
+- [x] `views/users.js` — user role management
+- [x] `views/media.js` — media library + upload
+- [x] `views/collections.js` — collection CRUD
+- [x] `views/categories.js` — category CRUD
+- [x] `views/integrations.js` — partner placement
+- [x] `views/moderation.js` — auto-moderation word filter
+- [x] `views/settings.js` — key-value settings
 
 ### Phase 4: Cutover
-- [ ] Block `/admin*` routes in SPA router (`public/js/core/router.js`)
-- [ ] Remove admin `<script>` tags from `public/index.html` (12 scripts)
-- [ ] Remove admin page files from `public/js/pages/admin/` (or keep as reference)
-- [ ] Update CSP in `server/app.js` if needed
-- [ ] Run `npm run check:claude` validation
-- [ ] Update `CLAUDE.md` with new architecture
+- [x] Block `/admin*` routes in SPA router (`public/js/core/router.js`)
+- [x] Remove admin `<script>` tags from `public/index.html` (12 scripts)
+- [ ] Remove admin page files from `public/js/pages/admin/` (kept as reference for now)
+- [x] CSP in `server/app.js` — no changes needed (same-origin miniapp)
+- [x] Run `npm run check:claude` validation
+- [x] Update `CLAUDE.md` with new architecture

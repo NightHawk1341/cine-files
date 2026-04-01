@@ -94,7 +94,9 @@ jobs:
             --environment TMDB_PROXY_URL=${{ secrets.TMDB_PROXY_URL }} \
             --environment TMDB_PROXY_SECRET=${{ secrets.TMDB_PROXY_SECRET }} \
             --environment TRIBUTE_API_URL=${{ secrets.TRIBUTE_API_URL }} \
-            --environment MEDIA_CDN_URL=${{ secrets.MEDIA_CDN_URL }}
+            --environment MEDIA_CDN_URL=${{ secrets.MEDIA_CDN_URL }} \
+            --environment ADMIN_USERNAME=${{ secrets.ADMIN_USERNAME }} \
+            --environment ADMIN_PASSWORD_HASH=${{ secrets.ADMIN_PASSWORD_HASH }}
 
       - name: Notify on failure
         if: failure()

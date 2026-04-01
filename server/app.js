@@ -206,6 +206,10 @@ app.get('*', function (req, res) {
   if (req.path.startsWith('/api/')) {
     return res.status(404).json({ error: 'Not found' });
   }
+  // Admin miniapp and login page are handled by their own routers
+  if (req.path.startsWith('/admin-miniapp') || req.path === '/admin/login') {
+    return res.status(404).json({ error: 'Not found' });
+  }
   var nonce = res.locals.nonce;
   var html = indexHtmlTemplate
     .replace(/%%CSP_NONCE%%/g, nonce)

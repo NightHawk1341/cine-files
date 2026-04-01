@@ -36,6 +36,8 @@ function collectFiles(dir, prefix) {
 var pageFiles = collectFiles(pagesDir, '');
 
 pageFiles.forEach(function (f) {
+  // Admin pages moved to standalone miniapp — skip validation
+  if (f.startsWith('admin/')) return;
   var scriptPath = '/js/pages/' + f;
   if (indexHtml.indexOf(scriptPath) === -1) {
     console.error(RED + 'ERROR: ' + scriptPath + ' not included in index.html' + RESET);
