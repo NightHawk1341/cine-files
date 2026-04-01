@@ -108,7 +108,6 @@ cine-files/
       modules/                 # Persistent UI modules (survive navigations)
       components/              # Content renderers (article-card, article-body, comment-list)
       pages/                   # Page scripts (home, article, category, etc.)
-      pages/admin/             # Legacy admin scripts (kept as reference, not loaded)
     fonts/                     # Montserrat WOFF2
     icons/                     # SVG icons
   migrations/                   # Manual SQL migrations (run via Supabase SQL editor)
@@ -201,7 +200,7 @@ Skeleton:      --skeleton-bg-base  --skeleton-bg-highlight
 - **SPA router redirect**: `/admin*` paths in main SPA redirect to `/admin-miniapp/` via `window.location.href`
 - **Env vars**: `ADMIN_USERNAME`, `ADMIN_PASSWORD_HASH` (added to deploy workflow)
 - **Rate limiting**: 10 login attempts per 15 minutes on `/api/admin/browser-login`
-- **Old admin scripts** in `public/js/pages/admin/` are kept as reference but no longer loaded
+- **Old admin scripts** in `public/js/pages/admin/` have been removed (migration complete)
 
 ### Database
 - PostgreSQL hosted on Supabase — schema changes applied manually via Supabase SQL editor

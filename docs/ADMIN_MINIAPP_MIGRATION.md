@@ -385,7 +385,7 @@ TR-BUTE has complex editor permissions (`editorPermissions` object with per-subt
 ### Phase 4: Cutover
 - [x] Block `/admin*` routes in SPA router (`public/js/core/router.js`)
 - [x] Remove admin `<script>` tags from `public/index.html` (12 scripts)
-- [ ] Remove admin page files from `public/js/pages/admin/` (kept as reference for now)
+- [x] Remove admin page files from `public/js/pages/admin/`
 - [x] CSP in `server/app.js` — no changes needed (same-origin miniapp)
 - [x] Run `npm run check:claude` validation
 - [x] Update `CLAUDE.md` with new architecture
