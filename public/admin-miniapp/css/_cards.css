@@ -86,6 +86,12 @@
   color: var(--text-tertiary);
 }
 
+.stat-note {
+  font-size: var(--font-xs);
+  color: var(--text-tertiary);
+  margin-top: var(--spacing-xs);
+}
+
 /* Page Header */
 .page-header {
   display: flex;

@@ -91,9 +91,103 @@
   color: var(--primary);
 }
 
-.upload-zone.dragover {
+.upload-zone.dragover,
+.upload-zone.active {
   border-color: var(--primary);
   background: var(--primary-muted);
+}
+
+.upload-zone-text {
+  font-size: var(--font-base);
+  color: var(--text-secondary);
+}
+
+.upload-zone-fields {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-md);
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+/* Dashboard Layout */
+.admin-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+}
+
+@media (max-width: 767px) {
+  .admin-columns {
+    grid-template-columns: 1fr;
+  }
+}
+
+.admin-column {
+  min-width: 0;
+}
+
+.admin-nav {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: var(--spacing-sm);
+}
+
+.admin-top-articles,
+.admin-top-authors {
+  margin-top: var(--spacing-sm);
+}
+
+/* Media Cards */
+.media-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: all var(--transition-base);
+}
+
+@media (hover: hover) {
+  .media-card:hover {
+    border-color: var(--border-hover);
+    box-shadow: var(--shadow-md);
+  }
+}
+
+.media-card-preview img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  display: block;
+}
+
+.media-card-info {
+  padding: var(--spacing-sm) var(--spacing-md);
+}
+
+.media-card-filename {
+  font-size: var(--font-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.media-card-meta {
+  display: flex;
+  gap: var(--spacing-sm);
+  font-size: var(--font-xs);
+  color: var(--text-tertiary);
+  margin-top: 2px;
+}
+
+.media-card-actions {
+  display: flex;
+  gap: var(--spacing-xs);
+  margin-top: var(--spacing-sm);
+  padding-bottom: var(--spacing-xs);
 }
 
 /* Comment Cards */
@@ -137,6 +231,13 @@
   font-size: var(--font-sm);
   color: var(--text-tertiary);
   margin-top: var(--spacing-sm);
+}
+
+.comment-card-text {
+  font-size: var(--font-base);
+  line-height: 1.6;
+  color: var(--text-secondary);
+  margin: 0;
 }
 
 .comment-card-actions {
@@ -202,6 +303,17 @@
 }
 
 /* Settings key-value */
+.admin-setting-value {
+  max-width: 400px;
+}
+
+.admin-setting-textarea {
+  min-height: 60px;
+  resize: vertical;
+  font-family: monospace;
+  font-size: var(--font-sm);
+}
+
 .settings-row {
   display: flex;
   gap: var(--spacing-md);
