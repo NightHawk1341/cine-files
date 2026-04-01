@@ -17,6 +17,14 @@ var BottomNav = (function () {
         item.classList.remove('mobile-pressed-to-active');
       });
     });
+
+    // Mobile search button — opens search sheet via Header
+    var searchBtn = document.getElementById('bottom-nav-search-btn');
+    if (searchBtn) {
+      searchBtn.addEventListener('click', function () {
+        Header.toggleSearch();
+      });
+    }
   }
 
   return {

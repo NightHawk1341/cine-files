@@ -24,24 +24,33 @@ var Sidebar = (function () {
   var utilItems = [
     { href: '/tags', label: 'Все теги', icon: 'icon-tag' },
     { href: '/collections', label: 'Подборки', icon: 'icon-grid' },
-    { href: '/search', label: 'Поиск', icon: 'icon-search' },
+    { href: '#search', label: 'Поиск', icon: 'icon-search', action: 'search' },
   ];
 
   function buildNavLink(item) {
-    var a = document.createElement('a');
-    a.href = item.href;
-    a.className = 'sidebar-nav-link';
+    var el;
+    if (item.action === 'search') {
+      el = document.createElement('button');
+      el.className = 'sidebar-nav-link';
+      el.addEventListener('click', function () {
+        Header.toggleSearch();
+      });
+    } else {
+      el = document.createElement('a');
+      el.href = item.href;
+      el.className = 'sidebar-nav-link';
+    }
 
     var iconWrap = document.createElement('span');
     iconWrap.className = 'sidebar-nav-icon';
     iconWrap.innerHTML = '<svg viewBox="0 0 64 64"><use href="#' + item.icon + '"/></svg>';
-    a.appendChild(iconWrap);
+    el.appendChild(iconWrap);
 
     var label = document.createElement('span');
     label.textContent = item.label;
-    a.appendChild(label);
+    el.appendChild(label);
 
-    return a;
+    return el;
   }
 
   function buildLeftSidebar() {
@@ -236,6 +245,7 @@ var Sidebar = (function () {
     var links = leftEl.querySelectorAll('.sidebar-nav-link');
     links.forEach(function (link) {
       var href = link.getAttribute('href');
+      if (!href || href === '#search') return;
       var isActive = href === '/' ? path === '/' : path.startsWith(href);
       link.classList.toggle('active', isActive);
     });

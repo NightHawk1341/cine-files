@@ -294,14 +294,14 @@ const Router = (function () {
     // Bottom nav items
     document.querySelectorAll('.bottom-nav-button').forEach(function (link) {
       var href = link.getAttribute('href');
+      if (!href) return;
       var isActive = href === '/' ? path === '/' : path.startsWith(href);
       link.classList.toggle('active-page', isActive);
     });
 
-    // Desktop search
-    var searchLink = document.querySelector('.header-search-desktop');
-    if (searchLink) {
-      searchLink.classList.toggle('header-button-active', path === '/search');
+    // Close search panel on navigation
+    if (typeof Header !== 'undefined' && Header.closeAllSearch) {
+      Header.closeAllSearch();
     }
   }
 
