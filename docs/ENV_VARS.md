@@ -15,7 +15,6 @@ GitHub Actions secrets mirror these for the CI/CD deploy workflow.
 | `APP_URL` | Public site URL | `https://cinefiles-txt.com` |
 | `DATABASE_URL` | PostgreSQL connection string (Supabase) | `postgresql://user:pass@host:5432/db` |
 | `JWT_SECRET` | Secret for signing JWT access tokens | Random 64+ char string |
-| `SESSION_SECRET` | Secret for session management | Random 64+ char string |
 | `CRON_SECRET` | Bearer token for cron job authentication | Random 64+ char string |
 
 ### OAuth — Yandex (Primary)

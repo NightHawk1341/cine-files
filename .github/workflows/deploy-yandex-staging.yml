@@ -1,19 +1,19 @@
-name: Deploy to Yandex Cloud
+name: Deploy to Yandex Cloud (Staging)
 
 on:
   push:
     branches:
-      - main
+      - develop
   workflow_dispatch:
 
 env:
   REGISTRY: cr.yandex
-  IMAGE_NAME: cinefiles-app
+  IMAGE_NAME: cinefiles-app-staging
   # Image lifecycle policy is managed via Yandex Cloud Console
 
 jobs:
-  build-and-deploy:
-    name: Build and Deploy to Yandex Cloud
+  build-and-deploy-staging:
+    name: Build and Deploy to Yandex Cloud Staging
     runs-on: ubuntu-latest
 
     steps:
@@ -36,7 +36,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ secrets.YC_REGISTRY_ID }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=raw,value=latest
+            type=raw,value=staging
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
@@ -60,20 +60,20 @@ jobs:
       - name: Configure Yandex Cloud CLI
         run: |
           echo '${{ secrets.YC_SA_JSON_KEY }}' > key.json
-          yc config profile create github-actions 2>/dev/null || yc config profile activate github-actions
+          yc config profile create github-actions-staging 2>/dev/null || yc config profile activate github-actions-staging
           yc config set service-account-key key.json
           rm key.json
-          FOLDER_ID=$(yc serverless container get --id ${{ secrets.YC_CONTAINER_ID }} --format json | python3 -c "import sys,json; print(json.load(sys.stdin)['folder_id'])")
+          FOLDER_ID=$(yc serverless container get --id ${{ secrets.YC_CONTAINER_ID_STAGING }} --format json | python3 -c "import sys,json; print(json.load(sys.stdin)['folder_id'])")
           yc config set folder-id $FOLDER_ID
           echo "Configured folder-id: $FOLDER_ID"
 
-      - name: Deploy to Yandex Cloud Container
+      - name: Deploy to Yandex Cloud Container (Staging)
         env:
-          IMAGE_URL: ${{ env.REGISTRY }}/${{ secrets.YC_REGISTRY_ID }}/${{ env.IMAGE_NAME }}:latest
-          CONTAINER_ID: ${{ secrets.YC_CONTAINER_ID }}
+          IMAGE_URL: ${{ env.REGISTRY }}/${{ secrets.YC_REGISTRY_ID }}/${{ env.IMAGE_NAME }}:staging
+          CONTAINER_ID: ${{ secrets.YC_CONTAINER_ID_STAGING }}
           SA_ID: ${{ secrets.YC_SERVICE_ACCOUNT_ID }}
           GIT_SHA: ${{ github.sha }}
-          LB_ID: ${{ secrets.YC_LOCKBOX_SECRET_ID }}
+          LB_ID: ${{ secrets.YC_LOCKBOX_SECRET_ID_STAGING }}
         run: |
           yc lockbox payload get --id "$LB_ID" --format json > /tmp/lb_payload.json
 
@@ -113,12 +113,12 @@ jobs:
 
       - name: Deployment Summary
         run: |
-          echo "Deployment successful!"
-          echo "Image: ${{ env.REGISTRY }}/${{ secrets.YC_REGISTRY_ID }}/${{ env.IMAGE_NAME }}:latest"
-          echo "Container ID: ${{ secrets.YC_CONTAINER_ID }}"
+          echo "Staging deployment successful!"
+          echo "Image: ${{ env.REGISTRY }}/${{ secrets.YC_REGISTRY_ID }}/${{ env.IMAGE_NAME }}:staging"
+          echo "Container ID: ${{ secrets.YC_CONTAINER_ID_STAGING }}"
 
       - name: Notify on failure
         if: failure()
         run: |
-          echo "Deployment failed! Check the logs above for details."
+          echo "Staging deployment failed! Check the logs above for details."
           exit 1

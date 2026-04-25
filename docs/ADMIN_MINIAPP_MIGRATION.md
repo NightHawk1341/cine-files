@@ -123,7 +123,7 @@ server/
 
 ### New Environment Variables
 - `ADMIN_USERNAME` — Admin login username
-- `ADMIN_PASSWORD_HASH` — bcrypt hash of admin password (supports both bcrypt and plain-text with timing-safe comparison → `tribute/api/admin/browser-login.js:17-32`)
+- `ADMIN_PASSWORD` — bcrypt hash of admin password (supports both bcrypt and plain-text with timing-safe comparison → `tribute/api/admin/browser-login.js:17-32`)
 
 ## Authentication Flow
 
@@ -352,7 +352,7 @@ TR-BUTE has complex editor permissions (`editorPermissions` object with per-subt
 - [x] Create `api/admin/logout.js` — copy from `tribute/api/admin/logout.js`
 - [x] Create `server/routes/admin.js` — copy factory pattern from `tribute/server/routes/admin.js`, remove Telegram/MAX
 - [x] Update `server/routes/index.js` — mount admin router, login page, protectAdminMiniapp
-- [x] Add `ADMIN_USERNAME` / `ADMIN_PASSWORD_HASH` to `lib/config.js` and deploy workflow
+- [x] Add `ADMIN_USERNAME` / `ADMIN_PASSWORD` to `lib/config.js` and deploy workflow
 - [x] Add rate-limiting on login endpoint
 
 ### Phase 2: Admin miniapp skeleton

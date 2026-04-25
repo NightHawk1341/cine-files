@@ -198,7 +198,7 @@ Skeleton:      --skeleton-bg-base  --skeleton-bg-highlight
 - **Navigation**: `switchView()` pattern (not URL-based `Router.registerPage()`), state saved to `localStorage`
 - **12 views**: dashboard, articles, article-editor, comments, tags, users, media, collections, categories, integrations, moderation, settings
 - **SPA router redirect**: `/admin*` paths in main SPA redirect to `/admin-miniapp/` via `window.location.href`
-- **Env vars**: `ADMIN_USERNAME`, `ADMIN_PASSWORD_HASH` (added to deploy workflow)
+- **Env vars**: `ADMIN_USERNAME`, `ADMIN_PASSWORD` (added to deploy workflow)
 - **Rate limiting**: 10 login attempts per 15 minutes on `/api/admin/browser-login`
 - **Old admin scripts** in `public/js/pages/admin/` have been removed (migration complete)
 
