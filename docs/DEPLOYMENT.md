@@ -83,7 +83,6 @@ All secrets must be set in the GitHub repo Settings -> Secrets and variables -> 
 | `APP_URL` | Production URL (e.g. `https://cinefiles-txt.com`) |
 | `DATABASE_URL` | Supabase PostgreSQL connection string |
 | `JWT_SECRET` | JWT signing secret (generate with `openssl rand -hex 32`) |
-| `SESSION_SECRET` | Session signing secret (generate with `openssl rand -hex 32`) |
 | `CRON_SECRET` | Cron endpoint auth token (generate with `openssl rand -hex 32`) |
 
 **Auth Providers:**
