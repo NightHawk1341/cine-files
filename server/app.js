@@ -13,6 +13,7 @@ const { setupRoutes } = require('./routes/index');
 const { authenticateToken } = require('./middleware/auth');
 const botGuard = require('./middleware/bot-guard');
 const hotlinkGuard = require('./middleware/hotlink-guard');
+const stagingLock = require('./middleware/staging-lock');
 const { execSync } = require('child_process');
 
 const app = express();
@@ -128,6 +129,11 @@ app.use(express.json({
 }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+
+// ============================================================
+// Staging lockscreen (no-op in production)
+// ============================================================
+app.use(stagingLock);
 
 // ============================================================
 // Rate Limiting
