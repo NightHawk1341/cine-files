@@ -108,7 +108,7 @@ All secrets must be set in the GitHub repo Settings -> Secrets and variables -> 
 | Secret | Description |
 |--------|-------------|
 | `TMDB_API_KEY` | TMDB API key |
-| `TMDB_PROXY_URL` | Vercel TMDB proxy URL (e.g. `https://cine-files.vercel.app/api/tmdb`) |
+| `TMDB_PROXY_URL` | Vercel TMDB proxy URL (e.g. `https://cinefiles-txt.vercel.app/api/tmdb`) |
 | `TMDB_PROXY_SECRET` | Shared secret for TMDB proxy auth |
 | `TRIBUTE_API_URL` | TR-BUTE API URL (e.g. `https://buy-tribute.com/api`) |
 
@@ -137,7 +137,7 @@ All secrets must be set in the GitHub repo Settings -> Secrets and variables -> 
 ## Domain
 
 - **Production**: `cinefiles-txt.com` (Yandex Cloud Serverless Container)
-- **Vercel fallback**: `cine-files.vercel.app`
+- **Vercel fallback**: `cinefiles-txt.vercel.app`
 - **DNS**: Domain bought on Vercel, pointed to Yandex Cloud
 
 ## CI/CD Workflows
