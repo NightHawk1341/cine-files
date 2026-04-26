@@ -92,7 +92,7 @@ All secrets must be set in the GitHub repo Settings -> Secrets and variables -> 
 | `YANDEX_CLIENT_SECRET` | Yandex OAuth app client secret |
 | `VK_CLIENT_ID` | VK ID app client ID |
 | `VK_CLIENT_SECRET` | VK ID app client secret |
-| `BOT_TOKEN` | Telegram bot token (from BotFather, shared with TR-BUTE) |
+| `USER_BOT_TOKEN` | Telegram bot token (from BotFather, shared with TR-BUTE) |
 | `TELEGRAM_OIDC_SECRET` | Telegram OIDC client secret (from BotFather > Bot Settings > Web Login) |
 
 **Storage:**

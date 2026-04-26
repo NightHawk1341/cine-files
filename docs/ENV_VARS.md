@@ -32,7 +32,7 @@ GitHub Actions secrets mirror these for the CI/CD deploy workflow.
 ### OAuth — Telegram (OIDC)
 | Variable | Description |
 |----------|-------------|
-| `BOT_TOKEN` | Telegram bot token (shared with TR-BUTE). Bot ID is derived as the part before `:` |
+| `USER_BOT_TOKEN` | Telegram bot token (shared with TR-BUTE). Bot ID is derived as the part before `:` |
 | `TELEGRAM_OIDC_SECRET` | Client Secret from BotFather > Bot Settings > Web Login |
 
 ### Yandex S3 (Image Storage)
